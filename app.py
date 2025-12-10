@@ -114,15 +114,3 @@ if consultar:
         with col3:
             if st.button("➡️ Próxima página"):
                 st.experimental_set_query_params(page=min(total_pages, page + 1))
-
-# Ajuda
-with st.expander("ℹ️ Dicas de uso"):
-    st.markdown("""
-- **Órgão** e **Tipo** filtram por igualdade (use o texto exato que está no banco).
-- **Nome** aceita pesquisa parcial, sem diferenciar maiúsculas/minúsculas (ex.: `maria` encontra `Maria da Silva`).
-- Use **Registros por página** para controlar quanto aparece de cada vez.  
-- Para grandes volumes, recomenda-se criar **índices** no banco:
-  ```sql
-  CREATE INDEX IF NOT EXISTS idx_dados_orgao ON public.dados (orgao);
-  CREATE INDEX IF NOT EXISTS idx_dados_nome ON public.dados (nome);
-  CREATE INDEX IF NOT EXISTS idx_dados_tipo ON public.dados (tipo);
