@@ -1,116 +1,98 @@
 import os
-import math
 import pandas as pd
 import streamlit as st
 from supabase import create_client, Client
 
 # -------------------- Config da página --------------------
-st.set_page_config(page_title="Consulta de Dados", page_icon="🔎", layout="wide")
-
-st.title("🔎 Consulta de Dados (Supabase + Streamlit)")
-st.caption("Filtre por órgão, nome e tipo. Suporta grandes volumes com paginação.")
+st.set_page_config(page_title="Consulta por Órgão", page_icon="🏛️", layout="wide")
+st.title("🏛️ Consulta de Membros por Órgão")
+st.caption("Selecione um órgão para listar os campos: membro, designacao e observacao.")
 
 # -------------------- Variáveis de ambiente --------------------
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY")
 
 if not SUPABASE_URL or not SUPABASE_ANON_KEY:
-    st.error("⚠️ Variáveis de ambiente não configuradas: SUPABASE_URL e SUPABASE_ANON_KEY.")
+    st.error("⚠️ Configure SUPABASE_URL e SUPABASE_ANON_KEY nos Secrets do Streamlit.")
     st.stop()
 
-# -------------------- Cliente Supabase (cache de recurso) --------------------
+# -------------------- Cliente Supabase (cache) --------------------
 @st.cache_resource
 def get_supabase() -> Client:
     return create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 supabase = get_supabase()
 
-# -------------------- Sidebar: filtros --------------------
-st.sidebar.header("Filtros")
-orgao = st.sidebar.text_input("Órgão (igual)")
-nome = st.sidebar.text_input("Nome (contém, sem diferenciar maiúsculas/minúsculas)")
-tipo = st.sidebar.text_input("Tipo (igual)")
+# -------------------- Utilitários --------------------
+def mostrar_erro(ex: Exception, contexto: str = ""):
+    st.error(f"❌ Ocorreu um erro {('em ' + contexto) if contexto else ''}: {ex}")
 
-# Paginação: tamanho da página e página atual
-page_size = st.sidebar.number_input("Registros por página", min_value=10, max_value=5000, value=50, step=10)
-page = st.sidebar.number_input("Página", min_value=1, value=1, step=1)
+@st.cache_data(ttl=300)
+def listar_orgaos_unicos() -> list:
+    """Busca valores distintos de 'orgao' e os ordena alfabeticamente."""
+    try:
+        res = supabase.table("dados").select("orgao").execute()
+        data = res.data if hasattr(res, "data") else []
+        orgaos = sorted({row.get("orgao") for row in data if row.get("orgao")})
+        return orgaos
+    except Exception as ex:
+        mostrar_erro(ex, "ao listar órgãos")
+        return []
 
-# Botão consultar
-consultar = st.sidebar.button("Consultar")
-
-# -------------------- Função de contagem total --------------------
-@st.cache_data(ttl=60)
-def contar_registros(orgao_filt, nome_filt, tipo_filt):
-    q = supabase.table("dados").select("count", count="exact")
-    if orgao_filt:
-        q = q.eq("orgao", orgao_filt)
-    if nome_filt:
-        q = q.ilike("nome", f"%{nome_filt}%")
-    if tipo_filt:
-        q = q.eq("tipo", tipo_filt)
+@st.cache_data(ttl=120)
+def consultar_por_orgao(orgao: str) -> pd.DataFrame:
+    """Retorna somente as colunas membro, designacao e observacao do órgão selecionado."""
+    q = supabase.table("dados").select("membro, designacao, observacao").eq("orgao", orgao).order("membro", desc=False)
     res = q.execute()
-    # Quando count="exact", supabase retorna count em res.count (em versões mais novas).
-    total = getattr(res, "count", None)
-    if total is None:
-        # fallback: se não vier count, carregar tudo (cuidado com grandes volumes)
-        data = getattr(res, "data", [])
-        total = len(data) if data else 0
-    return total
+    rows = res.data if hasattr(res, "data") else []
+    df = pd.DataFrame(rows)
+    # garante colunas na ordem desejada, mesmo se vierem fora de ordem
+    cols = [c for c in ["membro", "designacao", "observacao"] if c in df.columns]
+    return df[cols] if not df.empty else df
 
-# -------------------- Função de consulta paginada --------------------
-@st.cache_data(ttl=60)
-def consultar_paginado(orgao_filt, nome_filt, tipo_filt, page_size, page_number):
-    offset = (page_number - 1) * page_size
-    q = supabase.table("dados").select("*").range(offset, offset + page_size - 1)
-    if orgao_filt:
-        q = q.eq("orgao", orgao_filt)
-    if nome_filt:
-        q = q.ilike("nome", f"%{nome_filt}%")
-    if tipo_filt:
-        q = q.eq("tipo", tipo_filt)
-    res = q.execute()
-    data = res.data if hasattr(res, "data") else []
-    return pd.DataFrame(data)
+# -------------------- Interface --------------------
+st.sidebar.header("Filtro")
+orgaos = listar_orgaos_unicos()
 
-# -------------------- Execução da consulta --------------------
-if consultar:
-    # total de registros para os filtros
-    total = contar_registros(orgao, nome, tipo)
+if not orgaos:
+    st.warning("Não há órgãos cadastrados ou houve erro ao carregar a lista.")
+else:
+    orgao_sel = st.sidebar.selectbox("Órgão", options=orgaos, index=0)
+    consultar = st.sidebar.button("🔎 Consultar")
 
-    if total == 0:
-        st.warning("Nenhum registro encontrado para os filtros aplicados.")
-    else:
-        total_pages = max(1, math.ceil(total / page_size))
+    if consultar and orgao_sel:
+        try:
+            df = consultar_por_orgao(orgao_sel)
+        except Exception as ex:
+            mostrar_erro(ex, "na consulta por órgão")
+            st.stop()
 
-        # Segurança: limitar página ao máximo
-        if page > total_pages:
-            st.warning(f"Página {page} excede o total ({total_pages}). Ajustei para {total_pages}.")
-            page = total_pages
+        st.subheader(f"Resultados para: **{orgao_sel}**")
+        if df.empty:
+            st.info("Nenhum registro encontrado para este órgão.")
+        else:
+            st.success(f"{len(df)} registro(s) encontrado(s).")
+            st.dataframe(df, use_container_width=True)
 
-        # Dados da página atual
-        df = consultar_paginado(orgao, nome, tipo, page_size, page)
-
-        st.success(f"{total} registro(s) no total • Página {page}/{total_pages} • Exibindo {len(df)} registros")
-        st.dataframe(df, use_container_width=True)
-
-        # Download CSV
-        if not df.empty:
-            csv_data = df.to_csv(index=False).encode("utf-8")
-            st.download_button(
-                "⬇️ Baixar CSV desta página",
-                data=csv_data,
-                file_name=f"consulta_p{page}.csv",
-                mime="text/csv"
-            )
-
-        # Navegação rápida
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            if st.button("⏮️ Primeira página"):
-                st.experimental_set_query_params(page=1)
-        with col2:
-            if st.button("⬅️ Página anterior"):
-                st.experimental_set_query_params(page=max(1, page - 1))
-        with col3:
-            if st.button("➡️ Próxima página"):
-                st.experimental_set_query_params(page=min(total_pages, page + 1))
+            # Downloads
+            c1, c2 = st.columns(2)
+            with c1:
+                csv_bytes = df.to_csv(index=False).encode("utf-8")
+                st.download_button(
+                    "⬇️ Baixar CSV",
+                    data=csv_bytes,
+                    file_name=f"consulta_{orgao_sel}.csv",
+                    mime="text/csv"
+                )
+            with c2:
+                # gera Excel em memória
+                tmp_path = "/tmp/consulta_orgao.xlsx"
+                with pd.ExcelWriter(tmp_path, engine="xlsxwriter") as writer:
+                    df.to_excel(writer, index=False, sheet_name="Resultados")
+                with open(tmp_path, "rb") as f:
+                    st.download_button(
+                        "⬇️ Baixar Excel",
+                        data=f.read(),
+                        file_name=f"consulta_{orgao_sel}.xlsx",
+                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    )
