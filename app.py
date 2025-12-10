@@ -34,7 +34,7 @@ def listar_orgaos_unicos() -> list:
     """Busca valores de 'orgao' e retorna lista única ordenada.
        (Se preferir, troque por uma VIEW ou query DISTINCT no servidor)."""
     try:
-        res = supabase.table("dados").select("orgao").execute()
+        res = supabase.table("movimentacao").select("orgao").execute()
         data = res.data if hasattr(res, "data") else []
         orgaos = sorted({row.get("orgao") for row in data if row.get("orgao")})
         return orgaos
@@ -48,7 +48,7 @@ def consultar_por_orgao(orgao: str) -> pd.DataFrame:
     try:
         q = (
             supabase
-            .table("dados")
+            .table("movimentacao")
             .select("mes, membro, designacao, observacao")
             .eq("orgao", orgao)
             .order("mes", desc=False)
@@ -71,7 +71,7 @@ def consultar_membros_mes_outros_orgaos(membros: list, mes_valor, orgao_sel: str
     try:
         q = (
             supabase
-            .table("dados")
+            .table("movimentacao")
             .select("orgao, mes, membro, designacao, observacao")
             .in_("membro", membros)
             .eq("mes", mes_valor)
