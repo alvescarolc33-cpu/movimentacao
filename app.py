@@ -173,7 +173,7 @@ else:
                         )
                     with col_d2b:
                         excel_buffer_2 = io.BytesIO()
-                        with pd.ExcelWriter(excel_buffer_2, engine="openpyxl") as writer:
+                        with pd.ExcelWriter(excel_buffer_2, engine="xlsxwriter") as writer:
                             df_outros.to_excel(writer, index=False, sheet_name="Outros Órgãos")
                         excel_buffer_2.seek(0)
                         st.download_button(
