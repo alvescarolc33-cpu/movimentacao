@@ -31,7 +31,7 @@ def mostrar_erro(ex: Exception, contexto: str = ""):
 def listar_orgaos_unicos() -> list:
     """Busca valores distintos de 'orgao' e os ordena alfabeticamente."""
     try:
-        res = supabase.table("dados").select("orgao").execute()
+        res = supabase.table("movimentacao").select("orgao").execute()
         data = res.data if hasattr(res, "data") else []
         orgaos = sorted({row.get("orgao") for row in data if row.get("orgao")})
         return orgaos
@@ -42,7 +42,7 @@ def listar_orgaos_unicos() -> list:
 @st.cache_data(ttl=120)
 def consultar_por_orgao(orgao: str) -> pd.DataFrame:
     """Retorna somente as colunas membro, designacao e observacao do órgão selecionado."""
-    q = supabase.table("dados").select("membro, designacao, observacao").eq("orgao", orgao).order("membro", desc=False)
+    q = supabase.table("movimentacao").select("membro, designacao, observacao").eq("orgao", orgao).order("membro", desc=False)
     res = q.execute()
     rows = res.data if hasattr(res, "data") else []
     df = pd.DataFrame(rows)
