@@ -182,25 +182,3 @@ else:
                             file_name=f"tabela2_outros_orgaos.xlsx",
                             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                         )
-
-
-# -------------------- Dicas --------------------
-with st.expander("ℹ️ Dicas e próximos passos"):
-    st.markdown(
-        "- **Tabela 1**: filtra por `orgao` e mostra `mes`, `membro`, `designacao`, `observacao`.\n"
-        "- **Tabela 2**: usa os **mesmos membros** e **meses** da Tabela 1, e busca registros com `orgao ≠ órgão selecionado`.\n"
-        "- Se `mes` for data (`DATE`/`TIMESTAMP`) ou string (ex.: `'2025-11'`), a comparação `eq(\"mes\", valor)` funciona — garanta que tipo e formato sejam consistentes.\n"
-        "- **Performance**: recomendo índices nas colunas usadas nos filtros."
-    )
-
-# Mostra SQL recomendado como código (sem usar ```sql no arquivo .py)
-st.code(
-    \"\"\"\
--- Índices recomendados (execute no seu PostgreSQL/Supabase)
-CREATE INDEX IF NOT EXISTS idx_dados_orgao ON public.dados (orgao);
-CREATE INDEX IF NOT EXISTS idx_dados_mes ON public.dados (mes);
-CREATE INDEX IF NOT EXISTS idx_dados_membro ON public.dados (membro);
-CREATE INDEX IF NOT EXISTS idx_dados_mes_membro ON public.dados (mes, membro);
-\"\"\",
-    language="sql"
-)
