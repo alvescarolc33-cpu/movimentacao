@@ -122,7 +122,7 @@ else:
             with col_d1b:
                 # Excel (em memória) para Tabela 1
                 excel_buffer_1 = io.BytesIO()
-                with pd.ExcelWriter(excel_buffer_1, engine="openpyxl") as writer:
+                with pd.ExcelWriter(excel_buffer_1, engine="xlsxwriter") as writer:
                     df_orgao.to_excel(writer, index=False, sheet_name="Orgão Selecionado")
                 excel_buffer_1.seek(0)
                 st.download_button(
