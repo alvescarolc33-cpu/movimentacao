@@ -1,3 +1,4 @@
+
 import os
 import io
 import pandas as pd
@@ -5,10 +6,13 @@ import streamlit as st
 from supabase import create_client, Client
 
 # -------------------- Config da página --------------------
-st.set_page_config(page_title="Consulta por Órgão", page_icon="🏛️", layout="wide")
-st.title("🏛️ Consulta de Membros por Órgão")
-st.caption("Selecione um órgão para listar mes, membro, designacao e observacao. "
-           "Depois, veja onde esses mesmos membros aparecem no mesmo mês em outros órgãos.")
+st.set_page_config(page_title="Consulta por Órgão/Promotoria", page_icon="🏛️", layout="wide")
+st.title("🏛️ Consulta de Membros por Órgão/Promotoria")
+st.caption(
+    "Selecione um órgão para listar mes, membro, designacao e observacao. "
+    "Em seguida, o app busca automaticamente onde esses mesmos membros "
+    "aparecem no(s) mesmo(s) mês(es) em outras promotorias/órgãos."
+)
 
 # -------------------- Variáveis de ambiente --------------------
 SUPABASE_URL = os.getenv("SUPABASE_URL")
@@ -31,8 +35,11 @@ def mostrar_erro(ex: Exception, contexto: str = ""):
 
 @st.cache_data(ttl=300)
 def listar_orgaos_unicos() -> list:
-    """Busca valores de 'orgao' e retorna lista única ordenada.
-       (Se preferir, troque por uma VIEW ou query DISTINCT no servidor)."""
+    """
+    Busca valores de 'orgao' e retorna lista única ordenada.
+    Observação: esta abordagem lê a coluna e deduplica no cliente.
+    Para bases muito grandes, considere criar uma VIEW com SELECT DISTINCT.
+    """
     try:
         res = supabase.table("movimentacao").select("orgao").execute()
         data = res.data if hasattr(res, "data") else []
@@ -64,25 +71,32 @@ def consultar_por_orgao(orgao: str) -> pd.DataFrame:
         return pd.DataFrame([])
 
 @st.cache_data(ttl=120)
-def consultar_membros_mes_outros_orgaos(membros: list, mes_valor, orgao_sel: str) -> pd.DataFrame:
-    """Busca onde os mesmos membros aparecem no mesmo mês, porém em outros órgãos."""
-    if not membros or mes_valor is None or mes_valor == "":
+def consultar_membros_mes_outros_orgaos(membros: list, meses: list, orgao_sel: str) -> pd.DataFrame:
+    """
+    Busca em UMA consulta todas as ocorrências onde:
+    - membro ∈ membros da Tabela 1
+    - mes ∈ meses da Tabela 1
+    - orgao ≠ órgão selecionado
+    Retorna orgao, cod_orgao (se existir), mes, membro, designacao, observacao.
+    """
+    if not membros or not meses:
         return pd.DataFrame([])
     try:
         q = (
             supabase
             .table("movimentacao")
-            .select("orgao, mes, membro, designacao, observacao")
+            .select("orgao, cod_orgao, mes, membro, designacao, observacao")
             .in_("membro", membros)
-            .eq("mes", mes_valor)
+            .in_("mes", meses)
             .neq("orgao", orgao_sel)
-            .order("orgao", desc=False)
+            .order("mes", desc=False)
             .order("membro", desc=False)
+            .order("orgao", desc=False)
         )
         res = q.execute()
         rows = res.data if hasattr(res, "data") else []
         df = pd.DataFrame(rows)
-        cols = [c for c in ["orgao", "mes", "membro", "designacao", "observacao"] if c in df.columns]
+        cols = [c for c in ["orgao", "cod_orgao", "mes", "membro", "designacao", "observacao"] if c in df.columns]
         return df[cols] if not df.empty else df
     except Exception as ex:
         mostrar_erro(ex, "na consulta de ocorrências em outros órgãos")
@@ -95,21 +109,21 @@ orgaos = listar_orgaos_unicos()
 if not orgaos:
     st.warning("Não há órgãos cadastrados ou houve erro ao carregar a lista.")
 else:
-    orgao_sel = st.sidebar.selectbox("Órgão", options=orgaos, index=0)
+    orgao_sel = st.sidebar.selectbox("Órgão/Promotoria", options=orgaos, index=0)
     consultar = st.sidebar.button("🔎 Consultar")
 
     if consultar and orgao_sel:
         # ---- Tabela 1: resultados do órgão selecionado ----
         df_orgao = consultar_por_orgao(orgao_sel)
 
-        st.subheader(f"Resultados do órgão: **{orgao_sel}**")
+        st.subheader(f"Resultados do órgão/promotoria: **{orgao_sel}**")
         if df_orgao.empty:
             st.info("Nenhum registro encontrado para este órgão.")
         else:
             st.success(f"{len(df_orgao)} registro(s) encontrado(s).")
             st.dataframe(df_orgao, use_container_width=True)
 
-            # Downloads da tabela 1
+            # Downloads da Tabela 1
             col_d1a, col_d1b = st.columns(2)
             with col_d1a:
                 csv_bytes = df_orgao.to_csv(index=False).encode("utf-8")
@@ -120,9 +134,8 @@ else:
                     mime="text/csv"
                 )
             with col_d1b:
-                # Excel (em memória) para Tabela 1
                 excel_buffer_1 = io.BytesIO()
-                with pd.ExcelWriter(excel_buffer_1, engine="xlsxwriter") as writer:
+                with pd.ExcelWriter(excel_buffer_1, engine="openpyxl") as writer:
                     df_orgao.to_excel(writer, index=False, sheet_name="Orgão Selecionado")
                 excel_buffer_1.seek(0)
                 st.download_button(
@@ -132,37 +145,30 @@ else:
                     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 )
 
-            # ---- Escolha do mês (por padrão: mês do primeiro resultado) ----
-            meses_unicos = sorted([m for m in df_orgao["mes"].dropna().unique()])
-            mes_padrao = df_orgao.iloc[0]["mes"] if "mes" in df_orgao.columns and not df_orgao.empty else None
-
-            st.markdown("### 🔁 Ocorrências dos mesmos membros no **mesmo mês** em outros órgãos")
-            mes_escolhido = st.selectbox(
-                "Selecione o mês de referência",
-                options=meses_unicos if meses_unicos else [],
-                index=meses_unicos.index(mes_padrao) if meses_unicos and mes_padrao in meses_unicos else 0
-            ) if meses_unicos else None
-
+            # ---- Tabela 2: mesmos membros no(s) mesmo(s) mês(es) em outros órgãos ----
             membros_unicos = sorted([m for m in df_orgao["membro"].dropna().unique()]) if "membro" in df_orgao.columns else []
+            meses_unicos = sorted([m for m in df_orgao["mes"].dropna().unique()]) if "mes" in df_orgao.columns else []
 
-            buscar_outros = st.button("🔍 Buscar em outros órgãos (mesmo mês)")
-            if buscar_outros and mes_escolhido:
-                df_outros = consultar_membros_mes_outros_orgaos(membros_unicos, mes_escolhido, orgao_sel)
+            st.markdown("### 🔁 Ocorrências dos **mesmos membros** no(s) **mesmo(s) mês(es)** em outras promotorias/órgãos")
+            if not membros_unicos or not meses_unicos:
+                st.info("Não foi possível determinar membros e/ou meses a partir da Tabela 1.")
+            else:
+                df_outros = consultar_membros_mes_outros_orgaos(membros_unicos, meses_unicos, orgao_sel)
 
                 if df_outros.empty:
-                    st.info(f"Nenhuma ocorrência dos mesmos membros no mês **{mes_escolhido}** em outros órgãos.")
+                    st.info("Nenhuma ocorrência dos mesmos membros nos mesmos meses em outros órgãos.")
                 else:
-                    st.success(f"{len(df_outros)} ocorrência(s) encontrada(s) no mês **{mes_escolhido}** em outros órgãos.")
+                    st.success(f"{len(df_outros)} ocorrência(s) encontrada(s) em outros órgãos.")
                     st.dataframe(df_outros, use_container_width=True)
 
-                    # Downloads da tabela 2
+                    # Downloads da Tabela 2
                     col_d2a, col_d2b = st.columns(2)
                     with col_d2a:
                         csv_bytes_2 = df_outros.to_csv(index=False).encode("utf-8")
                         st.download_button(
                             "⬇️ Baixar CSV (Tabela 2)",
                             data=csv_bytes_2,
-                            file_name=f"tabela2_outros_orgaos_mes_{mes_escolhido}.csv",
+                            file_name=f"tabela2_outros_orgaos.csv",
                             mime="text/csv"
                         )
                     with col_d2b:
@@ -173,6 +179,20 @@ else:
                         st.download_button(
                             "⬇️ Baixar Excel (Tabela 2)",
                             data=excel_buffer_2.getvalue(),
-                            file_name=f"tabela2_outros_orgaos_mes_{mes_escolhido}.xlsx",
+                            file_name=f"tabela2_outros_orgaos.xlsx",
                             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                         )
+
+# -------------------- Dicas --------------------
+with st.expander("ℹ️ Dicas e próximos passos"):
+    st.markdown("""
+- **Tabela 1**: filtra por `orgao` e mostra `mes`, `membro`, `designacao`, `observacao`.
+- **Tabela 2**: usa os **mesmos membros** e **meses** da Tabela 1, e busca registros com `orgao ≠ órgão selecionado`.
+- Se `mes` for data (`DATE`/`TIMESTAMP`) ou string (`'2025-11'`), a comparação `eq("mes", valor)` funciona — só garanta que o tipo do filtro corresponda ao tipo no banco.
+- **Performance**: recomendo índices:
+""")
+  ```sql
+  CREATE INDEX IF NOT EXISTS idx_movimentacao_orgao ON public.movimentacao (orgao);
+  CREATE INDEX IF NOT EXISTS idx_movimentacao_mes ON public.movimentacao (mes);
+  CREATE INDEX IF NOT EXISTS idx_movimentacao_membro ON public.movimentacao (membro);
+  CREATE INDEX IF NOT EXISTS idx_movimentacao_mes_membro ON public.movimentacao (mes, membro);
