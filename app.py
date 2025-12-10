@@ -183,16 +183,24 @@ else:
                             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                         )
 
+
 # -------------------- Dicas --------------------
 with st.expander("ℹ️ Dicas e próximos passos"):
-    st.markdown("""
-- **Tabela 1**: filtra por `orgao` e mostra `mes`, `membro`, `designacao`, `observacao`.
-- **Tabela 2**: usa os **mesmos membros** e **meses** da Tabela 1, e busca registros com `orgao ≠ órgão selecionado`.
-- Se `mes` for data (`DATE`/`TIMESTAMP`) ou string (`'2025-11'`), a comparação `eq("mes", valor)` funciona — só garanta que o tipo do filtro corresponda ao tipo no banco.
-- **Performance**: recomendo índices:
-""")
-  ```sql
-  CREATE INDEX IF NOT EXISTS idx_movimentacao_orgao ON public.movimentacao (orgao);
-  CREATE INDEX IF NOT EXISTS idx_movimentacao_mes ON public.movimentacao (mes);
-  CREATE INDEX IF NOT EXISTS idx_movimentacao_membro ON public.movimentacao (membro);
-  CREATE INDEX IF NOT EXISTS idx_movimentacao_mes_membro ON public.movimentacao (mes, membro);
+    st.markdown(
+        "- **Tabela 1**: filtra por `orgao` e mostra `mes`, `membro`, `designacao`, `observacao`.\n"
+        "- **Tabela 2**: usa os **mesmos membros** e **meses** da Tabela 1, e busca registros com `orgao ≠ órgão selecionado`.\n"
+        "- Se `mes` for data (`DATE`/`TIMESTAMP`) ou string (ex.: `'2025-11'`), a comparação `eq(\"mes\", valor)` funciona — garanta que tipo e formato sejam consistentes.\n"
+        "- **Performance**: recomendo índices nas colunas usadas nos filtros."
+    )
+
+# Mostra SQL recomendado como código (sem usar ```sql no arquivo .py)
+st.code(
+    \"\"\"\
+-- Índices recomendados (execute no seu PostgreSQL/Supabase)
+CREATE INDEX IF NOT EXISTS idx_dados_orgao ON public.dados (orgao);
+CREATE INDEX IF NOT EXISTS idx_dados_mes ON public.dados (mes);
+CREATE INDEX IF NOT EXISTS idx_dados_membro ON public.dados (membro);
+CREATE INDEX IF NOT EXISTS idx_dados_mes_membro ON public.dados (mes, membro);
+\"\"\",
+    language="sql"
+)
