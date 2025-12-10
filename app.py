@@ -42,12 +42,12 @@ def listar_orgaos_unicos() -> list:
 @st.cache_data(ttl=120)
 def consultar_por_orgao(orgao: str) -> pd.DataFrame:
     """Retorna somente as colunas membro, designacao e observacao do órgão selecionado."""
-    q = supabase.table("movimentacao").select("membro, designacao, observacao").eq("orgao", orgao).order("membro", desc=False)
+    q = supabase.table("movimentacao").select("mes, membro, designacao, observacao").eq("orgao", orgao).order("membro", desc=False)
     res = q.execute()
     rows = res.data if hasattr(res, "data") else []
     df = pd.DataFrame(rows)
     # garante colunas na ordem desejada, mesmo se vierem fora de ordem
-    cols = [c for c in ["membro", "designacao", "observacao"] if c in df.columns]
+    cols = [c for c in ["mes", "membro", "designacao", "observacao"] if c in df.columns]
     return df[cols] if not df.empty else df
 
 # -------------------- Interface --------------------
