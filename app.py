@@ -81,9 +81,6 @@ h3.sec-exportacao {
 # Filtro
 st.markdown('<h3 class="sec-filtro">Filtro</h3>', unsafe_allow_html=True)
 
-# Resultado
-st.markdown(f'<h3 class="sec-resultado">Resultado: <strong>{orgao_sel}</strong></h3>', unsafe_allow_html=True)
-
 # Ocorrências
 st.markdown('<h3 class="sec-outros">🔁 Ocorrências em outros Órgãos</h3>', unsafe_allow_html=True)
 
