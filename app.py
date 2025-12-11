@@ -18,29 +18,52 @@ st.set_page_config(
     page_icon="🏛️",
     layout="wide",
     menu_items={
-        'Get Help': None,
-        'Report a bug': None,
-        'About': "Consulta de Membros • v1.0",
-    }
+        "Get Help": None,
+        "Report a bug": None,
+        "About": "Consulta de Membros • v1.0",
+    },
 )
 
+# 1) Título
 st.title("🏛️ Consulta de Membros por Órgão")
 st.caption("Selecione um Órgão. Em seguida, o app busca automaticamente onde os Membros aparecem no(s) mês(es).")
 
-# 2) Ocultar toolbar (superior direito)
-st.markdown("""
-<style>
-[data-testid="stToolbar"] { display: none !important; }
-header .stActionButton, header [data-testid="stHeader"] div:nth-child(2) { display: none !important; }
-</style>
-""", unsafe_allow_html=True)
+# 2) Ocultar toolbar/cabeçalho (variações de seletor)
+st.markdown(
+    """
+    <style>
+    /* Tentar esconder toolbar padrão */
+    [data-testid="stToolbar"] { display: none !important; }
 
-# 3) Ocultar botão "Manage app" (inferior direito)
-st.markdown("""
-<style>
-[data-testid="manage-app-button"] { display: none !important; }
-</style>
-""", unsafe_allow_html=True)
+    /* Esconder container do header (algumas versões) */
+    header { visibility: hidden !important; }
+
+    /* Esconder botões de ação no cabeçalho (variação) */
+    header .stActionButton { display: none !important; }
+
+    /* Em algumas builds, este seletor do header funciona melhor: */
+    [data-testid="stHeader"] { display: none !important; }
+
+    /* Ajuste o padding do app após esconder o header */
+    .block-container { padding-top: 2rem; }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+# 3) Ocultar botão "Manage app" (apenas na Community Cloud)
+st.markdown(
+    """
+    <style>
+    /* Botão de "Manage app" na Cloud */
+    [data-testid="manage-app-button"] { display: none !important; }
+
+    /* Às vezes vem dentro de um portal/overlay */
+    .stAppViewContainer [class*="ManageAppButton"], .app-controls { display: none !important; }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
 # -------------------- Variáveis de ambiente --------------------
 SUPABASE_URL = os.getenv("SUPABASE_URL")
