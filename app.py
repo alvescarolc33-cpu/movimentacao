@@ -27,6 +27,21 @@ st.set_page_config(
 st.title("🏛️ Consulta de Membros por Órgão")
 st.caption("Selecione um Órgão. Em seguida, o app busca automaticamente onde os Membros aparecem no(s) mês(es).")
 
+# 2) Ocultar toolbar (superior direito)
+st.markdown("""
+<style>
+[data-testid="stToolbar"] { display: none !important; }
+header .stActionButton, header [data-testid="stHeader"] div:nth-child(2) { display: none !important; }
+</style>
+""", unsafe_allow_html=True)
+
+# 3) Ocultar botão "Manage app" (inferior direito)
+st.markdown("""
+<style>
+[data-testid="manage-app-button"] { display: none !important; }
+</style>
+""", unsafe_allow_html=True)
+
 # -------------------- Variáveis de ambiente --------------------
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY")
