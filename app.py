@@ -183,7 +183,6 @@ with col1:
 with col2:
     # spacer para alinhar verticalmente o botão com o selectbox
     st.write("")  # primeira linha vazia
-    st.write("")  # segunda linha vazia (ajusta a altura)
     consultar = st.button("🔎 Consultar", use_container_width=True)
 
 # Fluxo permanece igual
