@@ -1,4 +1,3 @@
-
 import os
 import io
 import pandas as pd
@@ -89,6 +88,7 @@ def consultar_membros_mes_outros_orgaos(membros: list, meses: list, orgao_sel: s
             .in_("membro", membros)
             .in_("mes", meses)
             .neq("orgao", orgao_sel)
+            .neq("membro", "VAGO")
             .order("mes", desc=False)
             .order("membro", desc=False)
             .order("orgao", desc=False)
@@ -146,7 +146,13 @@ else:
                 )
 
             # ---- Tabela 2: mesmos membros no(s) mesmo(s) mês(es) em outros órgãos ----
-            membros_unicos = sorted([m for m in df_orgao["membro"].dropna().unique()]) if "membro" in df_orgao.columns else []
+membros_unicos = (
+    sorted([
+        m for m in df_orgao["membro"].dropna().unique()
+        if isinstance(m, str) and m.strip().upper() != "VAGO"
+    ])
+    if "membro" in df_orgao.columns else []
+)
             meses_unicos = sorted([m for m in df_orgao["mes"].dropna().unique()]) if "mes" in df_orgao.columns else []
 
             st.markdown("### 🔁 Ocorrências dos **mesmos membros** no(s) **mesmo(s) mês(es)** em outras promotorias/órgãos")
