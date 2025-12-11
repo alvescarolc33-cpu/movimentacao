@@ -64,37 +64,29 @@ header .stActionButton, header [data-testid="stHeader"] div:nth-child(2) { displ
 # 2) Ocultar toolbar (superior direito)
 st.markdown("""
 <style>
-/* Oculta apenas a toolbar */
 [data-testid="stToolbar"] { display: none !important; }
 
-/* NÃO oculte filhos do header. Evita sumir o título em re-renders */
-/* (remover regras como: header .stActionButton, header [data-testid="stHeader"] div:nth-child(2) { display: none !important; }) */
-
-/* Compacta o topo do conteúdo */
 .block-container { padding-top: 0.75rem !important; }
 
-/* Título da página (que vamos renderizar no corpo) */
 .page-title {
-    color: #262730 !important;       /* cor de texto padrão do Streamlit */
-    font-size: 1.35rem !important;   /* menor que h1 padrão */
+    color: #262730 !important;
+    font-size: 1.35rem !important;
     font-weight: 700 !important;
     margin-top: 0.1rem !important;
     margin-bottom: 0.25rem !important;
     line-height: 1.2 !important;
 }
 
-/* Cabeçalhos de seções com fonte menor */
 h3.sec-filtro,
 h3.sec-resultado,
 h3.sec-outros,
 h3.sec-exportacao {
-    color: inherit !important;       /* usa a cor do tema, nada de vermelho */
-    font-size: 0.95rem !important;   /* diminui a fonte */
+    color: inherit !important;
+    font-size: 0.95rem !important;
     font-weight: 600 !important;
     margin: 0.5rem 0 0.35rem 0 !important;
 }
 
-/* Compactar levemente tabelas/blocos */
 .stDataFrame, [data-testid="stTable"] { font-size: 0.95rem !important; }
 [data-testid="stVerticalBlock"] { gap: 0.5rem !important; }
 </style>
