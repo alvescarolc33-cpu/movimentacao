@@ -12,6 +12,7 @@ def normalize_str(x):
     """Normaliza para string sem espaços nas pontas (útil para comparar membro/mes)."""
     return "" if x is None else str(x).strip()
 
+
 # -------------------- Config da página --------------------
 st.set_page_config(
     page_title="Consulta por Órgão",
@@ -27,43 +28,63 @@ st.set_page_config(
 st.title("🏛️ Consulta de Membros por Órgão")
 st.caption("Selecione um Órgão. Em seguida, o app busca automaticamente onde os Membros aparecem no(s) mês(es).")
 
+# ---- CSS (USE <style> real; não use &lt;style&gt;) ----
 st.markdown("""
 <style>
+/* Compacta o topo do conteúdo sem esconder o header */
+.block-container { 
+    padding-top: 0.75rem !important; 
+}
+
+/* Garante visibilidade do h1 usado por st.title e o deixa menor */
 .stMarkdown h1, h1 {
     display: block !important;
     visibility: visible !important;
-    color: #262730 !important;
-    font-size: 1.45rem !important;
+    color: #262730 !important;          /* cor padrão de texto do tema */
+    font-size: 1.45rem !important;      /* menor que o padrão */
     line-height: 1.2 !important;
     margin-top: 0.2rem !important;
     margin-bottom: 0.2rem !important;
     font-weight: 700 !important;
 }
 
-.block-container { padding-top: 0.75rem !important; }
-
+/* Cabeçalhos das seções com fonte menor */
 h3.sec-filtro,
 h3.sec-resultado,
 h3.sec-outros,
 h3.sec-exportacao {
-    color: inherit !important;
-    font-size: 0.95rem !important;
+    color: inherit !important;          /* mantém a cor do tema (evita vermelho) */
+    font-size: 0.95rem !important;      /* diminui a fonte */
     font-weight: 600 !important;
     margin: 0.5rem 0 0.35rem 0 !important;
 }
 
+/* RÓTULOS dos campos (ex.: "Órgão/Promotoria") menores */
+.stSelectbox label,
+.stTextInput label,
+.stRadio label,
+.stNumberInput label,
+.stDateInput label,
+.stFileUploader label,
+.stMultiSelect label,
+.stSlider label {
+    font-size: 0.92rem !important;
+    font-weight: 600 !important;        /* mantém leve destaque */
+    color: inherit !important;
+    margin-bottom: 0.25rem !important;
+}
+
+/* Compactar levemente tabelas/blocos */
 .stDataFrame, [data-testid="stTable"] { font-size: 0.95rem !important; }
 [data-testid="stVerticalBlock"] { gap: 0.5rem !important; }
 
+/* Ocultar apenas a toolbar (seguro) */
 [data-testid="stToolbar"] { display: none !important; }
-header .stActionButton, header [data-testid="stHeader"] div:nth-child(2) { display: none !important; }
-[data-testid="manage-app-button"] { display: none !important; }
-</style>
-""", unsafe_allow_html=True)
 
-# 2) Ocultar botão "Manage app" (inferior direito)
-st.markdown("""
-<style>
+/* NÃO oculte filhos do header — isso some com o título em re-render */
+/* Removida a regra: header .stActionButton, header [data-testid="stHeader"] div:nth-child(2) { display: none !important; } */
+
+/* Ocultar "Manage app" (inferior direito) */
 [data-testid="manage-app-button"] { display: none !important; }
 </style>
 """, unsafe_allow_html=True)
