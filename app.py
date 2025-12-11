@@ -1,36 +1,41 @@
+
 import os
 import io
 import pandas as pd
 import streamlit as st
 from supabase import create_client, Client
 
-# 1) Configuração da página (sempre antes de outros st.*)
+# 1) Configuração da página (sempre antes de qualquer outro st.*)
 st.set_page_config(
     page_title="Consulta de Membros por Órgão/Promotoria",
     page_icon="🏛️",
     layout="wide",
     menu_items={
-        'Get Help': None,           # remove "Get Help" do menu
-        'Report a bug': None,       # remove "Report a bug"
-        'About': "Consulta de Membros • v1.0",  # texto do About
+        'Get Help': None,
+        'Report a bug': None,
+        'About': "Consulta de Membros • v1.0",
     }
 )
 
-# 2) Ocultar toolbar (superior direito)
+# 2) CSS: ocultar toolbar/Manage app + reduzir padding para "colar" no topo
 st.markdown("""
 <style>
+/* Oculta toolbar do Streamlit (canto superior direito) */
 [data-testid="stToolbar"] { display: none !important; }
 header .stActionButton, header [data-testid="stHeader"] div:nth-child(2) { display: none !important; }
-</style>
-""", unsafe_allow_html=True)
 
-# 3) Ocultar botão "Manage app" (inferior direito)
-st.markdown("""
-<style>
+/* Oculta botão 'Manage app' (canto inferior direito) */
 [data-testid="manage-app-button"] { display: none !important; }
+
+/* Reduz padding do contêiner principal para aproximar tudo do topo */
+.block-container { padding-top: 0.4rem; }
+
+/* Ajuste de margem dos títulos/legendas no topo */
+h1, h2, h3, p { margin-top: 0.2rem !important; }
 </style>
 """, unsafe_allow_html=True)
 
+# 3) Helpers (antes de usar em qualquer função)
 def is_vago(valor) -> bool:
     """Retorna True se o valor for 'VAGO' (ignorando espaços/caixa)."""
     return isinstance(valor, str) and valor.strip().upper() == "VAGO"
@@ -39,14 +44,37 @@ def normalize_str(x):
     """Normaliza para string sem espaços nas pontas (útil para comparar membro/mes)."""
     return "" if x is None else str(x).strip()
 
-# -------------------- Config da página --------------------
-st.set_page_config(page_title="Consulta por Órgão", page_icon="🏛️", layout="wide")
-st.title("🏛️ Consulta de Membros por Órgão")
-st.caption(
-    "Selecione um Órgão. "
-    "Em seguida, o app busca automaticamente onde os Membros "
-    "aparecem no(s) mês(es)."
-)
+# 4) Cabeçalho
+st.markdown("## 🏛️ Consulta de Membros por Órgão")
+st.caption("Selecione um Órgão. Em seguida, o app busca automaticamente onde os Membros aparecem no(s) mês(es).")
+
+# 5) Filtro no topo (horizontal)
+# -> assume que você já tem a função listar_orgaos_unicos() definida abaixo
+orgaos = listar_orgaos_unicos() if 'listar_orgaos_unicos' in globals() else []
+df_orgao = pd.DataFrame()  # evita NameError
+
+col1, col2 = st.columns([3, 1], gap="small")
+
+with col1:
+    st.caption("Órgão/Promotoria")
+    orgao_sel = st.selectbox(
+        label="",
+        options=orgaos if orgaos else [],
+        index=0 if orgaos else None,
+        key="orgao_sel_top",
+        label_visibility="collapsed",
+    )
+    if not orgaos:
+        st.warning("Não há Órgãos cadastrados ou houve erro ao carregar a lista.")
+        orgao_sel = None
+
+with col2:
+    # Se precisar alinhar mais, adicione um spacer: st.write("")
+    consultar = st.button("🔎 Consultar", use_container_width=True)
+
+# 6) Fluxo normal: renderize Tabela 1 e Tabela 2 somente após consultar
+if consultar and orgao_sel:
+
 
 # -------------------- Variáveis de ambiente --------------------
 SUPABASE_URL = os.getenv("SUPABASE_URL")
@@ -183,6 +211,7 @@ with col1:
 with col2:
     # spacer para alinhar verticalmente o botão com o selectbox
     st.write("")  # primeira linha vazia
+    st.write("")  # segunda linha vazia (ajusta a altura)
     consultar = st.button("🔎 Consultar", use_container_width=True)
 
 # Fluxo permanece igual
