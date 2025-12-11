@@ -191,23 +191,24 @@ else:
     st.success(f"{len(df_outros)} ocorrência(s) encontrada(s) em outros órgãos.")
     st.dataframe(df_outros, use_container_width=True)
 
-    # Downloads da Tabela 2 (mantendo xlsxwriter como você já usa)
-    col_d2a, col_d2b = st.columns(2)
-    with col_d2a:
-        csv_bytes_2 = df_outros.to_csv(index=False).encode("utf-8")
-        st.download_button(
-            "⬇️ Baixar CSV (Tabela 2)",
-            data=csv_bytes_2,
-            file_name=f"tabela2_outros_orgaos.csv",
-            mime="text/csv"
-        )
-    with col_d2b:
-        excel_buffer_2 = io.BytesIO()
-        with pd.ExcelWriter(excel_buffer_2, engine="xlsxwriter") as writer:
-            df_outros.to_excel(writer, index=False, sheet_name="Outros Órgãos")
-        excel_buffer_2.seek(0)
-        st.download_button(
-            "⬇️ Baixar Excel (Tabela 2)",
-            data=excel_buffer_2.getvalue(),
-            file_name=f"tabela2_outros_orgaos.xlsx",
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    # Downloads da Tabela 2
+                    col_d2a, col_d2b = st.columns(2)
+                    with col_d2a:
+                        csv_bytes_2 = df_outros.to_csv(index=False).encode("utf-8")
+                        st.download_button(
+                            "⬇️ Baixar CSV (Tabela 2)",
+                            data=csv_bytes_2,
+                            file_name=f"tabela2_outros_orgaos.csv",
+                            mime="text/csv"
+                        )
+                    with col_d2b:
+                        excel_buffer_2 = io.BytesIO()
+                        with pd.ExcelWriter(excel_buffer_2, engine="xlsxwriter") as writer:
+                            df_outros.to_excel(writer, index=False, sheet_name="Outros Órgãos")
+                        excel_buffer_2.seek(0)
+                        st.download_button(
+                            "⬇️ Baixar Excel (Tabela 2)",
+                            data=excel_buffer_2.getvalue(),
+                            file_name=f"tabela2_outros_orgaos.xlsx",
+                            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                        )
