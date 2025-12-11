@@ -4,6 +4,17 @@ import pandas as pd
 import streamlit as st
 from supabase import create_client, Client
 
+st.set_page_config(
+    page_title="Consulta de Membros por Órgão/Promotoria",
+    page_icon="🏛️",
+    layout="wide",
+    menu_items={
+        'Get Help': None,           # remove "Get Help"
+        'Report a bug': None,       # remove "Report a bug"
+        'About': "Consulta de Membros • v1.0",
+    }
+)
+
 def is_vago(valor) -> bool:
     """Retorna True se o valor for 'VAGO' (ignorando espaços/caixa)."""
     return isinstance(valor, str) and valor.strip().upper() == "VAGO"
