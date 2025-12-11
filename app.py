@@ -227,7 +227,8 @@ if consultar and orgao_sel:
 # -------------------- Downloads ÚNICOS --------------------
     st.divider()
     #st.markdown("### ⬇️ Exportação consolidada")
-    st.markdown('<h3 class="sec-exportacao">⬇️ Exportação consolidada</h3>', unsafe_allow_html=True)
+    #st.markdown('<h3 class="sec-exportacao">⬇️ Exportação consolidada</h3>', unsafe_allow_html=True)
+    st.markdown('<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">⬇️ Exportação consolidada</h3>', unsafe_allow_html=True)
 
     # 1) CSV único com as duas tabelas empilhadas e coluna de origem
     df_orgao_com_tag = df_orgao.copy()
