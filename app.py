@@ -171,7 +171,6 @@ with col2:
     # spacer para alinhar verticalmente o botão com o selectbox
     st.write("")  # primeira linha vazia
     st.write("")  # segunda linha vazia (ajusta a altura)
-    
     consultar = st.button("🔎 Consultar", use_container_width=True)
 
 if consultar and orgao_sel:
@@ -186,12 +185,12 @@ if consultar and orgao_sel:
 
     # ---- Tabela 2: mesmos membros no(s) mesmo(s) mês(es) em outros órgãos (pareamento exato) ----
     st.markdown("### 🔁 Ocorrências em outros Órgãos")
-
     df_outros = consultar_membros_mes_outros_orgaos_pares(df_orgao, orgao_sel)
 
     if df_outros.empty:
         st.info("Nenhuma ocorrência em outros Órgãos.")
     else:
+        st.dataframe(df_outros, use_container_width=True)
     
 # -------------------- Downloads ÚNICOS --------------------
     st.divider()
