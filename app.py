@@ -78,15 +78,6 @@ h3.sec-exportacao {
 </style>
 """, unsafe_allow_html=True)
 
-# Filtro
-st.markdown('<h3 class="sec-filtro">Filtro</h3>', unsafe_allow_html=True)
-
-# Ocorrências
-st.markdown('<h3 class="sec-outros">🔁 Ocorrências em outros Órgãos</h3>', unsafe_allow_html=True)
-
-# Exportação consolidada
-st.markdown('<h3 class="sec-exportacao">⬇️ Exportação consolidada</h3>', unsafe_allow_html=True)
-
 # -------------------- Variáveis de ambiente --------------------
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY")
@@ -205,6 +196,7 @@ def consultar_membros_mes_outros_orgaos_pares(df_orgao: pd.DataFrame, orgao_sel:
 
 # -------------------- Interface --------------------
 st.markdown("### Filtro")
+st.markdown('<h3 class="sec-filtro">Filtro</h3>', unsafe_allow_html=True)
 
 orgaos = listar_orgaos_unicos()
 df_orgao = pd.DataFrame()  # evita NameError
