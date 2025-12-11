@@ -214,6 +214,7 @@ with col2:
     # spacer para alinhar verticalmente o botão com o selectbox
     st.write("")  # primeira linha vazia
     st.write("")  # segunda linha vazia (ajusta a altura)
+    st.write("")  # terceira linha vazia (ajusta a altura)
     consultar = st.button("🔎 Consultar", use_container_width=True)
 
 if consultar and orgao_sel:
@@ -240,7 +241,7 @@ if consultar and orgao_sel:
     st.divider()
     #st.markdown("### ⬇️ Exportação consolidada")
     st.markdown('<h3 class="sec-exportacao">⬇️ Exportação consolidada</h3>', unsafe_allow_html=True)
-    
+
     # 1) CSV único com as duas tabelas empilhadas e coluna de origem
     df_orgao_com_tag = df_orgao.copy()
     df_orgao_com_tag["_tabela"] = "Tabela 1 - Órgão Selecionado"
