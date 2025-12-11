@@ -173,41 +173,17 @@ with col2:
     st.write("")  # segunda linha vazia (ajusta a altura)
     consultar = st.button("🔎 Consultar", use_container_width=True)
 
-# Fluxo permanece igual
 if consultar and orgao_sel:
 
-        # ---- Tabela 1: resultados do órgão selecionado ----
-        df_orgao = consultar_por_orgao(orgao_sel)
+# ---- Tabela 1: resultados do órgão selecionado ----
+df_orgao = consultar_por_orgao(orgao_sel)
 
-        st.subheader(f"Resultado: **{orgao_sel}**")
+st.subheader(f"Resultado: **{orgao_sel}**")
         if df_orgao.empty:
             st.info("Nenhum registro encontrado para este Órgão.")
         else:
-            st.success(f"{len(df_orgao)} registro(s) encontrado(s).")
+            #st.success(f"{len(df_orgao)} registro(s) encontrado(s).")
             st.dataframe(df_orgao, use_container_width=True)
-
-            # Downloads da Tabela 1
-            #col_d1a, col_d1b = st.columns(2)
-            #with col_d1a:
-            #    csv_bytes = df_orgao.to_csv(index=False).encode("utf-8")
-            #    st.download_button(
-            #        "⬇️ Baixar CSV (Tabela 1)",
-            #       data=csv_bytes,
-            #        file_name=f"tabela1_{orgao_sel}.csv",
-            #        mime="text/csv"
-            #    )
-            #with col_d1b:
-            #    excel_buffer_1 = io.BytesIO()
-            #    with pd.ExcelWriter(excel_buffer_1, engine="xlsxwriter") as writer:
-            #        df_orgao.to_excel(writer, index=False, sheet_name="Orgão Selecionado")
-            #    excel_buffer_1.seek(0)
-            #    st.download_button(
-            #        "⬇️ Baixar Excel (Tabela 1)",
-            #        data=excel_buffer_1.getvalue(),
-            #        file_name=f"tabela1_{orgao_sel}.xlsx",
-            #        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            #    )
-            
 
 # ---- Tabela 2: mesmos membros no(s) mesmo(s) mês(es) em outros órgãos (pareamento exato) ----
 st.markdown("### 🔁 Ocorrências em outros Órgãos")
@@ -217,30 +193,8 @@ df_outros = consultar_membros_mes_outros_orgaos_pares(df_orgao, orgao_sel)
 if df_outros.empty:
     st.info("Nenhuma ocorrência em outros Órgãos.")
 else:
-    st.success(f"{len(df_outros)} ocorrência(s) encontrada(s) em outros órgãos.")
+    #st.success(f"{len(df_outros)} ocorrência(s) encontrada(s) em outros órgãos.")
     st.dataframe(df_outros, use_container_width=True)
-
-    # Downloads da Tabela 2
-    #col_d2a, col_d2b = st.columns(2)
-    #with col_d2a:
-    #    csv_bytes_2 = df_outros.to_csv(index=False).encode("utf-8")
-    #    st.download_button(
-    #        label="⬇️ Baixar CSV (Tabela 2)",
-    #        data=csv_bytes_2,
-    #        file_name="tabela2_outros_orgaos.csv",
-    #        mime="text/csv"
-    #    )
-    #with col_d2b:
-    #    excel_buffer_2 = io.BytesIO()
-    #    with pd.ExcelWriter(excel_buffer_2, engine="xlsxwriter") as writer:
-    #        df_outros.to_excel(writer, index=False, sheet_name="Outros Órgãos")
-    #    excel_buffer_2.seek(0)
-    #    st.download_button(
-    #        label="⬇️ Baixar Excel (Tabela 2)",
-    #       data=excel_buffer_2.getvalue(),
-    #        file_name="tabela2_outros_orgaos.xlsx",
-    #        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    #    )
     
 # -------------------- Downloads ÚNICOS --------------------
     st.divider()
