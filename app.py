@@ -142,6 +142,9 @@ def consultar_membros_mes_outros_orgaos_pares(df_orgao: pd.DataFrame, orgao_sel:
 st.sidebar.header("Filtro")
 orgaos = listar_orgaos_unicos()
 
+# Antes do bloco if consultar...
+df_orgao = pd.DataFrame()
+
 if not orgaos:
     st.warning("Não há órgãos cadastrados ou houve erro ao carregar a lista.")
 else:
