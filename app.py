@@ -165,19 +165,27 @@ def consultar_membros_mes_outros_orgaos_pares(df_orgao: pd.DataFrame, orgao_sel:
     return df_outros
 
 # -------------------- Interface --------------------
-st.sidebar.header("Filtro")
+
+st.markdown("### Filtro")
+
 orgaos = listar_orgaos_unicos()
+df_orgao = pd.DataFrame()  # evita NameError
 
-# Antes do bloco if consultar...
-df_orgao = pd.DataFrame()
+col1, col2 = st.columns([3, 1])
 
-if not orgaos:
-    st.warning("Não há Órgãos cadastrados ou houve erro ao carregar a lista.")
-else:
-    orgao_sel = st.sidebar.selectbox("Órgão/Promotoria", options=orgaos, index=0)
-    consultar = st.sidebar.button("🔎 Consultar")
+with col1:
+    if not orgaos:
+        st.warning("Não há Órgãos cadastrados ou houve erro ao carregar a lista.")
+        orgao_sel = None
+    else:
+        orgao_sel = st.selectbox("Órgão/Promotoria", options=orgaos, index=0, key="orgao_sel_top")
 
-    if consultar and orgao_sel:
+with col2:
+    consultar = st.button("🔎 Consultar", use_container_width=True)
+
+# Fluxo permanece igual
+if consultar and orgao_sel:
+
         # ---- Tabela 1: resultados do órgão selecionado ----
         df_orgao = consultar_por_orgao(orgao_sel)
 
