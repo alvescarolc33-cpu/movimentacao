@@ -176,7 +176,6 @@ with col2:
 if consultar and orgao_sel:
 
 # ---- Tabela 1: resultados do órgão selecionado ----
-
 df_orgao = consultar_por_orgao(orgao_sel)
 
     st.subheader(f"Resultado: **{orgao_sel}**")
@@ -187,14 +186,13 @@ df_orgao = consultar_por_orgao(orgao_sel)
 
 # ---- Tabela 2: mesmos membros no(s) mesmo(s) mês(es) em outros órgãos (pareamento exato) ----
 st.markdown("### 🔁 Ocorrências em outros Órgãos")
+    df_outros = consultar_membros_mes_outros_orgaos_pares(df_orgao, orgao_sel)
 
-df_outros = consultar_membros_mes_outros_orgaos_pares(df_orgao, orgao_sel)
+    if df_outros.empty:
+        st.info("Nenhuma ocorrência em outros Órgãos.")
+    else:
+        st.dataframe(df_outros, use_container_width=True)
 
-if df_outros.empty:
-    st.info("Nenhuma ocorrência em outros Órgãos.")
-else:
-    st.success(f"{len(df_outros)} ocorrência(s) encontrada(s) em outros órgãos.")
-    st.dataframe(df_outros, use_container_width=True)
     
 # -------------------- Downloads ÚNICOS --------------------
     st.divider()
