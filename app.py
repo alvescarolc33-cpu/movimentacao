@@ -4,33 +4,6 @@ import pandas as pd
 import streamlit as st
 from supabase import create_client, Client
 
-# 1) Configuração da página (sempre antes de outros st.*)
-#st.set_page_config(
-#    page_title="Consulta de Membros por Órgão",
-#    page_icon="🏛️",
-#    layout="wide",
-#    menu_items={
-#        'Get Help': None,           # remove "Get Help" do menu
-#        'Report a bug': None,       # remove "Report a bug"
-#        'About': "Consulta de Membros • v1.0",  # texto do About
-#    }
-#)
-
-# 2) Ocultar toolbar (superior direito)
-st.markdown("""
-<style>
-[data-testid="stToolbar"] { display: none !important; }
-header .stActionButton, header [data-testid="stHeader"] div:nth-child(2) { display: none !important; }
-</style>
-""", unsafe_allow_html=True)
-
-# 3) Ocultar botão "Manage app" (inferior direito)
-st.markdown("""
-<style>
-[data-testid="manage-app-button"] { display: none !important; }
-</style>
-""", unsafe_allow_html=True)
-
 def is_vago(valor) -> bool:
     """Retorna True se o valor for 'VAGO' (ignorando espaços/caixa)."""
     return isinstance(valor, str) and valor.strip().upper() == "VAGO"
@@ -47,6 +20,21 @@ st.set_page_config(page_title="Consulta por Órgão", page_icon="🏛️", layou
     })
 st.title("🏛️ Consulta de Membros por Órgão")
 st.caption("Selecione um Órgão. Em seguida, o app busca automaticamente onde os Membros aparecem no(s) mês(es).")
+
+# 2) Ocultar toolbar (superior direito)
+st.markdown("""
+<style>
+[data-testid="stToolbar"] { display: none !important; }
+header .stActionButton, header [data-testid="stHeader"] div:nth-child(2) { display: none !important; }
+</style>
+""", unsafe_allow_html=True)
+
+# 3) Ocultar botão "Manage app" (inferior direito)
+st.markdown("""
+<style>
+[data-testid="manage-app-button"] { display: none !important; }
+</style>
+""", unsafe_allow_html=True)
 
 # -------------------- Variáveis de ambiente --------------------
 SUPABASE_URL = os.getenv("SUPABASE_URL")
