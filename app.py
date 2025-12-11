@@ -62,10 +62,12 @@ header .stActionButton, header [data-testid="stHeader"] div:nth-child(2) { displ
 """, unsafe_allow_html=True)
 
 # 2) Ocultar toolbar (superior direito)
+
 st.markdown("""
 <style>
 [data-testid="stToolbar"] { display: none !important; }
-header .stActionButton, header [data-testid="stHeader"] div:nth-child(2) { display: none !important; }
+
+.block-container { padding-top: 0.75rem !important; }
 </style>
 """, unsafe_allow_html=True)
 
