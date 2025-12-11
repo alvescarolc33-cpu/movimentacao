@@ -4,6 +4,15 @@ import pandas as pd
 import streamlit as st
 from supabase import create_client, Client
 
+
+def is_vago(valor) -> bool:
+    """Retorna True se o valor for 'VAGO' (ignorando espaços/caixa)."""
+    return isinstance(valor, str) and valor.strip().upper() == "VAGO"
+
+def normalize_str(x):
+    """Normaliza para string sem espaços nas pontas (útil para comparar membro/mes)."""
+    return "" if x is None else str(x).strip()
+
 # -------------------- Config da página --------------------
 st.set_page_config(page_title="Consulta por Órgão/Promotoria", page_icon="🏛️", layout="wide")
 st.title("🏛️ Consulta de Membros por Órgão/Promotoria")
@@ -70,37 +79,64 @@ def consultar_por_orgao(orgao: str) -> pd.DataFrame:
         return pd.DataFrame([])
 
 @st.cache_data(ttl=120)
-def consultar_membros_mes_outros_orgaos(membros: list, meses: list, orgao_sel: str) -> pd.DataFrame:
+def consultar_membros_mes_outros_orgaos_pares(df_orgao: pd.DataFrame, orgao_sel: str) -> pd.DataFrame:
     """
-    Busca em UMA consulta todas as ocorrências onde:
-    - membro ∈ membros da Tabela 1
-    - mes ∈ meses da Tabela 1
-    - orgao ≠ órgão selecionado
-    Retorna orgao, cod_orgao (se existir), mes, membro, designacao, observacao.
+    Usa os membros e meses da Tabela 1 e busca todas as ocorrências em outros órgãos,
+    mas só retorna registros que casem exatamente o PAR (membro, mes) da Tabela 1.
+    Exclui sempre membro = 'VAGO'.
     """
+
+    if df_orgao.empty or "membro" not in df_orgao.columns or "mes" not in df_orgao.columns:
+        return pd.DataFrame([])
+
+    # Extrai pares (membro, mes) da Tabela 1, excluindo 'VAGO'
+    df_pairs = df_orgao.copy()
+    df_pairs["membro_norm"] = df_pairs["membro"].apply(normalize_str)
+    df_pairs["mes_norm"] = df_pairs["mes"].apply(normalize_str)
+    df_pairs = df_pairs[~df_pairs["membro_norm"].apply(is_vago)]
+
+    membros = sorted(df_pairs["membro_norm"].dropna().unique().tolist())
+    meses = sorted(df_pairs["mes_norm"].dropna().unique().tolist())
+
     if not membros or not meses:
         return pd.DataFrame([])
-    try:
-        q = (
-            supabase
-            .table("movimentacao")
-            .select("orgao, cod_orgao, mes, membro, designacao, observacao")
-            .in_("membro", membros)
-            .in_("mes", meses)
-            .neq("orgao", orgao_sel)
-            .neq("membro", "VAGO")
-            .order("mes", desc=False)
-            .order("membro", desc=False)
-            .order("orgao", desc=False)
-        )
-        res = q.execute()
-        rows = res.data if hasattr(res, "data") else []
-        df = pd.DataFrame(rows)
-        cols = [c for c in ["orgao", "cod_orgao", "mes", "membro", "designacao", "observacao"] if c in df.columns]
-        return df[cols] if not df.empty else df
-    except Exception as ex:
-        mostrar_erro(ex, "na consulta de ocorrências em outros órgãos")
-        return pd.DataFrame([])
+
+    # Consulta bruta no Supabase (limitada por conjuntos), excluindo o órgão selecionado e 'VAGO'
+    q = (
+        supabase
+        .table("movimentacao")
+        .select("orgao, cod_orgao, mes, membro, designacao, observacao")
+        .in_("membro", membros)
+        .in_("mes", meses)
+        .neq("orgao", orgao_sel)
+        .neq("membro", "VAGO")
+        .order("mes", desc=False)
+        .order("membro", desc=False)
+        .order("orgao", desc=False)
+    )
+    res = q.execute()
+    rows = res.data if hasattr(res, "data") else []
+    df_raw = pd.DataFrame(rows)
+
+    if df_raw.empty:
+        return df_raw
+
+    # Normaliza os campos para comparação de pares
+    df_raw["membro_norm"] = df_raw["membro"].apply(normalize_str)
+    df_raw["mes_norm"] = df_raw["mes"].apply(normalize_str)
+
+    # Conjunto de pares válidos da Tabela 1
+    pairs_set = set(zip(df_pairs["membro_norm"], df_pairs["mes_norm"]))
+
+    # Filtra mantendo apenas (membro, mes) que existam na Tabela 1
+    df_outros = df_raw[df_raw.apply(lambda r: (r["membro_norm"], r["mes_norm"]) in pairs_set, axis=1)].copy()
+
+    # Garante ordem e remove colunas auxiliares
+    cols = [c for c in ["orgao", "cod_orgao", "mes", "membro", "designacao", "observacao"] if c in df_outros.columns]
+    df_outros = df_outros[cols].sort_values(by=["mes", "membro", "orgao"], ascending=[True, True, True])
+    df_outros.reset_index(drop=True, inplace=True)
+
+    return df_outros
 
 # -------------------- Interface --------------------
 st.sidebar.header("Filtro")
@@ -144,41 +180,34 @@ else:
                     file_name=f"tabela1_{orgao_sel}.xlsx",
                     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 )
+            
+# ---- Tabela 2: mesmos membros no(s) mesmo(s) mês(es) em outros órgãos (pareamento exato) ----
+st.markdown("### 🔁 Ocorrências dos **mesmos membros** no(s) **mesmo(s) mês(es)** em outras promotorias/órgãos")
+df_outros = consultar_membros_mes_outros_orgaos_pares(df_orgao, orgao_sel)
 
-            # ---- Tabela 2: mesmos membros no(s) mesmo(s) mês(es) em outros órgãos ----
-            membros_unicos = sorted([m for m in df_orgao["membro"].dropna().unique() if isinstance(m, str) and m.strip().upper() != "VAGO"]) if "membro" in df_orgao.columns else []
-            meses_unicos = sorted([m for m in df_orgao["mes"].dropna().unique()]) if "mes" in df_orgao.columns else []
+if df_outros.empty:
+    st.info("Nenhuma ocorrência dos mesmos membros nos mesmos meses em outros órgãos (excluindo 'VAGO').")
+else:
+    st.success(f"{len(df_outros)} ocorrência(s) encontrada(s) em outros órgãos.")
+    st.dataframe(df_outros, use_container_width=True)
 
-            st.markdown("### 🔁 Ocorrências dos **mesmos membros** no(s) **mesmo(s) mês(es)** em outras promotorias/órgãos")
-            if not membros_unicos or not meses_unicos:
-                st.info("Não foi possível determinar membros e/ou meses a partir da Tabela 1.")
-            else:
-                df_outros = consultar_membros_mes_outros_orgaos(membros_unicos, meses_unicos, orgao_sel)
-
-                if df_outros.empty:
-                    st.info("Nenhuma ocorrência dos mesmos membros nos mesmos meses em outros órgãos.")
-                else:
-                    st.success(f"{len(df_outros)} ocorrência(s) encontrada(s) em outros órgãos.")
-                    st.dataframe(df_outros, use_container_width=True)
-
-                    # Downloads da Tabela 2
-                    col_d2a, col_d2b = st.columns(2)
-                    with col_d2a:
-                        csv_bytes_2 = df_outros.to_csv(index=False).encode("utf-8")
-                        st.download_button(
-                            "⬇️ Baixar CSV (Tabela 2)",
-                            data=csv_bytes_2,
-                            file_name=f"tabela2_outros_orgaos.csv",
-                            mime="text/csv"
-                        )
-                    with col_d2b:
-                        excel_buffer_2 = io.BytesIO()
-                        with pd.ExcelWriter(excel_buffer_2, engine="xlsxwriter") as writer:
-                            df_outros.to_excel(writer, index=False, sheet_name="Outros Órgãos")
-                        excel_buffer_2.seek(0)
-                        st.download_button(
-                            "⬇️ Baixar Excel (Tabela 2)",
-                            data=excel_buffer_2.getvalue(),
-                            file_name=f"tabela2_outros_orgaos.xlsx",
-                            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                        )
+    # Downloads da Tabela 2 (mantendo xlsxwriter como você já usa)
+    col_d2a, col_d2b = st.columns(2)
+    with col_d2a:
+        csv_bytes_2 = df_outros.to_csv(index=False).encode("utf-8")
+        st.download_button(
+            "⬇️ Baixar CSV (Tabela 2)",
+            data=csv_bytes_2,
+            file_name=f"tabela2_outros_orgaos.csv",
+            mime="text/csv"
+        )
+    with col_d2b:
+        excel_buffer_2 = io.BytesIO()
+        with pd.ExcelWriter(excel_buffer_2, engine="xlsxwriter") as writer:
+            df_outros.to_excel(writer, index=False, sheet_name="Outros Órgãos")
+        excel_buffer_2.seek(0)
+        st.download_button(
+            "⬇️ Baixar Excel (Tabela 2)",
+            data=excel_buffer_2.getvalue(),
+            file_name=f"tabela2_outros_orgaos.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
