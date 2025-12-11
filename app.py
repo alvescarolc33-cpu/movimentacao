@@ -165,7 +165,7 @@ def consultar_membros_mes_outros_orgaos_pares(df_orgao: pd.DataFrame, orgao_sel:
     return df_outros
 
 # -------------------- Interface --------------------
-st.sidebar.header("Filtro")
+#st.sidebar.header("Filtro")
 orgaos = listar_orgaos_unicos()
 
 # Antes do bloco if consultar...
@@ -181,7 +181,7 @@ else:
         # ---- Tabela 1: resultados do órgão selecionado ----
         df_orgao = consultar_por_orgao(orgao_sel)
 
-        st.subheader(f"Resultados do Órgão: **{orgao_sel}**")
+        st.subheader(f"Resultado: **{orgao_sel}**")
         if df_orgao.empty:
             st.info("Nenhum registro encontrado para este Órgão.")
         else:
