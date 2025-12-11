@@ -72,10 +72,6 @@ with col2:
     # Se precisar alinhar mais, adicione um spacer: st.write("")
     consultar = st.button("🔎 Consultar", use_container_width=True)
 
-# 6) Fluxo normal: renderize Tabela 1 e Tabela 2 somente após consultar
-if consultar and orgao_sel:
-
-
 # -------------------- Variáveis de ambiente --------------------
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY")
