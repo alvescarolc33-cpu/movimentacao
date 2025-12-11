@@ -178,12 +178,12 @@ if consultar and orgao_sel:
 # ---- Tabela 1: resultados do órgão selecionado ----
 df_orgao = consultar_por_orgao(orgao_sel)
 
+
 st.subheader(f"Resultado: **{orgao_sel}**")
-        if df_orgao.empty:
-            st.info("Nenhum registro encontrado para este Órgão.")
-        else:
-            #st.success(f"{len(df_orgao)} registro(s) encontrado(s).")
-            st.dataframe(df_orgao, use_container_width=True)
+if df_orgao.empty:
+    st.info("Nenhum registro encontrado para este Órgão.")
+else:
+    st.dataframe(df_orgao, use_container_width=True)
 
 # ---- Tabela 2: mesmos membros no(s) mesmo(s) mês(es) em outros órgãos (pareamento exato) ----
 st.markdown("### 🔁 Ocorrências em outros Órgãos")
