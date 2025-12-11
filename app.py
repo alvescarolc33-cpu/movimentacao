@@ -61,38 +61,7 @@ header .stActionButton, header [data-testid="stHeader"] div:nth-child(2) { displ
 </style>
 """, unsafe_allow_html=True)
 
-# 2) Ocultar toolbar (superior direito)
-st.markdown("""
-<style>
-[data-testid="stToolbar"] { display: none !important; }
-
-.block-container { padding-top: 0.75rem !important; }
-
-.page-title {
-    color: #262730 !important;
-    font-size: 1.35rem !important;
-    font-weight: 700 !important;
-    margin-top: 0.1rem !important;
-    margin-bottom: 0.25rem !important;
-    line-height: 1.2 !important;
-}
-
-h3.sec-filtro,
-h3.sec-resultado,
-h3.sec-outros,
-h3.sec-exportacao {
-    color: inherit !important;
-    font-size: 0.95rem !important;
-    font-weight: 600 !important;
-    margin: 0.5rem 0 0.35rem 0 !important;
-}
-
-.stDataFrame, [data-testid="stTable"] { font-size: 0.95rem !important; }
-[data-testid="stVerticalBlock"] { gap: 0.5rem !important; }
-</style>
-""", unsafe_allow_html=True)
-
-# 3) Ocultar botão "Manage app" (inferior direito)
+# 2) Ocultar botão "Manage app" (inferior direito)
 st.markdown("""
 <style>
 [data-testid="manage-app-button"] { display: none !important; }
