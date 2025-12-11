@@ -208,7 +208,11 @@ if consultar and orgao_sel:
     # ---- Tabela 1: resultados do órgão selecionado ----
     df_orgao = consultar_por_orgao(orgao_sel)
 
-    st.subheader(f"Resultado: **{orgao_sel}**")
+    #st.subheader(f"Resultado: **{orgao_sel}**")
+    st.markdown(
+        f'<h3 style="font-size:1.1rem;margin:0;">Resultado: <strong>{orgao_sel}</strong></h3>',
+        unsafe_allow_html=True
+    )
     if df_orgao.empty:
         st.info("Nenhum registro encontrado para este Órgão.")
     else:
