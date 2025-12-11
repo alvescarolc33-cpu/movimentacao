@@ -195,7 +195,7 @@ def consultar_membros_mes_outros_orgaos_pares(df_orgao: pd.DataFrame, orgao_sel:
     return df_outros
 
 # -------------------- Interface --------------------
-st.markdown("### Filtro")
+#st.markdown("### Filtro")
 st.markdown('<h3 class="sec-filtro">Filtro</h3>', unsafe_allow_html=True)
 
 orgaos = listar_orgaos_unicos()
