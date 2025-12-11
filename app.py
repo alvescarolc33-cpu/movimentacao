@@ -215,7 +215,6 @@ if consultar and orgao_sel:
         st.dataframe(df_orgao, use_container_width=True)
 
     # ---- Tabela 2: mesmos membros no(s) mesmo(s) mês(es) em outros órgãos (pareamento exato) ----
-    #st.markdown("### 🔁 Ocorrências em outros Órgãos")
     st.markdown('<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">🔁 Ocorrências em outros Órgãos</h3>', unsafe_allow_html=True)
 
     df_outros = consultar_membros_mes_outros_orgaos_pares(df_orgao, orgao_sel)
@@ -227,8 +226,6 @@ if consultar and orgao_sel:
     
 # -------------------- Downloads ÚNICOS --------------------
     st.divider()
-    #st.markdown("### ⬇️ Exportação consolidada")
-    #st.markdown('<h3 class="sec-exportacao">⬇️ Exportação consolidada</h3>', unsafe_allow_html=True)
     st.markdown('<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">⬇️ Exportação consolidada</h3>', unsafe_allow_html=True)
 
     # 1) CSV único com as duas tabelas empilhadas e coluna de origem
