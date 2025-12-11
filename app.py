@@ -193,7 +193,7 @@ df_outros = consultar_membros_mes_outros_orgaos_pares(df_orgao, orgao_sel)
 if df_outros.empty:
     st.info("Nenhuma ocorrência em outros Órgãos.")
 else:
-    #st.success(f"{len(df_outros)} ocorrência(s) encontrada(s) em outros órgãos.")
+    st.success(f"{len(df_outros)} ocorrência(s) encontrada(s) em outros órgãos.")
     st.dataframe(df_outros, use_container_width=True)
     
 # -------------------- Downloads ÚNICOS --------------------
