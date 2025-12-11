@@ -181,8 +181,10 @@ else:
                     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 )
             
+
 # ---- Tabela 2: mesmos membros no(s) mesmo(s) mês(es) em outros órgãos (pareamento exato) ----
 st.markdown("### 🔁 Ocorrências dos **mesmos membros** no(s) **mesmo(s) mês(es)** em outras promotorias/órgãos")
+
 df_outros = consultar_membros_mes_outros_orgaos_pares(df_orgao, orgao_sel)
 
 if df_outros.empty:
@@ -191,8 +193,7 @@ else:
     st.success(f"{len(df_outros)} ocorrência(s) encontrada(s) em outros órgãos.")
     st.dataframe(df_outros, use_container_width=True)
 
-    
-# Downloads da Tabela 2
+    # Downloads da Tabela 2
     col_d2a, col_d2b = st.columns(2)
     with col_d2a:
         csv_bytes_2 = df_outros.to_csv(index=False).encode("utf-8")
