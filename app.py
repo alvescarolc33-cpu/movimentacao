@@ -4,7 +4,6 @@ import pandas as pd
 import streamlit as st
 from supabase import create_client, Client
 
-
 def is_vago(valor) -> bool:
     """Retorna True se o valor for 'VAGO' (ignorando espaços/caixa)."""
     return isinstance(valor, str) and valor.strip().upper() == "VAGO"
@@ -14,12 +13,12 @@ def normalize_str(x):
     return "" if x is None else str(x).strip()
 
 # -------------------- Config da página --------------------
-st.set_page_config(page_title="Consulta por Órgão/Promotoria", page_icon="🏛️", layout="wide")
-st.title("🏛️ Consulta de Membros por Órgão/Promotoria")
+st.set_page_config(page_title="Consulta por Órgão", page_icon="🏛️", layout="wide")
+st.title("🏛️ Consulta de Membros por Órgão")
 st.caption(
-    "Selecione um órgão para listar mes, membro, designacao e observacao. "
-    "Em seguida, o app busca automaticamente onde esses mesmos membros "
-    "aparecem no(s) mesmo(s) mês(es) em outras promotorias/órgãos."
+    "Selecione um Órgão. "
+    "Em seguida, o app busca automaticamente onde esses mesmos Membros "
+    "aparecem no(s) mês(es)."
 )
 
 # -------------------- Variáveis de ambiente --------------------
@@ -146,7 +145,7 @@ orgaos = listar_orgaos_unicos()
 df_orgao = pd.DataFrame()
 
 if not orgaos:
-    st.warning("Não há órgãos cadastrados ou houve erro ao carregar a lista.")
+    st.warning("Não há Órgãos cadastrados ou houve erro ao carregar a lista.")
 else:
     orgao_sel = st.sidebar.selectbox("Órgão/Promotoria", options=orgaos, index=0)
     consultar = st.sidebar.button("🔎 Consultar")
@@ -155,9 +154,9 @@ else:
         # ---- Tabela 1: resultados do órgão selecionado ----
         df_orgao = consultar_por_orgao(orgao_sel)
 
-        st.subheader(f"Resultados do órgão/promotoria: **{orgao_sel}**")
+        st.subheader(f"Resultados do Órgão: **{orgao_sel}**")
         if df_orgao.empty:
-            st.info("Nenhum registro encontrado para este órgão.")
+            st.info("Nenhum registro encontrado para este Órgão.")
         else:
             st.success(f"{len(df_orgao)} registro(s) encontrado(s).")
             st.dataframe(df_orgao, use_container_width=True)
@@ -186,12 +185,12 @@ else:
             
 
 # ---- Tabela 2: mesmos membros no(s) mesmo(s) mês(es) em outros órgãos (pareamento exato) ----
-st.markdown("### 🔁 Ocorrências dos **mesmos membros** no(s) **mesmo(s) mês(es)** em outras promotorias/órgãos")
+st.markdown("### 🔁 Ocorrências dos **mesmos membros** no(s) **mesmo(s) mês(es)** em outros Órgãos")
 
 df_outros = consultar_membros_mes_outros_orgaos_pares(df_orgao, orgao_sel)
 
 if df_outros.empty:
-    st.info("Nenhuma ocorrência dos mesmos membros nos mesmos meses em outros órgãos (excluindo 'VAGO').")
+    st.info("Nenhuma ocorrência dos mesmos membros nos mesmos meses em outros Órgãos.")
 else:
     st.success(f"{len(df_outros)} ocorrência(s) encontrada(s) em outros órgãos.")
     st.dataframe(df_outros, use_container_width=True)
