@@ -40,13 +40,11 @@ def normalize_str(x):
     return "" if x is None else str(x).strip()
 
 # -------------------- Config da página --------------------
-#st.set_page_config(page_title="Consulta por Órgão", page_icon="🏛️", layout="wide")
-#st.title("🏛️ Consulta de Membros por Órgão")
-#st.caption(
-#    "Selecione um Órgão. "
-#    "Em seguida, o app busca automaticamente onde os Membros "
-#    "aparecem no(s) mês(es)."
-#)
+st.set_page_config(page_title="Consulta por Órgão", page_icon="🏛️", layout="wide")
+st.title("🏛️ Consulta de Membros por Órgão")
+st.caption(
+    "Selecione um Órgão. Em seguida, o app busca automaticamente onde os Membros aparecem no(s) mês(es)."
+)
 
 # -------------------- Variáveis de ambiente --------------------
 SUPABASE_URL = os.getenv("SUPABASE_URL")
