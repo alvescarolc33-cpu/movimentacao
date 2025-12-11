@@ -5,16 +5,16 @@ import streamlit as st
 from supabase import create_client, Client
 
 # 1) Configuração da página (sempre antes de outros st.*)
-st.set_page_config(
-    page_title="Consulta de Membros por Órgão",
-    page_icon="🏛️",
-    layout="wide",
-    menu_items={
-        'Get Help': None,           # remove "Get Help" do menu
-        'Report a bug': None,       # remove "Report a bug"
-        'About': "Consulta de Membros • v1.0",  # texto do About
-    }
-)
+#st.set_page_config(
+#    page_title="Consulta de Membros por Órgão",
+#    page_icon="🏛️",
+#    layout="wide",
+#    menu_items={
+#        'Get Help': None,           # remove "Get Help" do menu
+#        'Report a bug': None,       # remove "Report a bug"
+#        'About': "Consulta de Membros • v1.0",  # texto do About
+#    }
+#)
 
 # 2) Ocultar toolbar (superior direito)
 st.markdown("""
@@ -40,11 +40,13 @@ def normalize_str(x):
     return "" if x is None else str(x).strip()
 
 # -------------------- Config da página --------------------
-st.set_page_config(page_title="Consulta por Órgão", page_icon="🏛️", layout="wide")
+st.set_page_config(page_title="Consulta por Órgão", page_icon="🏛️", layout="wide",menu_items={
+        'Get Help': None,           # remove "Get Help" do menu
+        'Report a bug': None,       # remove "Report a bug"
+        'About': "Consulta de Membros • v1.0",  # texto do About
+    })
 st.title("🏛️ Consulta de Membros por Órgão")
-st.caption(
-    "Selecione um Órgão. Em seguida, o app busca automaticamente onde os Membros aparecem no(s) mês(es)."
-)
+st.caption("Selecione um Órgão. Em seguida, o app busca automaticamente onde os Membros aparecem no(s) mês(es).")
 
 # -------------------- Variáveis de ambiente --------------------
 SUPABASE_URL = os.getenv("SUPABASE_URL")
