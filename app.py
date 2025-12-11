@@ -29,47 +29,31 @@ st.caption("Selecione um Órgão. Em seguida, o app busca automaticamente onde o
 
 st.markdown("""
 <style>
-.block-container {
-    padding-top: 0.75rem !important;
-}
-
-h1 {
+.stMarkdown h1, h1 {
+    display: block !important;
+    visibility: visible !important;
+    color: #262730 !important;
     font-size: 1.45rem !important;
+    line-height: 1.2 !important;
+    margin-top: 0.2rem !important;
     margin-bottom: 0.2rem !important;
-}
-h2 {
-    font-size: 1.2rem !important;
-    margin: 0.4rem 0 !important;
-}
-h3, .stMarkdown h3 {
-    font-size: 1.0rem !important;
-    margin: 0.35rem 0 !important;
+    font-weight: 700 !important;
 }
 
-h3.sec-filtro {
-    font-size: 0.95rem !important;
-    margin-top: 0.4rem !important;
-    margin-bottom: 0.3rem !important;
-}
-h3.sec-resultado {
-    font-size: 0.95rem !important;
-    margin-top: 0.6rem !important;
-}
-h3.sec-outros {
-    font-size: 0.95rem !important;
-    margin-top: 0.6rem !important;
-}
+.block-container { padding-top: 0.75rem !important; }
+
+h3.sec-filtro,
+h3.sec-resultado,
+h3.sec-outros,
 h3.sec-exportacao {
+    color: inherit !important;
     font-size: 0.95rem !important;
-    margin-top: 0.6rem !important;
+    font-weight: 600 !important;
+    margin: 0.5rem 0 0.35rem 0 !important;
 }
 
-[data-testid="stTable"], .stDataFrame {
-    font-size: 0.95rem !important;
-}
-[data-testid="stVerticalBlock"] {
-    gap: 0.5rem !important;
-}
+.stDataFrame, [data-testid="stTable"] { font-size: 0.95rem !important; }
+[data-testid="stVerticalBlock"] { gap: 0.5rem !important; }
 
 [data-testid="stToolbar"] { display: none !important; }
 header .stActionButton, header [data-testid="stHeader"] div:nth-child(2) { display: none !important; }
