@@ -27,53 +27,6 @@ st.set_page_config(
 st.title("🏛️ Consulta de Membros por Órgão")
 st.caption("Selecione um Órgão. Em seguida, o app busca automaticamente onde os Membros aparecem no(s) mês(es).")
 
-# ---- CSS (USE <style> real; não use &lt;style&gt;) ----
-st.markdown("""
-<style>
-.block-container { 
-    padding-top: 0.75rem !important; 
-}
-
-.stMarkdown h1, h1 {
-    display: block !important;
-    visibility: visible !important;
-    color: #262730 !important;
-    font-size: 1.45rem !important;
-    line-height: 1.2 !important;
-    margin-top: 0.2rem !important;
-    margin-bottom: 0.2rem !important;
-    font-weight: 700 !important;
-}
-
-h3.sec-filtro,
-h3.sec-resultado,
-h3.sec-outros,
-h3.sec-exportacao {
-    color: inherit !important;
-    font-size: 0.95rem !important;
-    font-weight: 600 !important;
-    margin: 0.5rem 0 0.35rem 0 !important;
-}
-
-.stSelectbox label,
-.stTextInput label,
-.stRadio label,
-.stNumberInput label,
-.stDateInput label,
-.stFileUploader label,
-.stMultiSelect label,
-.stSlider label {
-    font-size: 0.92rem !important;
-    font-weight: 600 !important;
-    color: inherit !important;
-    margin-bottom: 0.25rem !important;
-}
-
-.stDataFrame, [data-testid="stTable"] { font-size: 0.95rem !important; }
-[data-testid="stVerticalBlock"] { gap: 0.5rem !important; }
-
-[data-testid="stToolbar"] { display: none !important; }
-
 [data-testid="manage-app-button"] { display: none !important; }
 </style>
 """, unsafe_allow_html=True)
