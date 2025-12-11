@@ -153,7 +153,6 @@ def consultar_membros_mes_outros_orgaos_pares(df_orgao: pd.DataFrame, orgao_sel:
     return df_outros
 
 # -------------------- Interface --------------------
-
 st.markdown("### Filtro")
 
 orgaos = listar_orgaos_unicos()
@@ -188,26 +187,26 @@ if consultar and orgao_sel:
             st.dataframe(df_orgao, use_container_width=True)
 
             # Downloads da Tabela 1
-            col_d1a, col_d1b = st.columns(2)
-            with col_d1a:
-                csv_bytes = df_orgao.to_csv(index=False).encode("utf-8")
-                st.download_button(
-                    "⬇️ Baixar CSV (Tabela 1)",
-                    data=csv_bytes,
-                    file_name=f"tabela1_{orgao_sel}.csv",
-                    mime="text/csv"
-                )
-            with col_d1b:
-                excel_buffer_1 = io.BytesIO()
-                with pd.ExcelWriter(excel_buffer_1, engine="xlsxwriter") as writer:
-                    df_orgao.to_excel(writer, index=False, sheet_name="Orgão Selecionado")
-                excel_buffer_1.seek(0)
-                st.download_button(
-                    "⬇️ Baixar Excel (Tabela 1)",
-                    data=excel_buffer_1.getvalue(),
-                    file_name=f"tabela1_{orgao_sel}.xlsx",
-                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                )
+            #col_d1a, col_d1b = st.columns(2)
+            #with col_d1a:
+            #    csv_bytes = df_orgao.to_csv(index=False).encode("utf-8")
+            #    st.download_button(
+            #        "⬇️ Baixar CSV (Tabela 1)",
+            #       data=csv_bytes,
+            #        file_name=f"tabela1_{orgao_sel}.csv",
+            #        mime="text/csv"
+            #    )
+            #with col_d1b:
+            #    excel_buffer_1 = io.BytesIO()
+            #    with pd.ExcelWriter(excel_buffer_1, engine="xlsxwriter") as writer:
+            #        df_orgao.to_excel(writer, index=False, sheet_name="Orgão Selecionado")
+            #    excel_buffer_1.seek(0)
+            #    st.download_button(
+            #        "⬇️ Baixar Excel (Tabela 1)",
+            #        data=excel_buffer_1.getvalue(),
+            #        file_name=f"tabela1_{orgao_sel}.xlsx",
+            #        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            #    )
             
 
 # ---- Tabela 2: mesmos membros no(s) mesmo(s) mês(es) em outros órgãos (pareamento exato) ----
@@ -222,23 +221,70 @@ else:
     st.dataframe(df_outros, use_container_width=True)
 
     # Downloads da Tabela 2
-    col_d2a, col_d2b = st.columns(2)
-    with col_d2a:
-        csv_bytes_2 = df_outros.to_csv(index=False).encode("utf-8")
+    #col_d2a, col_d2b = st.columns(2)
+    #with col_d2a:
+    #    csv_bytes_2 = df_outros.to_csv(index=False).encode("utf-8")
+    #    st.download_button(
+    #        label="⬇️ Baixar CSV (Tabela 2)",
+    #        data=csv_bytes_2,
+    #        file_name="tabela2_outros_orgaos.csv",
+    #        mime="text/csv"
+    #    )
+    #with col_d2b:
+    #    excel_buffer_2 = io.BytesIO()
+    #    with pd.ExcelWriter(excel_buffer_2, engine="xlsxwriter") as writer:
+    #        df_outros.to_excel(writer, index=False, sheet_name="Outros Órgãos")
+    #    excel_buffer_2.seek(0)
+    #    st.download_button(
+    #        label="⬇️ Baixar Excel (Tabela 2)",
+    #       data=excel_buffer_2.getvalue(),
+    #        file_name="tabela2_outros_orgaos.xlsx",
+    #        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    #    )
+    
+# -------------------- Downloads ÚNICOS --------------------
+    st.divider()
+    st.markdown("### ⬇️ Exportação consolidada")
+
+    # 1) CSV único com as duas tabelas empilhadas e coluna de origem
+    # Para o CSV, como não há "abas", usamos uma coluna `_tabela` para identificar de qual tabela veio cada linha.
+    # Garantimos o alinhamento de colunas com union pelo concat (colunas ausentes viram NaN).
+    df_orgao_com_tag = df_orgao.copy()
+    df_orgao_com_tag["_tabela"] = "Tabela 1 - Órgão Selecionado"
+
+    df_outros_com_tag = df_outros.copy()
+    df_outros_com_tag["_tabela"] = "Tabela 2 - Outros Órgãos"
+
+    df_consolidado = pd.concat([df_orgao_com_tag, df_outros_com_tag], ignore_index=True, sort=False)
+
+    csv_bytes_all = df_consolidado.to_csv(index=False).encode("utf-8")
+
+    # 2) Excel único com duas abas (mais organizado para leitura)
+    excel_buffer_all = io.BytesIO()
+    with pd.ExcelWriter(excel_buffer_all, engine="xlsxwriter") as writer:
+        # Se quiser preservar o DataFrame original sem a coluna `_tabela`:
+        df_orgao.to_excel(writer, index=False, sheet_name="Órgão Selecionado")
+        df_outros.to_excel(writer, index=False, sheet_name="Outros Órgãos")
+
+        # Opcional: também incluir a aba consolidada com a coluna `_tabela`
+        # df_consolidado.to_excel(writer, index=False, sheet_name="Consolidado")
+
+    excel_buffer_all.seek(0)
+
+    col_dl_csv, col_dl_xlsx = st.columns(2)
+    with col_dl_csv:
         st.download_button(
-            label="⬇️ Baixar CSV (Tabela 2)",
-            data=csv_bytes_2,
-            file_name="tabela2_outros_orgaos.csv",
-            mime="text/csv"
+            label="⬇️ Baixar CSV (Consolidado)",
+            data=csv_bytes_all,
+            file_name=f"consolidado_{orgao_sel}.csv",
+            mime="text/csv",
+            use_container_width=True
         )
-    with col_d2b:
-        excel_buffer_2 = io.BytesIO()
-        with pd.ExcelWriter(excel_buffer_2, engine="xlsxwriter") as writer:
-            df_outros.to_excel(writer, index=False, sheet_name="Outros Órgãos")
-        excel_buffer_2.seek(0)
+    with col_dl_xlsx:
         st.download_button(
-            label="⬇️ Baixar Excel (Tabela 2)",
-            data=excel_buffer_2.getvalue(),
-            file_name="tabela2_outros_orgaos.xlsx",
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            label="⬇️ Baixar Excel (2 abas)",
+            data=excel_buffer_all.getvalue(),
+            file_name=f"consolidado_{orgao_sel}.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            use_container_width=True
         )
