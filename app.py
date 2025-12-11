@@ -78,6 +78,18 @@ h3.sec-exportacao {
 </style>
 """, unsafe_allow_html=True)
 
+# Filtro
+st.markdown('<h3 class="sec-filtro">Filtro</h3>', unsafe_allow_html=True)
+
+# Resultado
+st.markdown(f'<h3 class="sec-resultado">Resultado: <strong>{orgao_sel}</strong></h3>', unsafe_allow_html=True)
+
+# Ocorrências
+st.markdown('<h3 class="sec-outros">🔁 Ocorrências em outros Órgãos</h3>', unsafe_allow_html=True)
+
+# Exportação consolidada
+st.markdown('<h3 class="sec-exportacao">⬇️ Exportação consolidada</h3>', unsafe_allow_html=True)
+
 # -------------------- Variáveis de ambiente --------------------
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY")
