@@ -17,7 +17,7 @@ st.set_page_config(page_title="Consulta por Órgão", page_icon="🏛️", layou
 st.title("🏛️ Consulta de Membros por Órgão")
 st.caption(
     "Selecione um Órgão. "
-    "Em seguida, o app busca automaticamente onde esses mesmos Membros "
+    "Em seguida, o app busca automaticamente onde os Membros "
     "aparecem no(s) mês(es)."
 )
 
@@ -185,12 +185,12 @@ else:
             
 
 # ---- Tabela 2: mesmos membros no(s) mesmo(s) mês(es) em outros órgãos (pareamento exato) ----
-st.markdown("### 🔁 Ocorrências dos **mesmos membros** no(s) **mesmo(s) mês(es)** em outros Órgãos")
+st.markdown("### 🔁 Ocorrências em outros Órgãos")
 
 df_outros = consultar_membros_mes_outros_orgaos_pares(df_orgao, orgao_sel)
 
 if df_outros.empty:
-    st.info("Nenhuma ocorrência dos mesmos membros nos mesmos meses em outros Órgãos.")
+    st.info("Nenhuma ocorrência em outros Órgãos.")
 else:
     st.success(f"{len(df_outros)} ocorrência(s) encontrada(s) em outros órgãos.")
     st.dataframe(df_outros, use_container_width=True)
