@@ -13,13 +13,69 @@ def normalize_str(x):
     return "" if x is None else str(x).strip()
 
 # -------------------- Config da página --------------------
-st.set_page_config(page_title="Consulta por Órgão", page_icon="🏛️", layout="wide",menu_items={
-        'Get Help': None,           # remove "Get Help" do menu
-        'Report a bug': None,       # remove "Report a bug"
-        'About': "Consulta de Membros • v1.0",  # texto do About
-    })
+st.set_page_config(
+    page_title="Consulta por Órgão",
+    page_icon="🏛️",
+    layout="wide",
+    menu_items={
+        'Get Help': None,
+        'Report a bug': None,
+        'About': "Consulta de Membros • v1.0",
+    }
+)
+
 st.title("🏛️ Consulta de Membros por Órgão")
 st.caption("Selecione um Órgão. Em seguida, o app busca automaticamente onde os Membros aparecem no(s) mês(es).")
+
+st.markdown("""
+<style>
+.block-container {
+    padding-top: 0.75rem !important;
+}
+
+h1 {
+    font-size: 1.45rem !important;
+    margin-bottom: 0.2rem !important;
+}
+h2 {
+    font-size: 1.2rem !important;
+    margin: 0.4rem 0 !important;
+}
+h3, .stMarkdown h3 {
+    font-size: 1.0rem !important;
+    margin: 0.35rem 0 !important;
+}
+
+h3.sec-filtro {
+    font-size: 0.95rem !important;
+    margin-top: 0.4rem !important;
+    margin-bottom: 0.3rem !important;
+}
+h3.sec-resultado {
+    font-size: 0.95rem !important;
+    margin-top: 0.6rem !important;
+}
+h3.sec-outros {
+    font-size: 0.95rem !important;
+    margin-top: 0.6rem !important;
+}
+h3.sec-exportacao {
+    font-size: 0.95rem !important;
+    margin-top: 0.6rem !important;
+}
+
+[data-testid="stTable"], .stDataFrame {
+    font-size: 0.95rem !important;
+}
+[data-testid="stVerticalBlock"] {
+    gap: 0.5rem !important;
+}
+
+[data-testid="stToolbar"] { display: none !important; }
+header .stActionButton, header [data-testid="stHeader"] div:nth-child(2) { display: none !important; }
+[data-testid="manage-app-button"] { display: none !important; }
+</style>
+""", unsafe_allow_html=True)
 
 # 2) Ocultar toolbar (superior direito)
 st.markdown("""
@@ -197,8 +253,6 @@ if consultar and orgao_sel:
     st.markdown("### ⬇️ Exportação consolidada")
 
     # 1) CSV único com as duas tabelas empilhadas e coluna de origem
-    # Para o CSV, como não há "abas", usamos uma coluna `_tabela` para identificar de qual tabela veio cada linha.
-    # Garantimos o alinhamento de colunas com union pelo concat (colunas ausentes viram NaN).
     df_orgao_com_tag = df_orgao.copy()
     df_orgao_com_tag["_tabela"] = "Tabela 1 - Órgão Selecionado"
 
