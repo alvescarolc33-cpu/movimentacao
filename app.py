@@ -271,3 +271,103 @@ if consultar and orgao_sel:
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             use_container_width=True
         )
+        
+    # -------------------- Análises de Auxílios --------------------
+    st.divider()
+    st.markdown(
+        '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">📊 Análises de Auxílios (Órgão selecionado)</h3>',
+        unsafe_allow_html=True
+    )
+
+    # Cópia defensiva e filtro por 'auxílio' na designação (case-insensitive, com e sem acento)
+    df_auxilio = df_orgao.copy()
+    if not df_auxilio.empty:
+        df_auxilio["designacao"] = df_auxilio["designacao"].fillna("")
+        mask_aux = df_auxilio["designacao"].str.contains(r"aux[ií]lio", case=False, regex=True)
+        df_auxilio = df_auxilio[mask_aux].copy()
+    else:
+        df_auxilio = pd.DataFrame([])
+
+    if df_auxilio.empty:
+        st.info("Não há registros de auxílio para o Órgão selecionado.")
+    else:
+        # Normaliza 'mes' para 'ano_mes' (AAAA-MM) quando possível; senão, mantém o original
+        # Tenta converter valores comuns (AAAA-MM, AAAA/MM, AAAA-MM-DD, DD/MM/AAAA, etc.)
+        df_auxilio["ano_mes"] = pd.to_datetime(df_auxilio["mes"], errors="coerce").dt.to_period("M").astype(str)
+        # Se não conseguiu converter (NaT), usa o valor original de 'mes'
+        df_auxilio["ano_mes"] = df_auxilio["ano_mes"].mask(df_auxilio["ano_mes"].isin(["NaT", "nan"]), df_auxilio["mes"])
+
+        # --- Métricas rápidas ---
+        total_reg_auxilio = len(df_auxilio)
+        meses_com_auxilio = df_auxilio["ano_mes"].nunique()
+        membros_distintos_auxilio = df_auxilio["membro"].nunique()
+
+        colm1, colm2, colm3 = st.columns(3)
+        with colm1:
+            st.metric("Registros de auxílio", value=f"{total_reg_auxilio}")
+        with colm2:
+            st.metric("Meses com ocorrência de auxílio", value=f"{meses_com_auxilio}")
+        with colm3:
+            st.metric("Membros distintos (com auxílio)", value=f"{membros_distintos_auxilio}")
+
+        # --- Quantidade por mês ---
+        qtd_por_mes = (
+            df_auxilio
+            .groupby("ano_mes", as_index=False)
+            .size()
+            .rename(columns={"size": "quantidade"})
+        )
+
+        # Ordena cronologicamente quando possível
+        qtd_por_mes["ord"] = pd.to_datetime(qtd_por_mes["ano_mes"], errors="coerce")
+        qtd_por_mes = qtd_por_mes.sort_values(["ord", "ano_mes"], ascending=[True, True]).drop(columns=["ord"])
+
+        # --- Gráfico de barras por mês ---
+        try:
+            import altair as alt
+
+            chart_mes = (
+                alt.Chart(qtd_por_mes)
+                .mark_bar(color="#4E79A7")
+                .encode(
+                    x=alt.X("ano_mes:N", title="Mês (AAAA-MM)"),
+                    y=alt.Y("quantidade:Q", title="Quantidade de auxílios"),
+                    tooltip=["ano_mes", "quantidade"]
+                )
+                .properties(title="Auxílios por mês", width="container", height=360)
+            )
+            st.altair_chart(chart_mes, use_container_width=True)
+        except Exception:
+            # Fallback caso Altair não esteja disponível
+            st.bar_chart(qtd_por_mes.set_index("ano_mes"))
+
+        # --- (Opcional) Distribuição por tipo de auxílio dentro de 'designacao' ---
+        tipos_aux = (
+            df_auxilio["designacao"]
+            .str.strip()
+            .value_counts()
+            .reset_index()
+            .rename(columns={"index": "tipo_auxilio", "designacao": "quantidade"})
+        )
+
+        if not tipos_aux.empty:
+            try:
+                import altair as alt
+
+                chart_tipos = (
+                    alt.Chart(tipos_aux)
+                    .mark_arc(innerRadius=40)
+                    .encode(
+                        theta=alt.Theta(field="quantidade", type="quantitative"),
+                        color=alt.Color(field="tipo_auxilio", type="nominal", legend=alt.Legend(title="Tipo de auxílio")),
+                        tooltip=["tipo_auxilio", "quantidade"]
+                    )
+                    .properties(title="Distribuição por tipo de auxílio", width=380, height=380)
+                )
+                st.altair_chart(chart_tipos, use_container_width=True)
+            except Exception:
+                st.dataframe(tipos_aux, use_container_width=True)
+
+        # --- Tabela resumo ---
+        st.subheader("Resumo por mês")
+        st.dataframe(qtd_por_mes, use_container_width=True)
