@@ -169,7 +169,7 @@ def consultar_por_orgao(orgao: str) -> pd.DataFrame:
         res = q.execute()
         rows = res.data if hasattr(res, "data") else []
         df = pd.DataFrame(rows)
-        cols = [c for c in ["mes", "membro", "designacao", "observacao"] if c in df.columns]
+        cols = [c for c in ["ano", "mes", "membro", "designacao", "observacao"] if c in df.columns]
         df = df[cols] if not df.empty else df
 
         # ✅ Ordena pela ordem customizada
@@ -178,7 +178,6 @@ def consultar_por_orgao(orgao: str) -> pd.DataFrame:
     except Exception as ex:
         mostrar_erro(ex, "na consulta por órgão")
         return pd.DataFrame([])
-
 
 @st.cache_data(ttl=120)
 def consultar_membros_mes_outros_orgaos_pares(df_orgao: pd.DataFrame, orgao_sel: str) -> pd.DataFrame:
@@ -232,12 +231,15 @@ def consultar_membros_mes_outros_orgaos_pares(df_orgao: pd.DataFrame, orgao_sel:
 
     # Filtra mantendo apenas (membro, mes) que existam na Tabela 1
     df_outros = df_raw[df_raw.apply(lambda r: (r["membro_norm"], r["mes_norm"]) in pairs_set, axis=1)].copy()
-
+    
     # Garante ordem e remove colunas auxiliares
     cols = [c for c in ["orgao", "cod_orgao", "mes", "membro", "designacao", "observacao"] if c in df_outros.columns]
-    df_outros = df_outros[cols].sort_values(by=["mes", "membro", "orgao"], ascending=[True, True, True])
-    df_outros.reset_index(drop=True, inplace=True)
+    df_outros = df_outros[cols]
 
+    # ✅ Ordena pela ordem customizada
+    df_outros = ordenar_por_mes_e_designacao(df_outros)
+
+    df_outros.reset_index(drop=True, inplace=True)
     return df_outros
 
 # -------------------- Interface --------------------
