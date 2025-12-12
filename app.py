@@ -344,3 +344,131 @@ if consultar and orgao_sel:
         # --- Tabela resumo ---
         st.markdown('<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">Resumo por mês</h3>', unsafe_allow_html=True)
         st.dataframe(qtd_por_mes, use_container_width=True)
+        
+    # -------------------- Análise: designacao == 'DESIGNAÇÃO' --------------------
+    st.divider()
+    st.markdown(
+        '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">🧾 Ocorrências com DESIGNAÇÃO</h3>',
+        unsafe_allow_html=True
+    )
+
+    df_designacao = df_orgao.copy()
+    if not df_designacao.empty:
+        # Comparação exata, ignorando espaços/acento comuns
+        df_designacao["designacao"] = df_designacao["designacao"].fillna("").str.strip()
+        df_designacao = df_designacao[df_designacao["designacao"].str.upper() == "DESIGNAÇÃO"]
+    else:
+        df_designacao = pd.DataFrame([])
+
+    if df_designacao.empty:
+        st.info("Não há ocorrências com designação igual a 'DESIGNAÇÃO'.")
+    else:
+        # Normaliza 'mes' -> 'ano_mes' (AAAA-MM), mantendo original quando não parseável
+        df_designacao["ano_mes"] = (
+            pd.to_datetime(df_designacao["mes"], errors="coerce")
+            .dt.to_period("M").astype(str)
+        )
+        df_designacao["ano_mes"] = df_designacao["ano_mes"].mask(
+            df_designacao["ano_mes"].isin(["NaT", "nan"]),
+            df_designacao["mes"]
+        )
+
+        # Métricas
+        total_designacao = len(df_designacao)
+        meses_designacao = df_designacao["ano_mes"].nunique()
+        membros_designacao = df_designacao["membro"].nunique()
+
+        c1, c2, c3 = st.columns(3)
+        with c1:
+            st.metric("Registros 'DESIGNAÇÃO'", value=total_designacao)
+        with c2:
+            st.metric("Meses com 'DESIGNAÇÃO'", value=meses_designacao)
+        with c3:
+            st.metric("Membros distintos (com 'DESIGNAÇÃO')", value=membros_designacao)
+
+        # Contagem por mês + gráfico compacto
+        qtd_designacao_mes = (
+            df_designacao.groupby("ano_mes", as_index=False)
+            .size()
+            .rename(columns={"size": "quantidade"})
+        )
+        qtd_designacao_mes["ord"] = pd.to_datetime(qtd_designacao_mes["ano_mes"], errors="coerce")
+        qtd_designacao_mes = qtd_designacao_mes.sort_values(["ord", "ano_mes"]).drop(columns=["ord"])
+
+        try:
+            import altair as alt
+            chart_desig = (
+                alt.Chart(qtd_designacao_mes)
+                .mark_bar(color="#A0CBE8")
+                .encode(
+                    x=alt.X("ano_mes:N", title="Mês (AAAA-MM)"),
+                    y=alt.Y("quantidade:Q", title="Qtd. 'DESIGNAÇÃO'"),
+                    tooltip=["ano_mes", "quantidade"]
+                )
+                .properties(title="DESIGNAÇÃO por mês", width="container", height=180)  # gráfico menor
+            )
+            st.altair_chart(chart_desig, use_container_width=True)
+        except Exception:
+            st.bar_chart(qtd_designacao_mes.set_index("ano_mes"))
+
+    # -------------------- Análise: membro == 'VAGO' --------------------
+    st.divider()
+    st.markdown(
+        '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">🚫 Ocorrências com membro VAGO</h3>',
+        unsafe_allow_html=True
+    )
+
+    df_vago = df_orgao.copy()
+    if not df_vago.empty:
+        df_vago["membro"] = df_vago["membro"].fillna("").str.strip()
+        df_vago = df_vago[df_vago["membro"].str.upper() == "VAGO"]
+    else:
+        df_vago = pd.DataFrame([])
+
+    if df_vago.empty:
+        st.info("Não há ocorrências com membro igual a 'VAGO'.")
+    else:
+        # Normaliza 'mes' -> 'ano_mes'
+        df_vago["ano_mes"] = (
+            pd.to_datetime(df_vago["mes"], errors="coerce")
+            .dt.to_period("M").astype(str)
+        )
+        df_vago["ano_mes"] = df_vago["ano_mes"].mask(
+            df_vago["ano_mes"].isin(["NaT", "nan"]),
+            df_vago["mes"]
+        )
+
+        # Métricas
+        total_vago = len(df_vago)
+        meses_vago = df_vago["ano_mes"].nunique()
+
+        c1, c2 = st.columns(2)
+        with c1:
+            st.metric("Registros com membro 'VAGO'", value=total_vago)
+        with c2:
+            st.metric("Meses com 'VAGO'", value=meses_vago)
+
+        # Contagem por mês + gráfico compacto
+        qtd_vago_mes = (
+            df_vago.groupby("ano_mes", as_index=False)
+            .size()
+            .rename(columns={"size": "quantidade"})
+        )
+        qtd_vago_mes["ord"] = pd.to_datetime(qtd_vago_mes["ano_mes"], errors="coerce")
+        qtd_vago_mes = qtd_vago_mes.sort_values(["ord", "ano_mes"]).drop(columns=["ord"])
+
+        try:
+            import altair as alt
+            chart_vago = (
+                alt.Chart(qtd_vago_mes)
+                .mark_bar(color="#59A14F")
+                .encode(
+                    x=alt.X("ano_mes:N", title="Mês (AAAA-MM)"),
+                    y=alt.Y("quantidade:Q", title="Qtd. membro 'VAGO'"),
+                    tooltip=["ano_mes", "quantidade"]
+                )
+                .properties(title="VAGO por mês", width="container", height=180)  # gráfico menor
+            )
+            st.altair_chart(chart_vago, use_container_width=True)
+        except Exception:
+            st.bar_chart(qtd_vago_mes.set_index("ano_mes"))
