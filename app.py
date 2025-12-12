@@ -411,6 +411,10 @@ if consultar and orgao_sel:
         except Exception:
             st.bar_chart(qtd_designacao_mes.set_index("ano_mes"))
 
+# --- Tabela resumo ---
+        st.markdown('<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">Resumo por mês</h3>', unsafe_allow_html=True)
+        st.dataframe(qtd_designacao_mes, use_container_width=True)
+
     # -------------------- Análise: membro == 'VAGO' --------------------
     st.divider()
     st.markdown(
@@ -472,3 +476,7 @@ if consultar and orgao_sel:
             st.altair_chart(chart_vago, use_container_width=True)
         except Exception:
             st.bar_chart(qtd_vago_mes.set_index("ano_mes"))
+
+            # --- Tabela resumo ---
+        st.markdown('<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">Resumo por mês</h3>', unsafe_allow_html=True)
+        st.dataframe(qtd_vago_mes, use_container_width=True)
