@@ -334,7 +334,7 @@ if consultar and orgao_sel:
                     y=alt.Y("quantidade:Q", title="Quantidade de auxílios"),
                     tooltip=["ano_mes", "quantidade"]
                 )
-                .properties(title="Auxílios por mês", width="container", height=360)
+                .properties(title="Auxílios por mês", width="container", height=220)
             )
             st.altair_chart(chart_mes, use_container_width=True)
         except Exception:
