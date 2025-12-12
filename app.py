@@ -12,6 +12,58 @@ def normalize_str(x):
     """Normaliza para string sem espaços nas pontas (útil para comparar membro/mes)."""
     return "" if x is None else str(x).strip()
 
+# -------------------- Ordem personalizada --------------------
+# Ordem cronológica dos meses
+MESES_ORDEM = [
+    "JANEIRO","FEVEREIRO","MARÇO","ABRIL","MAIO","JUNHO",
+    "JULHO","AGOSTO","SETEMBRO","OUTUBRO","NOVEMBRO","DEZEMBRO"
+]
+
+# Ordem desejada para designação
+DESIGNACAO_ORDEM = [
+    "TITULAR",
+    "DESIGNAÇÃO",
+    "DESIGNAÇÃO TEMPORÁRIA",
+    "AUXÍLIO",
+    "AUXÍLIO TEMPORÁRIO",
+]
+
+def ordenar_por_mes_e_designacao(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Aplica ordenação customizada:
+    1) 'mes' em ordem cronológica (MESES_ORDEM)
+    2) 'designacao' na ordem lógica (DESIGNACAO_ORDEM)
+    3) 'membro' e 'orgao' como adicionais para estabilidade visual
+
+    Retorna DataFrame ordenado. Não altera o índice original.
+    """
+    if df.empty:
+        return df
+
+    df = df.copy()
+
+    # Categorias ordenadas
+    if "mes" in df.columns:
+        df["mes"] = pd.Categorical(df["mes"], categories=MESES_ORDEM, ordered=True)
+    if "designacao" in df.columns:
+        df["designacao"] = pd.Categorical(df["designacao"], categories=DESIGNACAO_ORDEM, ordered=True)
+
+    # Define colunas de ordenação conforme disponíveis
+    sort_cols, ascending = [], []
+    if "mes" in df.columns:
+        sort_cols.append("mes"); ascending.append(True)
+    if "designacao" in df.columns:
+        sort_cols.append("designacao"); ascending.append(True)
+    if "membro" in df.columns:
+        sort_cols.append("membro"); ascending.append(True)
+    if "orgao" in df.columns:
+        sort_cols.append("orgao"); ascending.append(True)
+
+    if not sort_cols:
+        return df
+
+    return df.sort_values(by=sort_cols, ascending=ascending, kind="mergesort")
+
 # -------------------- Config da página --------------------
 st.set_page_config(
     page_title="Consulta por Órgão",
@@ -115,8 +167,13 @@ def consultar_por_orgao(orgao: str) -> pd.DataFrame:
         res = q.execute()
         rows = res.data if hasattr(res, "data") else []
         df = pd.DataFrame(rows)
-        cols = [c for c in ["mes", "membro", "designacao", "observacao"] if c in df.columns]
+        cols = [c for c in ["ano", "mes", "membro", "designacao", "observacao"] if c in df.columns]
         return df[cols] if not df.empty else df
+        
+# Ordena pela ordem customizada
+        df = ordenar_por_mes_e_designacao(df)
+        return df
+
     except Exception as ex:
         mostrar_erro(ex, "na consulta por órgão")
         return pd.DataFrame([])
