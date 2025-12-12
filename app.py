@@ -12,9 +12,8 @@ def normalize_str(x):
     """Normaliza para string sem espaços nas pontas (útil para comparar membro/mes)."""
     return "" if x is None else str(x).strip()
 
-# -------------------- Ordem personalizada --------------------
-
-# Mapas para ordem personalizada
+# -------------------- Ordem personalizada (sem Categorical) --------------------
+# Mapas para ordem de meses e de designação
 MESES_MAP = {
     "JANEIRO": 1, "FEVEREIRO": 2, "MARÇO": 3, "ABRIL": 4, "MAIO": 5, "JUNHO": 6,
     "JULHO": 7, "AGOSTO": 8, "SETEMBRO": 9, "OUTUBRO": 10, "NOVEMBRO": 11, "DEZEMBRO": 12
@@ -25,25 +24,48 @@ DESIGNACAO_MAP = {
     "DESIGNAÇÃO": 2,
     "DESIGNAÇÃO TEMPORÁRIA": 3,
     "AUXÍLIO": 4,
-    "AUXÍLIO TEMPORÁRIO": 5
+    "AUXÍLIO TEMPORÁRIO": 5,
 }
 
+def ordenar_por_mes_e_designacao(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Ordena sem mudar o dtype das colunas (evita problemas com fillna/replace):
+    - Cria colunas auxiliares numéricas para a ordenação (mes e designacao).
+    - Ordena por essas colunas e por colunas de apoio (membro, orgao) se existirem.
+    - Remove as colunas auxiliares no fim.
+    """
+    if df.empty:
+        return df
+
+    df = df.copy()
+
+    # Chaves de ordenação (sem alterar o tipo original das colunas)
     if "mes" in df.columns:
         df["__mes_ord__"] = df["mes"].map(MESES_MAP).fillna(999)
     if "designacao" in df.columns:
         df["__des_ord__"] = df["designacao"].map(DESIGNACAO_MAP).fillna(999)
 
+    # Monta a lista de colunas para o sort
     sort_cols = []
-    if "__mes_ord__" in df.columns: sort_cols.append("__mes_ord__")
-    if "__des_ord__" in df.columns: sort_cols.append("__des_ord__")
-    if "membro" in df.columns: sort_cols.append("membro")
-    if "orgao" in df.columns: sort_cols.append("orgao")
+    ascending = []
+
+    if "__mes_ord__" in df.columns:
+        sort_cols.append("__mes_ord__"); ascending.append(True)
+    if "__des_ord__" in df.columns:
+        sort_cols.append("__des_ord__"); ascending.append(True)
+    if "membro" in df.columns:
+        sort_cols.append("membro"); ascending.append(True)
+    if "orgao" in df.columns:
+        sort_cols.append("orgao"); ascending.append(True)
 
     if sort_cols:
-        df = df.sort_values(by=sort_cols, ascending=True, kind="mergesort")
+        df = df.sort_values(by=sort_cols, ascending=ascending, kind="mergesort")
 
     # Remove colunas auxiliares
-    df.drop(columns=[c for c in ["__mes_ord__", "__des_ord__"] if c in df.columns], inplace=True)
+    for c in ["__mes_ord__", "__des_ord__"]:
+        if c in df.columns:
+            df.drop(columns=c, inplace=True)
+
     return df
 
 # -------------------- Config da página --------------------
