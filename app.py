@@ -323,23 +323,23 @@ if consultar and orgao_sel:
         qtd_por_mes = qtd_por_mes.sort_values(["ord", "ano_mes"], ascending=[True, True]).drop(columns=["ord"])
 
         # --- Gráfico de barras por mês ---
-        try:
-            import altair as alt
+        #try:
+        #    import altair as alt
 
-            chart_mes = (
-                alt.Chart(qtd_por_mes)
-                .mark_bar(color="#4E79A7")
-                .encode(
-                    x=alt.X("ano_mes:N", title="Mês (AAAA-MM)"),
-                    y=alt.Y("quantidade:Q", title="Quantidade de auxílios"),
-                    tooltip=["ano_mes", "quantidade"]
-                )
-                .properties(title="Auxílios por mês", width="container", height=220)
-            )
-            st.altair_chart(chart_mes, use_container_width=True)
-        except Exception:
-            # Fallback caso Altair não esteja disponível
-            st.bar_chart(qtd_por_mes.set_index("ano_mes"))
+        #    chart_mes = (
+        #        alt.Chart(qtd_por_mes)
+        #        .mark_bar(color="#4E79A7")
+        #        .encode(
+        #            x=alt.X("ano_mes:N", title="Mês (AAAA-MM)"),
+        #            y=alt.Y("quantidade:Q", title="Quantidade de auxílios"),
+        #            tooltip=["ano_mes", "quantidade"]
+        #        )
+        #        .properties(title="Auxílios por mês", width="container", height=220)
+        #    )
+        #    st.altair_chart(chart_mes, use_container_width=True)
+        #except Exception:
+        #    # Fallback caso Altair não esteja disponível
+        #    st.bar_chart(qtd_por_mes.set_index("ano_mes"))
 
         # --- Tabela resumo ---
         st.markdown('<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">Resumo por mês</h3>', unsafe_allow_html=True)
@@ -395,21 +395,21 @@ if consultar and orgao_sel:
         qtd_designacao_mes["ord"] = pd.to_datetime(qtd_designacao_mes["ano_mes"], errors="coerce")
         qtd_designacao_mes = qtd_designacao_mes.sort_values(["ord", "ano_mes"]).drop(columns=["ord"])
 
-        try:
-            import altair as alt
-            chart_desig = (
-                alt.Chart(qtd_designacao_mes)
-                .mark_bar(color="#A0CBE8")
-                .encode(
-                    x=alt.X("ano_mes:N", title="Mês (AAAA-MM)"),
-                    y=alt.Y("quantidade:Q", title="Qtd. 'DESIGNAÇÃO'"),
-                    tooltip=["ano_mes", "quantidade"]
-                )
-                .properties(title="DESIGNAÇÃO por mês", width="container", height=180)  # gráfico menor
-            )
-            st.altair_chart(chart_desig, use_container_width=True)
-        except Exception:
-            st.bar_chart(qtd_designacao_mes.set_index("ano_mes"))
+        #try:
+        #    import altair as alt
+        #    chart_desig = (
+        #        alt.Chart(qtd_designacao_mes)
+        #        .mark_bar(color="#A0CBE8")
+        #        .encode(
+        #            x=alt.X("ano_mes:N", title="Mês (AAAA-MM)"),
+        #            y=alt.Y("quantidade:Q", title="Qtd. 'DESIGNAÇÃO'"),
+        #            tooltip=["ano_mes", "quantidade"]
+        #        )
+        #        .properties(title="DESIGNAÇÃO por mês", width="container", height=180)  # gráfico menor
+        #    )
+        #    st.altair_chart(chart_desig, use_container_width=True)
+        #except Exception:
+        #    st.bar_chart(qtd_designacao_mes.set_index("ano_mes"))
 
 # --- Tabela resumo ---
         st.markdown('<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">Resumo por mês</h3>', unsafe_allow_html=True)
@@ -461,21 +461,21 @@ if consultar and orgao_sel:
         qtd_vago_mes["ord"] = pd.to_datetime(qtd_vago_mes["ano_mes"], errors="coerce")
         qtd_vago_mes = qtd_vago_mes.sort_values(["ord", "ano_mes"]).drop(columns=["ord"])
 
-        try:
-            import altair as alt
-            chart_vago = (
-                alt.Chart(qtd_vago_mes)
-                .mark_bar(color="#59A14F")
-                .encode(
-                    x=alt.X("ano_mes:N", title="Mês (AAAA-MM)"),
-                    y=alt.Y("quantidade:Q", title="Qtd. membro 'VAGO'"),
-                    tooltip=["ano_mes", "quantidade"]
-                )
-                .properties(title="VAGO por mês", width="container", height=180)  # gráfico menor
-            )
-            st.altair_chart(chart_vago, use_container_width=True)
-        except Exception:
-            st.bar_chart(qtd_vago_mes.set_index("ano_mes"))
+        #try:
+        #    import altair as alt
+        #    chart_vago = (
+        #        alt.Chart(qtd_vago_mes)
+        #        .mark_bar(color="#59A14F")
+        #        .encode(
+        #            x=alt.X("ano_mes:N", title="Mês (AAAA-MM)"),
+        #            y=alt.Y("quantidade:Q", title="Qtd. membro 'VAGO'"),
+        #            tooltip=["ano_mes", "quantidade"]
+        #        )
+        #        .properties(title="VAGO por mês", width="container", height=180)  # gráfico menor
+        #    )
+        #    st.altair_chart(chart_vago, use_container_width=True)
+        #except Exception:
+        #    st.bar_chart(qtd_vago_mes.set_index("ano_mes"))
 
             # --- Tabela resumo ---
         st.markdown('<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">Resumo por mês</h3>', unsafe_allow_html=True)
