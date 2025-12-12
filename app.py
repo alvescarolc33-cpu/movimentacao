@@ -348,7 +348,7 @@ if consultar and orgao_sel:
     # -------------------- Análise: designacao == 'DESIGNAÇÃO' --------------------
     st.divider()
     st.markdown(
-        '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">🧾 Ocorrências com DESIGNAÇÃO</h3>',
+        '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">🧾 Ocorrências com Designação</h3>',
         unsafe_allow_html=True
     )
 
@@ -418,7 +418,7 @@ if consultar and orgao_sel:
     # -------------------- Análise: membro == 'VAGO' --------------------
     st.divider()
     st.markdown(
-        '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">🚫 Ocorrências com membro VAGO</h3>',
+        '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">🚫 Ocorrências com Órgão VAGO</h3>',
         unsafe_allow_html=True
     )
 
