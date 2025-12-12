@@ -13,56 +13,38 @@ def normalize_str(x):
     return "" if x is None else str(x).strip()
 
 # -------------------- Ordem personalizada --------------------
-# Ordem cronológica dos meses
-MESES_ORDEM = [
-    "JANEIRO","FEVEREIRO","MARÇO","ABRIL","MAIO","JUNHO",
-    "JULHO","AGOSTO","SETEMBRO","OUTUBRO","NOVEMBRO","DEZEMBRO"
-]
 
-# Ordem desejada para designação
-DESIGNACAO_ORDEM = [
-    "TITULAR",
-    "DESIGNAÇÃO",
-    "DESIGNAÇÃO TEMPORÁRIA",
-    "AUXÍLIO",
-    "AUXÍLIO TEMPORÁRIO",
-]
+# Mapas para ordem personalizada
+MESES_MAP = {
+    "JANEIRO": 1, "FEVEREIRO": 2, "MARÇO": 3, "ABRIL": 4, "MAIO": 5, "JUNHO": 6,
+    "JULHO": 7, "AGOSTO": 8, "SETEMBRO": 9, "OUTUBRO": 10, "NOVEMBRO": 11, "DEZEMBRO": 12
+}
 
-def ordenar_por_mes_e_designacao(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Aplica ordenação customizada:
-    1) 'mes' em ordem cronológica (MESES_ORDEM)
-    2) 'designacao' na ordem lógica (DESIGNACAO_ORDEM)
-    3) 'membro' e 'orgao' como adicionais para estabilidade visual
+DESIGNACAO_MAP = {
+    "TITULAR": 1,
+    "DESIGNAÇÃO": 2,
+    "DESIGNAÇÃO TEMPORÁRIA": 3,
+    "AUXÍLIO": 4,
+    "AUXÍLIO TEMPORÁRIO": 5
+}
 
-    Retorna DataFrame ordenado. Não altera o índice original.
-    """
-    if df.empty:
-        return df
-
-    df = df.copy()
-
-    # Categorias ordenadas
     if "mes" in df.columns:
-        df["mes"] = pd.Categorical(df["mes"], categories=MESES_ORDEM, ordered=True)
+        df["__mes_ord__"] = df["mes"].map(MESES_MAP).fillna(999)
     if "designacao" in df.columns:
-        df["designacao"] = pd.Categorical(df["designacao"], categories=DESIGNACAO_ORDEM, ordered=True)
+        df["__des_ord__"] = df["designacao"].map(DESIGNACAO_MAP).fillna(999)
 
-    # Define colunas de ordenação conforme disponíveis
-    sort_cols, ascending = [], []
-    if "mes" in df.columns:
-        sort_cols.append("mes"); ascending.append(True)
-    if "designacao" in df.columns:
-        sort_cols.append("designacao"); ascending.append(True)
-    if "membro" in df.columns:
-        sort_cols.append("membro"); ascending.append(True)
-    if "orgao" in df.columns:
-        sort_cols.append("orgao"); ascending.append(True)
+    sort_cols = []
+    if "__mes_ord__" in df.columns: sort_cols.append("__mes_ord__")
+    if "__des_ord__" in df.columns: sort_cols.append("__des_ord__")
+    if "membro" in df.columns: sort_cols.append("membro")
+    if "orgao" in df.columns: sort_cols.append("orgao")
 
-    if not sort_cols:
-        return df
+    if sort_cols:
+        df = df.sort_values(by=sort_cols, ascending=True, kind="mergesort")
 
-    return df.sort_values(by=sort_cols, ascending=ascending, kind="mergesort")
+    # Remove colunas auxiliares
+    df.drop(columns=[c for c in ["__mes_ord__", "__des_ord__"] if c in df.columns], inplace=True)
+    return df
 
 # -------------------- Config da página --------------------
 st.set_page_config(
