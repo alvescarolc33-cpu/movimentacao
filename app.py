@@ -152,6 +152,7 @@ def listar_orgaos_unicos() -> list:
         mostrar_erro(ex, "ao listar órgãos")
         return []
 
+
 @st.cache_data(ttl=120)
 def consultar_por_orgao(orgao: str) -> pd.DataFrame:
     """Retorna colunas mes, membro, designacao, observacao para o órgão selecionado."""
@@ -161,22 +162,23 @@ def consultar_por_orgao(orgao: str) -> pd.DataFrame:
             .table("movimentacao")
             .select("mes, membro, designacao, observacao")
             .eq("orgao", orgao)
+            # A ordem do Supabase aqui não garante cronologia, mas não atrapalha
             .order("mes", desc=False)
             .order("membro", desc=False)
         )
         res = q.execute()
         rows = res.data if hasattr(res, "data") else []
         df = pd.DataFrame(rows)
-        cols = [c for c in ["ano", "mes", "membro", "designacao", "observacao"] if c in df.columns]
-        return df[cols] if not df.empty else df
-        
-# Ordena pela ordem customizada
+        cols = [c for c in ["mes", "membro", "designacao", "observacao"] if c in df.columns]
+        df = df[cols] if not df.empty else df
+
+        # ✅ Ordena pela ordem customizada
         df = ordenar_por_mes_e_designacao(df)
         return df
-
     except Exception as ex:
         mostrar_erro(ex, "na consulta por órgão")
         return pd.DataFrame([])
+
 
 @st.cache_data(ttl=120)
 def consultar_membros_mes_outros_orgaos_pares(df_orgao: pd.DataFrame, orgao_sel: str) -> pd.DataFrame:
