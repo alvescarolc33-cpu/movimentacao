@@ -341,33 +341,6 @@ if consultar and orgao_sel:
             # Fallback caso Altair não esteja disponível
             st.bar_chart(qtd_por_mes.set_index("ano_mes"))
 
-        # --- (Opcional) Distribuição por tipo de auxílio dentro de 'designacao' ---
-        #tipos_aux = (
-        #    df_auxilio["designacao"]
-        #    .str.strip()
-        #    .value_counts()
-        #    .reset_index()
-        #    .rename(columns={"index": "tipo_auxilio", "designacao": "quantidade"})
-        #)
-
-        #if not tipos_aux.empty:
-        #    try:
-        #        import altair as alt
-
-        #        chart_tipos = (
-        #            alt.Chart(tipos_aux)
-        #            .mark_arc(innerRadius=40)
-        #            .encode(
-        #                theta=alt.Theta(field="quantidade", type="quantitative"),
-        #                color=alt.Color(field="tipo_auxilio", type="nominal", legend=alt.Legend(title="Tipo de auxílio")),
-        #                tooltip=["tipo_auxilio", "quantidade"]
-        #            )
-        #            .properties(title="Distribuição por tipo de auxílio", width=380, height=380)
-        #        )
-        #        st.altair_chart(chart_tipos, use_container_width=True)
-        #    except Exception:
-        #        st.dataframe(tipos_aux, use_container_width=True)
-
         # --- Tabela resumo ---
-        st.subheader("Resumo por mês")
+        st.markdown('<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">Resumo por mês</h3>', unsafe_allow_html=True)
         st.dataframe(qtd_por_mes, use_container_width=True)
