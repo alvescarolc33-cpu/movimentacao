@@ -2,14 +2,14 @@
 import streamlit as st
 import streamlit_authenticator as stauth
 
-st.write(st.secrets.get("credentials"))
-
 st.set_page_config(page_title="Movimentação", page_icon="📊", layout="wide")
 
 # --- Lê secrets
 credentials = st.secrets["credentials"]
 cookie = st.secrets["cookie"]
 preauthorized = st.secrets.get("preauthorized", {"emails": []})
+
+st.write(st.secrets.get("credentials"))
 
 # --- Validação amigável
 if "usernames" not in credentials or not isinstance(credentials["usernames"], dict):
