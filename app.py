@@ -4,24 +4,25 @@ import streamlit_authenticator as stauth
 
 st.set_page_config(page_title="Movimentação", page_icon="📊", layout="wide")
 
-# Carregar secrets
+# --- Lê secrets
 credentials = st.secrets["credentials"]
 cookie = st.secrets["cookie"]
 preauthorized = st.secrets.get("preauthorized", {"emails": []})
 
-# Opcional: validar estrutura antes de instanciar
-assert "usernames" in credentials and isinstance(credentials["usernames"], dict), \
-    "A chave 'credentials.usernames' deve ser um dicionário {username: {...}}."
+# --- Validação amigável
+if "usernames" not in credentials or not isinstance(credentials["usernames"], dict):
+    st.error("Secrets inválidos: esperava 'credentials.usernames' como dicionário.\n"
+             "Verifique o conteúdo em Settings → Secrets no Streamlit Cloud.")
+    st.stop()
 
 authenticator = stauth.Authenticate(
-    credentials,             # dict com 'usernames'
-    cookie["name"],          # string
-    cookie["key"],           # string secreta
-    cookie["expiry_days"],   # int
-    preauthorized["emails"]  # lista de emails (opcional)
+    credentials,                 # precisa do dict com 'usernames'
+    cookie["name"],
+    cookie["key"],
+    cookie["expiry_days"],
+    preauthorized["emails"]
 )
 
-# Login no sidebar
 st.sidebar.title("Acesso")
 name, authentication_status, username = authenticator.login("Login", "sidebar")
 
@@ -35,4 +36,4 @@ else:
 
     st.title("📊 Painel de Movimentação")
     st.write(f"Usuário logado: {username}")
-    # Coloque seu conteúdo protegido aqui
+    # Seu conteúdo protegido aqui
