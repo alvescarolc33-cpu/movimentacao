@@ -2,6 +2,8 @@
 import streamlit as st
 import streamlit_authenticator as stauth
 
+st.write(st.secrets.get("credentials"))
+
 st.set_page_config(page_title="Movimentação", page_icon="📊", layout="wide")
 
 # --- Lê secrets
