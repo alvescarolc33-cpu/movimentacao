@@ -7,9 +7,9 @@ st.set_page_config(page_title="Movimentação", page_icon="📊", layout="wide")
 # --- Lê secrets
 credentials = st.secrets["credentials"]
 cookie = st.secrets["cookie"]
-preauthorized = st.secrets.get("preauthorized", {"emails": []})
 
-st.write(credential)
+st.write(credentials)
+st.write(cookie)
 
 # --- Validação amigável
 if "usernames" not in credentials or not isinstance(credentials["usernames"], dict):
@@ -21,8 +21,7 @@ authenticator = stauth.Authenticate(
     credentials,                 # precisa do dict com 'usernames'
     cookie["name"],
     cookie["key"],
-    cookie["expiry_days"],
-    preauthorized["emails"]
+    cookie["expiry_days"]
 )
 
 st.sidebar.title("Acesso")
