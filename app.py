@@ -9,7 +9,7 @@ credentials = st.secrets["credentials"]
 cookie = st.secrets["cookie"]
 preauthorized = st.secrets.get("preauthorized", {"emails": []})
 
-st.write(credentials)
+st.write(credential)
 
 # --- Validação amigável
 if "usernames" not in credentials or not isinstance(credentials["usernames"], dict):
