@@ -1,33 +1,38 @@
+
 import streamlit as st
 import streamlit_authenticator as stauth
 
-st.set_page_config(page_title="App Protegida", page_icon="🔐")
+st.set_page_config(page_title="Movimentação", page_icon="📊", layout="wide")
 
-# Carrega configs de secrets
+# Carregar secrets
 credentials = st.secrets["credentials"]
 cookie = st.secrets["cookie"]
-preauthorized = st.secrets.get("preauthorized", {})
+preauthorized = st.secrets.get("preauthorized", {"emails": []})
+
+# Opcional: validar estrutura antes de instanciar
+assert "usernames" in credentials and isinstance(credentials["usernames"], dict), \
+    "A chave 'credentials.usernames' deve ser um dicionário {username: {...}}."
 
 authenticator = stauth.Authenticate(
-    credentials,
-    cookie["name"],
-    cookie["key"],
-    cookie["expiry_days"],
-    preauthorized
+    credentials,             # dict com 'usernames'
+    cookie["name"],          # string
+    cookie["key"],           # string secreta
+    cookie["expiry_days"],   # int
+    preauthorized["emails"]  # lista de emails (opcional)
 )
 
-# Renderiza o login e obtém estado
-name, authentication_status, username = authenticator.login("Login", "main")
+# Login no sidebar
+st.sidebar.title("Acesso")
+name, authentication_status, username = authenticator.login("Login", "sidebar")
 
-if authentication_status:
-    st.sidebar.success(f"Logada: {name}")
+if authentication_status is False:
+    st.sidebar.error("Usuário ou senha inválidos.")
+elif authentication_status is None:
+    st.sidebar.warning("Informe suas credenciais.")
+else:
+    st.sidebar.success(f"Bem-vinda, {name}!")
     authenticator.logout("Sair", "sidebar")
 
-    st.header("Conteúdo protegido")
-    st.write("Sua página Streamlit aqui…")
-    # … sua consulta, gráficos, etc.
-
-elif authentication_status is False:
-    st.error("Usuário ou senha inválidos.")
-elif authentication_status is None:
-    st.warning("Por favor, informe usuário e senha.")
+    st.title("📊 Painel de Movimentação")
+    st.write(f"Usuário logado: {username}")
+    # Coloque seu conteúdo protegido aqui
