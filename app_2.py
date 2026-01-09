@@ -2,7 +2,7 @@ import os
 import io
 import pandas as pd
 import streamlit as st
-from supabase import create_client, Client
+#from supabase import create_client, Client
 
 def is_vago(valor) -> bool:
     """Retorna True se o valor for 'VAGO' (ignorando espaços/caixa)."""
@@ -130,11 +130,11 @@ if not SUPABASE_URL or not SUPABASE_ANON_KEY:
     st.stop()
 
 # -------------------- Cliente Supabase (cache) --------------------
-@st.cache_resource
-def get_supabase() -> Client:
-    return create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
+#@st.cache_resource
+#def get_supabase() -> Client:
+    #return create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-supabase = get_supabase()
+#supabase = get_supabase()
 
 # -------------------- Utilitários --------------------
 def mostrar_erro(ex: Exception, contexto: str = ""):
