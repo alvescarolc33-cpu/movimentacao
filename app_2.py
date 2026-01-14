@@ -156,7 +156,6 @@ def listar_orgaos_unicos() -> list:
         mostrar_erro(ex, "ao listar órgãos")
         return []
 
-
 @st.cache_data(ttl=120)
 def consultar_por_orgao(orgao: str) -> pd.DataFrame:
     """Retorna colunas mes, membro, designacao, observacao para o órgão selecionado."""
