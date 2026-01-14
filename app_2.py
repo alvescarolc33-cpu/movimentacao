@@ -134,7 +134,7 @@ if not SUPABASE_URL or not SUPABASE_ANON_KEY:
 #def get_supabase() -> Client:
     #return create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-#supabase = get_supabase()
+supabase = get_supabase()
 
 # -------------------- Utilitários --------------------
 def mostrar_erro(ex: Exception, contexto: str = ""):
