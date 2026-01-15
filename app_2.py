@@ -36,9 +36,6 @@ if st.session_state.access_token and st.session_state.refresh_token:
         "refresh_token": st.session_state.refresh_token
     })
 
-st.session_state.access_token = res.session.access_token
-st.session_state.refresh_token = res.session.refresh_token
-
 #tela de login
 def tela_login():
     st.title("🔐 Login")
