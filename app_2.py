@@ -26,7 +26,15 @@ if not SUPABASE_URL or not SUPABASE_ANON_KEY:
 
 #supabase = get_supabase()
 
-supabase = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
+supabase_anon = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+def get_supabase():
+    if st.session_state.access_token:
+        return create_client(
+            SUPABASE_URL,
+            st.session_state.access_token
+        )
+    return None
 
 #tela de login (agora funciona)
 def tela_login():
@@ -37,19 +45,13 @@ def tela_login():
 
     if st.button("Entrar"):
         try:
-            res = supabase.auth.sign_in_with_password({
+            res = supabase_anon.auth.sign_in_with_password({
                 "email": email,
                 "password": senha
             })
 
             st.session_state.user = res.user
             st.session_state.access_token = res.session.access_token
-
-            # 🔑 ESSENCIAL
-            supabase.auth.set_session(
-                res.session.access_token,
-                res.session.refresh_token
-            )
 
             st.success("Login realizado com sucesso!")
             st.rerun()
@@ -61,6 +63,8 @@ def tela_login():
 if not st.session_state.user:
     tela_login()
     st.stop()
+
+supabase = get_supabase()
 
 #Logout (sidebar)
 with st.sidebar:
