@@ -1,3 +1,4 @@
+
 import os
 import io
 import pandas as pd
@@ -11,32 +12,40 @@ if "user" not in st.session_state:
 if "access_token" not in st.session_state:
     st.session_state.access_token = None
 
-# -------------------- Variáveis de ambiente --------------------
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY")
+if "refresh_token" not in st.session_state:
+    st.session_state.refresh_token = None
+
+# -------------------- Variáveis de ambiente/Secrets --------------------
+SUPABASE_URL = st.secrets.get("SUPABASE_URL") or os.getenv("SUPABASE_URL")
+SUPABASE_ANON_KEY = st.secrets.get("SUPABASE_ANON_KEY") or os.getenv("SUPABASE_ANON_KEY")
 
 if not SUPABASE_URL or not SUPABASE_ANON_KEY:
-    st.error("⚠️ Configure SUPABASE_URL e SUPABASE_ANON_KEY nos Secrets.")
+    st.error("⚠️ Configure SUPABASE_URL e SUPABASE_ANON_KEY em st.secrets ou variáveis de ambiente.")
     st.stop()
 
-# -------------------- Cliente Supabase (cache) --------------------
-#@st.cache_resource
-#def get_supabase() -> Client:
-    #return create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
+# -------------------- Cliente Supabase (cacheado) --------------------
+@st.cache_resource
+def get_supabase_client():
+    # Sempre cria com a ANON KEY. A sessão do usuário será aplicada via auth.set_session.
+    return create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-#supabase = get_supabase()
+supabase = get_supabase_client()
 
-supabase_anon = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
+# Reaplica a sessão do usuário no client a cada rerun, se houver tokens
+def ensure_session_on_client():
+    if st.session_state.get("access_token") and st.session_state.get("refresh_token"):
+        try:
+            supabase.auth.set_session({
+                "access_token": st.session_state.access_token,
+                "refresh_token": st.session_state.refresh_token,
+            })
+        except Exception as e:
+            # Se der erro, zera a sessão para forçar novo login
+            st.session_state.user = None
+            st.session_state.access_token = None
+            st.session_state.refresh_token = None
 
-def get_supabase():
-    if st.session_state.access_token:
-        return create_client(
-            SUPABASE_URL,
-            st.session_state.access_token
-        )
-    return None
-
-#tela de login
+# -------------------- Tela de login --------------------
 def tela_login():
     st.title("🔐 Login")
 
@@ -45,13 +54,15 @@ def tela_login():
 
     if st.button("Entrar"):
         try:
-            res = supabase_anon.auth.sign_in_with_password({
+            res = supabase.auth.sign_in_with_password({
                 "email": email,
                 "password": senha
             })
 
+            # Guarda usuário e tokens no session_state
             st.session_state.user = res.user
             st.session_state.access_token = res.session.access_token
+            st.session_state.refresh_token = res.session.refresh_token
 
             st.success("Login realizado com sucesso!")
             st.rerun()
@@ -60,25 +71,45 @@ def tela_login():
             st.error("Email ou senha inválidos")
             st.caption(str(e))
 
+# -------------------- Lógica de autenticação --------------------
+ensure_session_on_client()
+
 if not st.session_state.user:
     tela_login()
     st.stop()
 
-supabase = get_supabase()
-
-#Logout (sidebar)
+# -------------------- Logout (sidebar) --------------------
 with st.sidebar:
     if st.session_state.user:
         st.write(f"👤 {st.session_state.user.email}")
-
         if st.button("Sair"):
-            supabase.auth.sign_out()
+            try:
+                supabase.auth.sign_out()
+            except Exception:
+                pass
             st.session_state.user = None
             st.session_state.access_token = None
+            st.session_state.refresh_token = None
             st.rerun()
-
     else:
         st.write("🔒 Não autenticado")
+
+# -------------------- Consulta de teste à tabela ORGAOS --------------------
+st.header("Órgãos")
+
+try:
+    # Exemplo simples de leitura (ajuste o nome da tabela/colunas conforme seu schema)
+    resp = supabase.table("orgaos").select("*").limit(20).execute()
+    if getattr(resp, "error", None):
+        st.error(f"Erro na consulta: {getattr(resp.error, 'message', resp.error)}")
+    elif not resp.data:
+        st.warning("Não há Órgãos cadastrados ou houve erro ao carregar a lista.")
+    else:
+        st.success(f"Carregado: {len(resp.data)} órgão(s).")
+        st.dataframe(pd.DataFrame(resp.data))
+except Exception as e:
+    st.error("Falha inesperada ao consultar órgãos.")
+    st.caption(str(e))
 
 #--------------------Retorna True se o valor for 'VAGO' (ignorando espaços/caixa)/Normaliza para string sem espaços nas pontas (útil para comparar membro/mes).
 def is_vago(valor) -> bool:
