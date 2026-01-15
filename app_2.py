@@ -11,6 +11,7 @@ if "user" not in st.session_state:
 if "access_token" not in st.session_state:
     st.session_state.access_token = None
 
+
 def tela_login():
     st.title("🔐 Login")
 
@@ -20,9 +21,9 @@ def tela_login():
     if st.button("Entrar"):
         try:
             res = supabase.auth.sign_in_with_password({
-    "email": email,
-    "password": senha
-})
+                "email": email.strip(),
+                "password": senha
+            })
 
             st.session_state.user = res.user
             st.session_state.access_token = res.session.access_token
@@ -30,8 +31,9 @@ def tela_login():
             st.success("Login realizado com sucesso!")
             st.rerun()
 
-        except Exception:
+        except Exception as e:
             st.error("Email ou senha inválidos")
+            st.write(e)  # ← deixe isso enquanto testa
 
 #Logout (sidebar)
 with st.sidebar:
