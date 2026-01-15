@@ -34,7 +34,7 @@ def tela_login():
             st.error("Email ou senha inválidos")
 
 #Logout (sidebar)
-            with st.sidebar:
+with st.sidebar:
     st.write(f"👤 {st.session_state.user.email}")
     if st.button("Sair"):
         supabase.auth.sign_out()
