@@ -65,15 +65,13 @@ if not st.session_state.user:
 with st.sidebar:
     if st.session_state.user:
         st.write(f"👤 {st.session_state.user.email}")
+
         if st.button("Sair"):
-            try:
-                supabase.auth.sign_out()
-            except Exception:
-                pass
+            supabase.auth.sign_out()
             st.session_state.user = None
             st.session_state.access_token = None
-            st.session_state.refresh_token = None
             st.rerun()
+
     else:
         st.write("🔒 Não autenticado")
 
