@@ -11,15 +11,21 @@ if "user" not in st.session_state:
 if "access_token" not in st.session_state:
     st.session_state.access_token = None
 
-# -------------------- Variáveis de ambiente/Secrets --------------------
+# -------------------- Variáveis de ambiente --------------------
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY")
 
 if not SUPABASE_URL or not SUPABASE_ANON_KEY:
-    st.error("⚠️ Configure SUPABASE_URL e SUPABASE_ANON_KEY em st.secrets ou variáveis de ambiente.")
+    st.error("⚠️ Configure SUPABASE_URL e SUPABASE_ANON_KEY nos Secrets.")
     st.stop()
 
-# -------------------- Cliente Supabase (cacheado) --------------------
+# -------------------- Cliente Supabase (cache) --------------------
+#@st.cache_resource
+#def get_supabase() -> Client:
+    #return create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+#supabase = get_supabase()
+
 supabase_anon = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 def get_supabase():
@@ -30,7 +36,7 @@ def get_supabase():
         )
     return None
 
-# -------------------- Tela de login --------------------
+#tela de login
 def tela_login():
     st.title("🔐 Login")
 
@@ -39,15 +45,13 @@ def tela_login():
 
     if st.button("Entrar"):
         try:
-            res = supabase.auth.sign_in_with_password({
+            res = supabase_anon.auth.sign_in_with_password({
                 "email": email,
                 "password": senha
             })
 
-            # Guarda usuário e tokens no session_state
             st.session_state.user = res.user
             st.session_state.access_token = res.session.access_token
-            st.session_state.refresh_token = res.session.refresh_token
 
             st.success("Login realizado com sucesso!")
             st.rerun()
@@ -56,12 +60,13 @@ def tela_login():
             st.error("Email ou senha inválidos")
             st.caption(str(e))
 
-# -------------------- Lógica de autenticação --------------------
 if not st.session_state.user:
     tela_login()
     st.stop()
 
-# -------------------- Logout (sidebar) --------------------
+supabase = get_supabase()
+
+#Logout (sidebar)
 with st.sidebar:
     if st.session_state.user:
         st.write(f"👤 {st.session_state.user.email}")
