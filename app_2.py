@@ -82,10 +82,10 @@ with st.sidebar:
         st.write(f"👤 {st.session_state.user.email}")
 
         if st.button("Sair"):
-    supabase.auth.sign_out()
-    st.session_state.user = None
-    st.session_state.access_token = None
-    st.rerun()
+            supabase.auth.sign_out()
+            st.session_state.user = None
+            st.session_state.access_token = None
+            st.rerun()
 
     else:
         st.write("🔒 Não autenticado")
