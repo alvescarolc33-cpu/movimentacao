@@ -134,20 +134,24 @@ supabase = get_supabase()
 def mostrar_erro(ex: Exception, contexto: str = ""):
     st.error(f"❌ Ocorreu um erro {('em ' + contexto) if contexto else ''}: {ex}")
 
-@st.cache_data(ttl=300)
-def listar_orgaos_unicos() -> list:
+#@st.cache_data(ttl=600)
+#def listar_orgaos_unicos() -> list:
     #Busca valores de 'orgao' e retorna lista única ordenada.
     #Observação: esta abordagem lê a coluna e deduplica no cliente.
     #Para bases muito grandes, considere criar uma VIEW com SELECT DISTINCT. Usando VIEW via SUPABASE.
-    
-    try:
-        res = supabase.table("movimentacao").select("orgao").execute()
-        data = res.data if hasattr(res, "data") else []
-        orgaos = sorted({row.get("orgao") for row in data if row.get("orgao")})
-        return orgaos
-    except Exception as ex:
-        mostrar_erro(ex, "ao listar órgãos")
-        return []
+    #try:
+        #res = supabase.table("movimentacao").select("orgao").execute()
+        #data = res.data if hasattr(res, "data") else []
+        #orgaos = sorted({row.get("orgao") for row in data if row.get("orgao")})
+        #return orgaos
+    #except Exception as ex:
+        #mostrar_erro(ex, "ao listar órgãos")
+        #return []
+
+@st.cache_data(ttl=600)
+def listar_orgaos_unicos() -> list:
+    res = supabase.table("vw_orgaos_distintos").select("orgao").execute()
+    return [row["orgao"] for row in res.data or []]
 
 @st.cache_data(ttl=120)
 def consultar_por_orgao(orgao: str) -> pd.DataFrame:
