@@ -12,7 +12,6 @@ def normalize_str(x):
     return "" if x is None else str(x).strip()
 
 # -------------------- Ordem personalizada (sem Categorical) --------------------
-# Mapas para ordem de meses e de designação
 MESES_MAP = {
     "JANEIRO": 1, "FEVEREIRO": 2, "MARÇO": 3, "ABRIL": 4, "MAIO": 5, "JUNHO": 6,
     "JULHO": 7, "AGOSTO": 8, "SETEMBRO": 9, "OUTUBRO": 10, "NOVEMBRO": 11, "DEZEMBRO": 12
@@ -134,20 +133,6 @@ supabase = get_supabase()
 def mostrar_erro(ex: Exception, contexto: str = ""):
     st.error(f"❌ Ocorreu um erro {('em ' + contexto) if contexto else ''}: {ex}")
 
-#@st.cache_data(ttl=600)
-#def listar_orgaos_unicos() -> list:
-    #Busca valores de 'orgao' e retorna lista única ordenada.
-    #Observação: esta abordagem lê a coluna e deduplica no cliente.
-    #Para bases muito grandes, considere criar uma VIEW com SELECT DISTINCT. Usando VIEW via SUPABASE.
-    #try:
-        #res = supabase.table("movimentacao").select("orgao").execute()
-        #data = res.data if hasattr(res, "data") else []
-        #orgaos = sorted({row.get("orgao") for row in data if row.get("orgao")})
-        #return orgaos
-    #except Exception as ex:
-        #mostrar_erro(ex, "ao listar órgãos")
-        #return []
-
 @st.cache_data(ttl=600)
 def listar_orgaos_unicos() -> list:
     res = supabase.table("vw_orgaos_distintos").select("orgao").execute()
@@ -155,14 +140,12 @@ def listar_orgaos_unicos() -> list:
 
 @st.cache_data(ttl=120)
 def consultar_por_orgao(orgao: str) -> pd.DataFrame:
-    #Retorna colunas mes, membro, designacao, observacao para o órgão selecionado.
     try:
         q = (
             supabase
             .table("movimentacao")
             .select("ano, mes, membro, designacao, observacao")
             .eq("orgao", orgao)
-            # A ordem do Supabase aqui não garante cronologia, mas não atrapalha
             .order("mes", desc=False)
             .order("membro", desc=False)
         )
@@ -378,25 +361,6 @@ if consultar and orgao_sel:
         qtd_por_mes["ord"] = pd.to_datetime(qtd_por_mes["ano_mes"], errors="coerce")
         qtd_por_mes = qtd_por_mes.sort_values(["ord", "ano_mes"], ascending=[True, True]).drop(columns=["ord"])
 
-        # --- Gráfico de barras por mês ---
-        #try:
-        #    import altair as alt
-
-        #    chart_mes = (
-        #        alt.Chart(qtd_por_mes)
-        #        .mark_bar(color="#4E79A7")
-        #        .encode(
-        #            x=alt.X("ano_mes:N", title="Mês (AAAA-MM)"),
-        #            y=alt.Y("quantidade:Q", title="Quantidade de auxílios"),
-        #            tooltip=["ano_mes", "quantidade"]
-        #        )
-        #        .properties(title="Auxílios por mês", width="container", height=220)
-        #    )
-        #    st.altair_chart(chart_mes, use_container_width=True)
-        #except Exception:
-        #    # Fallback caso Altair não esteja disponível
-        #    st.bar_chart(qtd_por_mes.set_index("ano_mes"))
-
         # --- Tabela resumo ---
         st.markdown('<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">Resumo por mês</h3>', unsafe_allow_html=True)
         st.dataframe(qtd_por_mes, use_container_width=True)
@@ -451,22 +415,6 @@ if consultar and orgao_sel:
         qtd_designacao_mes["ord"] = pd.to_datetime(qtd_designacao_mes["ano_mes"], errors="coerce")
         qtd_designacao_mes = qtd_designacao_mes.sort_values(["ord", "ano_mes"]).drop(columns=["ord"])
 
-        #try:
-        #    import altair as alt
-        #    chart_desig = (
-        #        alt.Chart(qtd_designacao_mes)
-        #        .mark_bar(color="#A0CBE8")
-        #        .encode(
-        #            x=alt.X("ano_mes:N", title="Mês (AAAA-MM)"),
-        #            y=alt.Y("quantidade:Q", title="Qtd. 'DESIGNAÇÃO'"),
-        #            tooltip=["ano_mes", "quantidade"]
-        #        )
-        #        .properties(title="DESIGNAÇÃO por mês", width="container", height=180)  # gráfico menor
-        #    )
-        #    st.altair_chart(chart_desig, use_container_width=True)
-        #except Exception:
-        #    st.bar_chart(qtd_designacao_mes.set_index("ano_mes"))
-
 # --- Tabela resumo ---
         st.markdown('<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">Resumo por mês</h3>', unsafe_allow_html=True)
         st.dataframe(qtd_designacao_mes, use_container_width=True)
@@ -516,22 +464,6 @@ if consultar and orgao_sel:
         )
         qtd_vago_mes["ord"] = pd.to_datetime(qtd_vago_mes["ano_mes"], errors="coerce")
         qtd_vago_mes = qtd_vago_mes.sort_values(["ord", "ano_mes"]).drop(columns=["ord"])
-
-        #try:
-        #    import altair as alt
-        #    chart_vago = (
-        #        alt.Chart(qtd_vago_mes)
-        #        .mark_bar(color="#59A14F")
-        #        .encode(
-        #            x=alt.X("ano_mes:N", title="Mês (AAAA-MM)"),
-        #            y=alt.Y("quantidade:Q", title="Qtd. membro 'VAGO'"),
-        #            tooltip=["ano_mes", "quantidade"]
-        #        )
-        #        .properties(title="VAGO por mês", width="container", height=180)  # gráfico menor
-        #    )
-        #    st.altair_chart(chart_vago, use_container_width=True)
-        #except Exception:
-        #    st.bar_chart(qtd_vago_mes.set_index("ano_mes"))
 
             # --- Tabela resumo ---
         st.markdown('<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">Resumo por mês</h3>', unsafe_allow_html=True)
