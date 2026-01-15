@@ -236,7 +236,7 @@ def consultar_membros_mes_outros_orgaos_pares(df_orgao: pd.DataFrame, orgao_sel:
     df_outros = df_raw[df_raw.apply(lambda r: (r["membro_norm"], r["mes_norm"]) in pairs_set, axis=1)].copy()
     
     # Garante ordem e remove colunas auxiliares
-    cols = [c for c in ["orgao", "cod_orgao", "mes", "membro", "designacao", "observacao"] if c in df_outros.columns]
+    cols = [c for c in ["orgao", "cod_orgao", "mes", "ano", "membro", "designacao", "observacao"] if c in df_outros.columns]
     df_outros = df_outros[cols]
 
     # ✅ Ordena pela ordem customizada
