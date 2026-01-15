@@ -20,11 +20,6 @@ if not SUPABASE_URL or not SUPABASE_ANON_KEY:
     st.stop()
 
 # -------------------- Cliente Supabase (cacheado) --------------------
-@st.cache_resource
-def get_supabase_client():
-    # Sempre cria com a ANON KEY. A sessão do usuário será aplicada via auth.set_session.
-    return create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
-
 supabase = get_supabase_client()
 
 # Reaplica a sessão do usuário no client a cada rerun, se houver tokens
