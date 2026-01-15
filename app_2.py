@@ -1,7 +1,6 @@
 import os
 import io
 import pandas as pd
-import os
 import streamlit as st
 from supabase import create_client
 
