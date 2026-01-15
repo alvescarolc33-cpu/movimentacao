@@ -36,7 +36,7 @@ def get_supabase():
         )
     return None
 
-#tela de login (agora funciona)
+#tela de login
 def tela_login():
     st.title("🔐 Login")
 
@@ -138,11 +138,6 @@ def ordenar_por_mes_e_designacao(df: pd.DataFrame) -> pd.DataFrame:
             df.drop(columns=c, inplace=True)
 
     return df
-
-#BLOQUEAR O APP SEM LOGIN
-if not st.session_state.user:
-    tela_login()
-    st.stop()
 
 # -------------------- Config da página --------------------
 st.set_page_config(
