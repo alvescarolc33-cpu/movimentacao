@@ -24,8 +24,8 @@ def tela_login():
     "password": senha
 })
 
-            st.session_state.user = response.user
-            st.session_state.access_token = response.session.access_token
+            st.session_state.user = res.user
+            st.session_state.access_token = res.session.access_token
 
             st.success("Login realizado com sucesso!")
             st.rerun()
