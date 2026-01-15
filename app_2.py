@@ -8,7 +8,7 @@ SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY")
 
 if not SUPABASE_URL or not SUPABASE_ANON_KEY:
-    st.error("⚠️ Configure SUPABASE_URL e SUPABASE_ANON_KEY nos Secrets.")
+    st.error("⚠️ Configure SUPABASE_URL e SUPABASE_ANON_KEY nos Secrets do Streamlit.")
     st.stop()
 
 # -------------------- Cliente Supabase (cache) --------------------
@@ -16,7 +16,7 @@ if not SUPABASE_URL or not SUPABASE_ANON_KEY:
 def get_supabase() -> Client:
     return create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
     
-    supabase = get_supabase()
+supabase = get_supabase()
 
 # -------------------- Consulta de teste à tabela ORGAOS --------------------
 st.header("Órgãos")
