@@ -80,12 +80,11 @@ with st.sidebar:
     else:
         st.write("🔒 Não autenticado")
 
+#--------------------Retorna True se o valor for 'VAGO' (ignorando espaços/caixa)/Normaliza para string sem espaços nas pontas (útil para comparar membro/mes).
 def is_vago(valor) -> bool:
-    #Retorna True se o valor for 'VAGO' (ignorando espaços/caixa).
     return isinstance(valor, str) and valor.strip().upper() == "VAGO"
 
 def normalize_str(x):
-    #Normaliza para string sem espaços nas pontas (útil para comparar membro/mes).
     return "" if x is None else str(x).strip()
 
 # -------------------- Ordem personalizada (sem Categorical) --------------------
