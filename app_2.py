@@ -209,7 +209,7 @@ def consultar_membros_mes_outros_orgaos_pares(df_orgao: pd.DataFrame, orgao_sel:
     q = (
         supabase
         .table("movimentacao")
-        .select("orgao, cod_orgao, mes, membro, designacao, observacao")
+        .select("orgao, cod_orgao, mes, ano, membro, designacao, observacao")
         .in_("membro", membros)
         .in_("mes", meses)
         .neq("orgao", orgao_sel)
