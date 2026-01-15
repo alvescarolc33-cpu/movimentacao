@@ -35,12 +35,16 @@ def tela_login():
 
 #Logout (sidebar)
 with st.sidebar:
-    st.write(f"👤 {st.session_state.user.email}")
-    if st.button("Sair"):
-        supabase.auth.sign_out()
-        st.session_state.user = None
-        st.session_state.access_token = None
-        st.rerun()
+    if st.session_state.user:
+        st.write(f"👤 {st.session_state.user.email}")
+
+        if st.button("Sair"):
+            supabase.auth.sign_out()
+            st.session_state.user = None
+            st.session_state.access_token = None
+            st.rerun()
+    else:
+        st.write("🔒 Não autenticado")
 
 def is_vago(valor) -> bool:
     #Retorna True se o valor for 'VAGO' (ignorando espaços/caixa).
