@@ -228,7 +228,7 @@ def consultar_membros_mes_outros_orgaos_pares(df_orgao: pd.DataFrame, orgao_sel:
     cols = [c for c in ["orgao", "cod_orgao", "mes", "ano", "membro", "designacao", "observacao"] if c in df_outros.columns]
     df_outros = df_outros[cols]
 
-    # ✅ Ordena pela ordem customizada
+    #Ordena pela ordem customizada
     df_outros = ordenar_por_mes_e_designacao(df_outros)
 
     df_outros.reset_index(drop=True, inplace=True)
