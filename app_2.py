@@ -2,6 +2,7 @@ import os
 import io
 import pandas as pd
 import streamlit as st
+from supabase import create_client, Client
 
 # -------------------- Variáveis de ambiente --------------------
 SUPABASE_URL = os.getenv("SUPABASE_URL")
