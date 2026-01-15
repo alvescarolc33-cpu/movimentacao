@@ -26,21 +26,6 @@ if not SUPABASE_URL or not SUPABASE_ANON_KEY:
 
 #supabase = get_supabase()
 
-""""def get_supabase():
-    if st.session_state.access_token:
-        return create_client(
-            SUPABASE_URL,
-            SUPABASE_ANON_KEY,
-            options={
-                "headers": {
-                    "Authorization": f"Bearer {st.session_state.access_token}"
-                }
-            }
-        )
-    return create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
-
-supabase = get_supabase()""""
-
 supabase = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 #tela de login (agora funciona)
