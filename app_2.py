@@ -13,10 +13,10 @@ if not SUPABASE_URL or not SUPABASE_ANON_KEY:
 
 # -------------------- Cliente Supabase (cache) --------------------
 @st.cache_resource
-def get_supabase():
+def get_supabase() -> Client:
     return create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
-
-supabase_anon = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
+    
+    supabase = get_supabase()
 
 # -------------------- Consulta de teste à tabela ORGAOS --------------------
 st.header("Órgãos")
