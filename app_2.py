@@ -1,8 +1,8 @@
 import os
 import io
 import pandas as pd
-import streamlit as st
 import os
+import streamlit as st
 from supabase import create_client
 
 # -------------------- Sessão --------------------
@@ -12,7 +12,37 @@ if "user" not in st.session_state:
 if "access_token" not in st.session_state:
     st.session_state.access_token = None
 
+# -------------------- Variáveis de ambiente --------------------
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY")
 
+if not SUPABASE_URL or not SUPABASE_ANON_KEY:
+    st.error("⚠️ Configure SUPABASE_URL e SUPABASE_ANON_KEY nos Secrets.")
+    st.stop()
+
+# -------------------- Cliente Supabase (cache) --------------------
+#@st.cache_resource
+#def get_supabase() -> Client:
+    #return create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+#supabase = get_supabase()
+
+def get_supabase():
+    if st.session_state.access_token:
+        return create_client(
+            SUPABASE_URL,
+            SUPABASE_ANON_KEY,
+            options={
+                "headers": {
+                    "Authorization": f"Bearer {st.session_state.access_token}"
+                }
+            }
+        )
+    return create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+    supabase = get_supabase()
+
+#tela de login (agora funciona)
 def tela_login():
     st.title("🔐 Login")
 
@@ -22,8 +52,8 @@ def tela_login():
     if st.button("Entrar"):
         try:
             res = supabase.auth.sign_in_with_password({
-            "email": email,
-            "password": senha
+                "email": email,
+                "password": senha
             })
 
             st.session_state.user = res.user
@@ -34,7 +64,11 @@ def tela_login():
 
         except Exception as e:
             st.error("Email ou senha inválidos")
-            st.write(e)  # ← deixe isso enquanto testa
+            st.caption(str(e))
+
+if not st.session_state.user:
+    tela_login()
+    st.stop()
 
 #Logout (sidebar)
 with st.sidebar:
@@ -165,34 +199,6 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
-
-# -------------------- Variáveis de ambiente --------------------
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY")
-
-if not SUPABASE_URL or not SUPABASE_ANON_KEY:
-    st.error("⚠️ Configure SUPABASE_URL e SUPABASE_ANON_KEY nos Secrets do Streamlit.")
-    st.stop()
-
-# -------------------- Cliente Supabase (cache) --------------------
-#@st.cache_resource
-#def get_supabase() -> Client:
-    #return create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
-
-#supabase = get_supabase()
-
-def get_supabase_auth():
-    if st.session_state.access_token:
-        return create_client(
-            SUPABASE_URL,
-            SUPABASE_ANON_KEY,
-            options={
-                "headers": {
-                    "Authorization": f"Bearer {st.session_state.access_token}"
-                }
-            }
-        )
-    return supabase
 
 # -------------------- Utilitários --------------------
 def mostrar_erro(ex: Exception, contexto: str = ""):
