@@ -4,6 +4,44 @@ import pandas as pd
 import streamlit as st
 from supabase import create_client, Client
 
+# -------------------- Sessão --------------------
+if "user" not in st.session_state:
+    st.session_state.user = None
+
+if "access_token" not in st.session_state:
+    st.session_state.access_token = None
+
+def tela_login():
+    st.title("🔐 Login")
+
+    email = st.text_input("Email")
+    senha = st.text_input("Senha", type="password")
+
+    if st.button("Entrar"):
+        try:
+            response = supabase.auth.sign_in_with_password({
+                "email": email,
+                "password": senha
+            })
+
+            st.session_state.user = response.user
+            st.session_state.access_token = response.session.access_token
+
+            st.success("Login realizado com sucesso!")
+            st.rerun()
+
+        except Exception:
+            st.error("Email ou senha inválidos")
+
+#Logout (sidebar)
+            with st.sidebar:
+    st.write(f"👤 {st.session_state.user.email}")
+    if st.button("Sair"):
+        supabase.auth.sign_out()
+        st.session_state.user = None
+        st.session_state.access_token = None
+        st.rerun()
+
 def is_vago(valor) -> bool:
     #Retorna True se o valor for 'VAGO' (ignorando espaços/caixa).
     return isinstance(valor, str) and valor.strip().upper() == "VAGO"
@@ -62,6 +100,11 @@ def ordenar_por_mes_e_designacao(df: pd.DataFrame) -> pd.DataFrame:
             df.drop(columns=c, inplace=True)
 
     return df
+
+#BLOQUEAR O APP SEM LOGIN
+if not st.session_state.user:
+    tela_login()
+    st.stop()
 
 # -------------------- Config da página --------------------
 st.set_page_config(
@@ -125,11 +168,26 @@ if not SUPABASE_URL or not SUPABASE_ANON_KEY:
     st.stop()
 
 # -------------------- Cliente Supabase (cache) --------------------
-@st.cache_resource
-def get_supabase() -> Client:
-    return create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
+#@st.cache_resource
+#def get_supabase() -> Client:
+    #return create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-supabase = get_supabase()
+#supabase = get_supabase()
+
+supabase = get_supabase_auth()
+
+def get_supabase_auth():
+    if st.session_state.access_token:
+        return create_client(
+            SUPABASE_URL,
+            SUPABASE_ANON_KEY,
+            options={
+                "headers": {
+                    "Authorization": f"Bearer {st.session_state.access_token}"
+                }
+            }
+        )
+    return supabase
 
 # -------------------- Utilitários --------------------
 def mostrar_erro(ex: Exception, contexto: str = ""):
