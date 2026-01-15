@@ -2,7 +2,9 @@ import os
 import io
 import pandas as pd
 import streamlit as st
-from supabase import create_client, Client
+from supabase import create_client
+import streamlit as st
+import os
 
 # -------------------- Sessão --------------------
 if "user" not in st.session_state:
