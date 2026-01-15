@@ -26,15 +26,15 @@ if not SUPABASE_URL or not SUPABASE_ANON_KEY:
 
 #supabase = get_supabase()
 
-# Cria o client com a ANON KEY
-supabase = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
+supabase_anon = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-# Se o usuário já fez login, aplica a sessão
-if st.session_state.access_token and st.session_state.refresh_token:
-    supabase.auth.set_session({
-        "access_token": st.session_state.access_token,
-        "refresh_token": st.session_state.refresh_token
-    })
+def get_supabase():
+    if st.session_state.access_token:
+        return create_client(
+            SUPABASE_URL,
+            st.session_state.access_token
+        )
+    return None
 
 #tela de login
 def tela_login():
