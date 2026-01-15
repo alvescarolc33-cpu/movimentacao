@@ -26,7 +26,7 @@ if not SUPABASE_URL or not SUPABASE_ANON_KEY:
 
 #supabase = get_supabase()
 
-def get_supabase():
+""""def get_supabase():
     if st.session_state.access_token:
         return create_client(
             SUPABASE_URL,
@@ -39,7 +39,9 @@ def get_supabase():
         )
     return create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-supabase = get_supabase()
+supabase = get_supabase()""""
+
+supabase = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 #tela de login (agora funciona)
 def tela_login():
