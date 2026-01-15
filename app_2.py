@@ -57,8 +57,6 @@ def tela_login():
             st.caption(str(e))
 
 # -------------------- Lógica de autenticação --------------------
-ensure_session_on_client()
-
 if not st.session_state.user:
     tela_login()
     st.stop()
