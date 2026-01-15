@@ -4,13 +4,6 @@ import pandas as pd
 import streamlit as st
 from supabase import create_client
 
-# -------------------- Sessão --------------------
-if "user" not in st.session_state:
-    st.session_state.user = None
-
-if "access_token" not in st.session_state:
-    st.session_state.access_token = None
-
 # -------------------- Variáveis de ambiente --------------------
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY")
@@ -25,50 +18,6 @@ def get_supabase():
     return create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 supabase_anon = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
-
-#tela de login
-def tela_login():
-    st.title("🔐 Login")
-
-    email = st.text_input("Email")
-    senha = st.text_input("Senha", type="password")
-
-    if st.button("Entrar"):
-        try:
-            res = supabase_anon.auth.sign_in_with_password({
-                "email": email,
-                "password": senha
-            })
-
-            st.session_state.user = res.user
-            st.session_state.access_token = res.session.access_token
-
-            st.success("Login realizado com sucesso!")
-            st.rerun()
-
-        except Exception as e:
-            st.error("Email ou senha inválidos")
-            st.caption(str(e))
-
-if not st.session_state.user:
-    tela_login()
-    st.stop()
-
-supabase = get_supabase()
-
-#Logout (sidebar)
-with st.sidebar:
-    if st.session_state.user:
-        st.write(f"👤 {st.session_state.user.email}")
-
-        if st.button("Sair"):
-            supabase.auth.sign_out()
-            st.session_state.user = None
-            st.session_state.access_token = None
-            st.rerun()
-
-    else:
-        st.write("🔒 Não autenticado")
 
 # -------------------- Consulta de teste à tabela ORGAOS --------------------
 st.header("Órgãos")
