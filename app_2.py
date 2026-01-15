@@ -4,38 +4,6 @@ import pandas as pd
 import streamlit as st
 from supabase import create_client, Client
 
-# -------------------- Variáveis de ambiente --------------------
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY")
-
-if not SUPABASE_URL or not SUPABASE_ANON_KEY:
-    st.error("⚠️ Configure SUPABASE_URL e SUPABASE_ANON_KEY nos Secrets do Streamlit.")
-    st.stop()
-
-# -------------------- Cliente Supabase (cache) --------------------
-@st.cache_resource
-def get_supabase() -> Client:
-    return create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
-    
-supabase = get_supabase()
-
-# -------------------- Consulta de teste à tabela ORGAOS --------------------
-st.header("Órgãos")
-
-try:
-    # Exemplo simples de leitura (ajuste o nome da tabela/colunas conforme seu schema)
-    resp = supabase.table("orgaos").select("*").limit(20).execute()
-    if getattr(resp, "error", None):
-        st.error(f"Erro na consulta: {getattr(resp.error, 'message', resp.error)}")
-    elif not resp.data:
-        st.warning("Não há Órgãos cadastrados ou houve erro ao carregar a lista.")
-    else:
-        st.success(f"Carregado: {len(resp.data)} órgão(s).")
-        st.dataframe(pd.DataFrame(resp.data))
-except Exception as e:
-    st.error("Falha inesperada ao consultar órgãos.")
-    st.caption(str(e))
-
 #--------------------Retorna True se o valor for 'VAGO' (ignorando espaços/caixa)/Normaliza para string sem espaços nas pontas (útil para comparar membro/mes).
 def is_vago(valor) -> bool:
     return isinstance(valor, str) and valor.strip().upper() == "VAGO"
@@ -146,6 +114,21 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
+# -------------------- Variáveis de ambiente --------------------
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY")
+
+if not SUPABASE_URL or not SUPABASE_ANON_KEY:
+    st.error("⚠️ Configure SUPABASE_URL e SUPABASE_ANON_KEY nos Secrets do Streamlit.")
+    st.stop()
+
+# -------------------- Cliente Supabase (cache) --------------------
+@st.cache_resource
+def get_supabase() -> Client:
+    return create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
+    
+supabase = get_supabase()
 
 # -------------------- Utilitários --------------------
 def mostrar_erro(ex: Exception, contexto: str = ""):
