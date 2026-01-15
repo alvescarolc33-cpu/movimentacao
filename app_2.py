@@ -163,7 +163,7 @@ def consultar_por_orgao(orgao: str) -> pd.DataFrame:
         q = (
             supabase
             .table("movimentacao")
-            .select("mes, membro, designacao, observacao")
+            .select("ano, mes, membro, designacao, observacao")
             .eq("orgao", orgao)
             # A ordem do Supabase aqui não garante cronologia, mas não atrapalha
             .order("mes", desc=False)
