@@ -21,7 +21,7 @@ if not SUPABASE_URL or not SUPABASE_ANON_KEY:
 
 # -------------------- Cliente Supabase (cache) --------------------
 @st.cache_resource
-def get_supabase() -> Client:
+def get_supabase():
     return create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 #tela de login
