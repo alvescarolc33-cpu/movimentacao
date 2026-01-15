@@ -19,10 +19,10 @@ def tela_login():
 
     if st.button("Entrar"):
         try:
-            response = supabase.auth.sign_in_with_password({
-                "email": email,
-                "password": senha
-            })
+            res = supabase.auth.sign_in_with_password({
+    "email": email,
+    "password": senha
+})
 
             st.session_state.user = response.user
             st.session_state.access_token = response.session.access_token
