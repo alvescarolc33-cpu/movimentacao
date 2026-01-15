@@ -24,7 +24,7 @@ if not SUPABASE_URL or not SUPABASE_ANON_KEY:
 def get_supabase():
     return create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-supabase = get_supabase()
+supabase_anon = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 #tela de login
 def tela_login():
