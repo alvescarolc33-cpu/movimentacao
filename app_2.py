@@ -28,12 +28,7 @@ DESIGNACAO_MAP = {
 }
 
 def ordenar_por_mes_e_designacao(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Ordena sem mudar o dtype das colunas (evita problemas com fillna/replace):
-    - Cria colunas auxiliares numéricas para a ordenação (mes e designacao).
-    - Ordena por essas colunas e por colunas de apoio (membro, orgao) se existirem.
-    - Remove as colunas auxiliares no fim.
-    """
+    #Ordena sem mudar o dtype das colunas (evita problemas com fillna/replace): - Cria colunas auxiliares numéricas para a ordenação (mes e designacao); - Ordena por essas colunas e por colunas de apoio (membro, orgao) se existirem; - Remove as colunas auxiliares no fim.
     if df.empty:
         return df
 
@@ -142,11 +137,10 @@ def mostrar_erro(ex: Exception, contexto: str = ""):
 
 @st.cache_data(ttl=300)
 def listar_orgaos_unicos() -> list:
-    """
-    Busca valores de 'orgao' e retorna lista única ordenada.
-    Observação: esta abordagem lê a coluna e deduplica no cliente.
-    Para bases muito grandes, considere criar uma VIEW com SELECT DISTINCT.
-    """
+    #Busca valores de 'orgao' e retorna lista única ordenada.
+    #Observação: esta abordagem lê a coluna e deduplica no cliente.
+    #Para bases muito grandes, considere criar uma VIEW com SELECT DISTINCT. Usando VIEW via SUPABASE.
+    
     try:
         res = supabase.table("movimentacao").select("orgao").execute()
         data = res.data if hasattr(res, "data") else []
@@ -158,7 +152,7 @@ def listar_orgaos_unicos() -> list:
 
 @st.cache_data(ttl=120)
 def consultar_por_orgao(orgao: str) -> pd.DataFrame:
-    """Retorna colunas mes, membro, designacao, observacao para o órgão selecionado."""
+    #Retorna colunas mes, membro, designacao, observacao para o órgão selecionado.
     try:
         q = (
             supabase
@@ -175,7 +169,7 @@ def consultar_por_orgao(orgao: str) -> pd.DataFrame:
         cols = [c for c in ["ano", "mes", "membro", "designacao", "observacao"] if c in df.columns]
         df = df[cols] if not df.empty else df
 
-        # ✅ Ordena pela ordem customizada
+        #Ordena pela ordem customizada
         df = ordenar_por_mes_e_designacao(df)
         return df
     except Exception as ex:
@@ -184,12 +178,7 @@ def consultar_por_orgao(orgao: str) -> pd.DataFrame:
 
 @st.cache_data(ttl=120)
 def consultar_membros_mes_outros_orgaos_pares(df_orgao: pd.DataFrame, orgao_sel: str) -> pd.DataFrame:
-    """
-    Usa os membros e meses da Tabela 1 e busca todas as ocorrências em outros órgãos,
-    mas só retorna registros que casem exatamente o PAR (membro, mes) da Tabela 1.
-    Exclui sempre membro = 'VAGO'.
-    """
-
+    #Usa os membros e meses da Tabela 1 e busca todas as ocorrências em outros órgãos, mas só retorna registros que casem exatamente o PAR (membro, mes) da Tabela 1. Exclui sempre membro = 'VAGO'.
     if df_orgao.empty or "membro" not in df_orgao.columns or "mes" not in df_orgao.columns:
         return pd.DataFrame([])
 
