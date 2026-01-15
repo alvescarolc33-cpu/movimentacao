@@ -182,9 +182,22 @@ if not SUPABASE_URL or not SUPABASE_ANON_KEY:
 
 #supabase = get_supabase()
 
-supabase = get_supabase_auth()
+#supabase = get_supabase_auth()
 
-def get_supabase_auth():
+#def get_supabase_auth():
+    #if st.session_state.access_token:
+        #return create_client(
+            #SUPABASE_URL,
+            #SUPABASE_ANON_KEY,
+            #options={
+                #"headers": {
+                    #"Authorization": f"Bearer {st.session_state.access_token}"
+                #}
+            #}
+        #)
+    #return supabase
+
+    def get_supabase_auth():
     if st.session_state.access_token:
         return create_client(
             SUPABASE_URL,
@@ -195,7 +208,11 @@ def get_supabase_auth():
                 }
             }
         )
-    return supabase
+    else:
+        return create_client(
+            SUPABASE_URL,
+            SUPABASE_ANON_KEY
+        )
 
 # -------------------- Utilitários --------------------
 def mostrar_erro(ex: Exception, contexto: str = ""):
