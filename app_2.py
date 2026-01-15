@@ -20,21 +20,11 @@ if not SUPABASE_URL or not SUPABASE_ANON_KEY:
     st.stop()
 
 # -------------------- Cliente Supabase (cache) --------------------
-#@st.cache_resource
-#def get_supabase() -> Client:
+@st.cache_resource
+def get_supabase() -> Client:
     #return create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-#supabase = get_supabase()
-
-supabase_anon = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
-
-def get_supabase():
-    if st.session_state.access_token:
-        return create_client(
-            SUPABASE_URL,
-            st.session_state.access_token
-        )
-    return None
+supabase = get_supabase()
 
 #tela de login
 def tela_login():
