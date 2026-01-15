@@ -40,7 +40,7 @@ def get_supabase():
         )
     return create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-    supabase = get_supabase()
+supabase = get_supabase()
 
 #tela de login (agora funciona)
 def tela_login():
