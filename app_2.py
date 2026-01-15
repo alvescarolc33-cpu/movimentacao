@@ -1,4 +1,3 @@
-
 import os
 import io
 import pandas as pd
@@ -12,12 +11,9 @@ if "user" not in st.session_state:
 if "access_token" not in st.session_state:
     st.session_state.access_token = None
 
-if "refresh_token" not in st.session_state:
-    st.session_state.refresh_token = None
-
 # -------------------- Variáveis de ambiente/Secrets --------------------
-SUPABASE_URL = st.secrets.get("SUPABASE_URL") or os.getenv("SUPABASE_URL")
-SUPABASE_ANON_KEY = st.secrets.get("SUPABASE_ANON_KEY") or os.getenv("SUPABASE_ANON_KEY")
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY")
 
 if not SUPABASE_URL or not SUPABASE_ANON_KEY:
     st.error("⚠️ Configure SUPABASE_URL e SUPABASE_ANON_KEY em st.secrets ou variáveis de ambiente.")
