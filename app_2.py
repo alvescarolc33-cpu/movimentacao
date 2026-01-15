@@ -59,6 +59,12 @@ def tela_login():
             st.session_state.user = res.user
             st.session_state.access_token = res.session.access_token
 
+            # 🔑 ESSENCIAL
+            supabase.auth.set_session(
+                res.session.access_token,
+                res.session.refresh_token
+            )
+
             st.success("Login realizado com sucesso!")
             st.rerun()
 
@@ -76,10 +82,11 @@ with st.sidebar:
         st.write(f"👤 {st.session_state.user.email}")
 
         if st.button("Sair"):
-            supabase.auth.sign_out()
-            st.session_state.user = None
-            st.session_state.access_token = None
-            st.rerun()
+    supabase.auth.sign_out()
+    st.session_state.user = None
+    st.session_state.access_token = None
+    st.rerun()
+
     else:
         st.write("🔒 Não autenticado")
 
