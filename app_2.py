@@ -20,19 +20,15 @@ if not SUPABASE_URL or not SUPABASE_ANON_KEY:
     st.stop()
 
 # -------------------- Cliente Supabase (cacheado) --------------------
-# Reaplica a sessão do usuário no client a cada rerun, se houver tokens
-def ensure_session_on_client():
-    if st.session_state.get("access_token") and st.session_state.get("refresh_token"):
-        try:
-            supabase.auth.set_session({
-                "access_token": st.session_state.access_token,
-                "refresh_token": st.session_state.refresh_token,
-            })
-        except Exception as e:
-            # Se der erro, zera a sessão para forçar novo login
-            st.session_state.user = None
-            st.session_state.access_token = None
-            st.session_state.refresh_token = None
+supabase_anon = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+def get_supabase():
+    if st.session_state.access_token:
+        return create_client(
+            SUPABASE_URL,
+            st.session_state.access_token
+        )
+    return None
 
 # -------------------- Tela de login --------------------
 def tela_login():
