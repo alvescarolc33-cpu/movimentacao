@@ -2,7 +2,7 @@ import os
 import io
 import pandas as pd
 import streamlit as st
-#from supabase import create_client, Client --- retirado diante das alterações do CHAT
+from supabase import create_client, Client
 
 #-------INCLUSÃO DO CHAT
 if "user" not in st.session_state:
@@ -141,8 +141,8 @@ def tela_login():
             st.success("Login realizado!")
             st.rerun()
 
-        except Exception:
-            st.error("Email ou senha inválidos")
+        except Exception as e:
+    st.error(f"Erro no login: {e}")
 
 # -------------------- Variáveis de ambiente --------------------
 SUPABASE_URL = os.getenv("SUPABASE_URL")
@@ -254,6 +254,11 @@ def consultar_membros_mes_outros_orgaos_pares(df_orgao: pd.DataFrame, orgao_sel:
 if not st.session_state.user:
     tela_login()
     st.stop()
+
+supabase = create_client(
+    SUPABASE_URL,
+    st.session_state.token
+)
 
 # -------------------- Interface --------------------
 #st.markdown("### Filtro")
