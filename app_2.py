@@ -141,7 +141,7 @@ def tela_login():
             st.success("Login realizado!")
             st.rerun()
 
-        except Exception as e:
+except Exception as e:
     st.error(f"Erro no login: {e}")
 
 # -------------------- Variáveis de ambiente --------------------
