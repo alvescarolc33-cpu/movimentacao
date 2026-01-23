@@ -4,6 +4,11 @@ import pandas as pd
 import streamlit as st
 from supabase import create_client, Client
 
+#-------INCLUSÃO DO CHAT
+if "user" not in st.session_state:
+    st.session_state.user = None
+    st.session_state.token = None
+
 #--------------------Retorna True se o valor for 'VAGO' (ignorando espaços/caixa)/Normaliza para string sem espaços nas pontas (útil para comparar membro/mes).
 def is_vago(valor) -> bool:
     return isinstance(valor, str) and valor.strip().upper() == "VAGO"
@@ -114,6 +119,31 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+#-------INCLUSÃO DO CHAT
+def tela_login():
+
+    st.title("🔐 Login")
+
+    email = st.text_input("Email")
+    senha = st.text_input("Senha", type="password")
+
+    if st.button("Entrar"):
+
+        try:
+            res = anon_client.auth.sign_in_with_password({
+                "email": email,
+                "password": senha
+            })
+
+            st.session_state.user = res.user
+            st.session_state.token = res.session.access_token
+
+            st.success("Login realizado!")
+            st.rerun()
+
+        except Exception:
+            st.error("Email ou senha inválidos")
+
 # -------------------- Variáveis de ambiente --------------------
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY")
@@ -122,12 +152,12 @@ if not SUPABASE_URL or not SUPABASE_ANON_KEY:
     st.error("⚠️ Configure SUPABASE_URL e SUPABASE_ANON_KEY nos Secrets do Streamlit.")
     st.stop()
 
-# -------------------- Cliente Supabase (cache) --------------------
+# -------------------- Cliente Supabase (cache) --------------------ALTERAÇÃO DO CHAT
 @st.cache_resource
-def get_supabase() -> Client:
+def get_anon_client():
     return create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
-    
-supabase = get_supabase()
+
+anon_client = get_anon_client()
 
 # -------------------- Utilitários --------------------
 def mostrar_erro(ex: Exception, contexto: str = ""):
@@ -219,6 +249,11 @@ def consultar_membros_mes_outros_orgaos_pares(df_orgao: pd.DataFrame, orgao_sel:
 
     df_outros.reset_index(drop=True, inplace=True)
     return df_outros
+
+#------INCLUSÃO DO CHAT
+if not st.session_state.user:
+    tela_login()
+    st.stop()
 
 # -------------------- Interface --------------------
 #st.markdown("### Filtro")
