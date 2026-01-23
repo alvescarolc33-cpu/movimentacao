@@ -159,6 +159,19 @@ def get_anon_client():
 
 anon_client = get_anon_client()
 
+from supabase import create_client
+
+def get_auth_client(token: str):
+    return create_client(
+        SUPABASE_URL,
+        token
+    )
+
+if st.session_state.token:
+    supabase = get_auth_client(st.session_state.token)
+else:
+    supabase = anon_client
+
 # -------------------- Utilitários --------------------
 def mostrar_erro(ex: Exception, contexto: str = ""):
     st.error(f"❌ Ocorreu um erro {('em ' + contexto) if contexto else ''}: {ex}")
