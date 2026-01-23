@@ -2,7 +2,7 @@ import os
 import io
 import pandas as pd
 import streamlit as st
-from supabase import create_client, Client
+#from supabase import create_client, Client --- retirado diante das alterações do CHAT
 
 #-------INCLUSÃO DO CHAT
 if "user" not in st.session_state:
