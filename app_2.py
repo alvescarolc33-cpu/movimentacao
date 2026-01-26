@@ -4,6 +4,9 @@ import pandas as pd
 import streamlit as st
 from supabase import create_client, Client
 
+supabase_client = get_supabase()
+print(supabase_client)
+
 #-------INCLUSÃO DO CHAT
 if "user" not in st.session_state:
     st.session_state.user = None
@@ -129,7 +132,6 @@ if not SUPABASE_URL or not SUPABASE_ANON_KEY:
 
 #-------INCLUSÃO DO CHAT
 def tela_login():
-    supabase = get_supabase()
     st.title("🔐 Login")
 
     email = st.text_input("Email")
