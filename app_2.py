@@ -127,6 +127,24 @@ if not SUPABASE_URL or not SUPABASE_ANON_KEY:
     st.error("⚠️ Configure SUPABASE_URL e SUPABASE_ANON_KEY nos Secrets do Streamlit.")
     st.stop()
 
+# -------------------- Cliente Supabase (cache) --------------------ALTERAÇÃO DO CHAT
+
+# from supabase import create_client
+
+@st.cache_resource
+def get_anon_client():
+    return create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+anon_client = get_anon_client()
+
+def get_auth_client():
+    if "token" in st.session_state and st.session_state.token:
+        return create_client(SUPABASE_URL, st.session_state.token)
+    return anon_client
+
+def get_supabase():
+    return get_auth_client()
+
 #-------INCLUSÃO DO CHAT
 def tela_login():
 
@@ -166,24 +184,6 @@ if "user" not in st.session_state:
 if not st.session_state.user:
     tela_login()
     st.stop()
-
-# -------------------- Cliente Supabase (cache) --------------------ALTERAÇÃO DO CHAT
-
-# from supabase import create_client
-
-@st.cache_resource
-def get_anon_client():
-    return create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
-
-anon_client = get_anon_client()
-
-def get_auth_client():
-    if "token" in st.session_state and st.session_state.token:
-        return create_client(SUPABASE_URL, st.session_state.token)
-    return anon_client
-
-def get_supabase():
-    return get_auth_client()
 
 # -------------------- Utilitários --------------------
 def mostrar_erro(ex: Exception, contexto: str = ""):
