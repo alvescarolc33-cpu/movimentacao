@@ -2,7 +2,7 @@ import os
 import io
 import pandas as pd
 import streamlit as st
-from supabase import create_client
+from supabase import create_client, Client
 from supabase.lib.client_options import ClientOptions
 
 #-------INCLUSÃO DO CHAT
