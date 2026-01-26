@@ -4,6 +4,8 @@ import pandas as pd
 import streamlit as st
 from supabase import create_client, Client
 
+supabase = get_supabase()
+
 #-------INCLUSÃO DO CHAT
 if "user" not in st.session_state:
     st.session_state.user = None
@@ -276,9 +278,6 @@ def consultar_membros_mes_outros_orgaos_pares(df_orgao: pd.DataFrame, orgao_sel:
 if not st.session_state.user:
     tela_login()
     st.stop()
-
-supabase = get_supabase()
-print(supabase)
 
 # -------------------- Interface --------------------
 #st.markdown("### Filtro")
