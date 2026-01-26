@@ -130,13 +130,17 @@ def tela_login():
     if st.button("Entrar"):
 
         try:
-            res = anon_client.auth.sign_in_with_password({
+            res = supabase.auth.sign_in_with_password({
                 "email": email,
                 "password": senha
             })
 
+            supabase.auth.set_session(
+            res.session.access_token,
+            res.session.refresh_token
+            )
+
             st.session_state.user = res.user
-            st.session_state.token = res.session.access_token
 
             st.success("Login realizado!")
             st.rerun()
@@ -161,12 +165,10 @@ def get_anon_client():
 
 anon_client = get_anon_client()
 
-
 def get_auth_client():
     if "token" in st.session_state and st.session_state.token:
         return create_client(SUPABASE_URL, st.session_state.token)
     return anon_client
-
 
 def get_supabase():
     return get_auth_client()
