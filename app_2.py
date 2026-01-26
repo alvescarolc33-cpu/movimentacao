@@ -3,7 +3,6 @@ import io
 import pandas as pd
 import streamlit as st
 from supabase import create_client, Client
-from supabase.lib.client_options import ClientOptions
 
 #-------INCLUSÃO DO CHAT
 if "user" not in st.session_state:
@@ -136,20 +135,17 @@ if not SUPABASE_URL or not SUPABASE_ANON_KEY:
 def get_anon_client():
     return create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-anon_client = get_anon_client()
-
 def get_auth_client():
-
+    st.write("Token:", st.session_state.token[:30])
     if "token" in st.session_state and st.session_state.token:
         return create_client(
             SUPABASE_URL,
             SUPABASE_ANON_KEY,
-            options=ClientOptions(
-                auto_refresh_token = False,
-                persist_session = False,
-            )
+            headers={
+                "Authorization": f"Bearer {st.session_state.token}"
+            }
         )
-    return anon_client
+    return get_anon_client()
 
 def get_supabase():
     return get_auth_client()
@@ -186,7 +182,7 @@ if "user" not in st.session_state:
 if not st.session_state.user:
     tela_login()
     st.stop()
-st.write("Token:", st.session_state.token[:30])
+
 supabase = get_supabase()
 
 # -------------------- Utilitários --------------------
