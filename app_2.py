@@ -142,11 +142,15 @@ def get_auth_client():
         return create_client(
             SUPABASE_URL,
             SUPABASE_ANON_KEY,
-            headers={
-                "Authorization": f"Bearer {st.session_state.token}"
+            options={
+                "global": {
+                    "headers": {
+                        "Authorization": f"Bearer {st.session_state.token}"
+                    }
+                }
             }
         )
-    return anon_client
+    return get_anon_client()
 
 def get_supabase():
     return get_auth_client()
@@ -183,7 +187,7 @@ if "user" not in st.session_state:
 if not st.session_state.user:
     tela_login()
     st.stop()
-
+st.write("Token:", st.session_state.token[:30])
 supabase = get_supabase()
 
 # -------------------- Utilitários --------------------
