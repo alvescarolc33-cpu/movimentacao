@@ -185,13 +185,14 @@ if not st.session_state.user:
     tela_login()
     st.stop()
 
+supabase = get_supabase()
+
 # -------------------- Utilitários --------------------
 def mostrar_erro(ex: Exception, contexto: str = ""):
     st.error(f"❌ Ocorreu um erro {('em ' + contexto) if contexto else ''}: {ex}")
 
 #@st.cache_data(ttl=600)
 def listar_orgaos_unicos():
-    supabase = get_supabase()
     res = supabase.table("orgaos_distintos").select("orgao").execute()
     return [r["orgao"] for r in res.data or []]
 
