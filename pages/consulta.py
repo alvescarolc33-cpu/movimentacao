@@ -7,7 +7,8 @@ from utils.helpers import (
     is_vago,
     normalize_str,
     ordenar_por_mes_e_designacao,
-    consultar_membros_mes_outros_orgaos_pares
+    consultar_membros_mes_outros_orgaos_pares,
+    listar_orgaos_unicos
 )
 
 st.markdown('<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">Filtro</h3>', unsafe_allow_html=True)
