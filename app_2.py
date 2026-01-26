@@ -191,6 +191,7 @@ def mostrar_erro(ex: Exception, contexto: str = ""):
 
 #@st.cache_data(ttl=600)
 def listar_orgaos_unicos():
+    supabase = get_supabase()
     res = supabase.table("orgaos_distintos").select("orgao").execute()
     return [r["orgao"] for r in res.data or []]
 
