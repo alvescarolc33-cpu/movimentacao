@@ -154,8 +154,6 @@ def get_auth_client():
         )
     return get_anon_client()
 
-admin_auth_client = supabase.auth.admin
-
 def get_supabase():
     return get_auth_client()
 
