@@ -133,7 +133,9 @@ if not SUPABASE_URL or not SUPABASE_ANON_KEY:
 
 @st.cache_resource
 def get_anon_client():
-    return create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
+    return create_client(SUPABASE_URL, SUPABASE_ANON_KEY, headers={
+        "Authorization": f"Bearer {token}"
+    })
 
 anon_client = get_anon_client()
 
