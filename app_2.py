@@ -143,8 +143,8 @@ def get_auth_client():
     if "token" in st.session_state and st.session_state.token:
         options = ClientOptions(
             headers={
-                auto_refresh_token=False,
-                persist_session=False,
+                auto_refresh_token: False,
+                persist_session: False,
             }
         )
         return create_client(
