@@ -177,15 +177,17 @@ def mostrar_erro(ex: Exception, contexto: str = ""):
     st.error(f"❌ Ocorreu um erro {('em ' + contexto) if contexto else ''}: {ex}")
 
 @st.cache_data(ttl=600)
-def listar_orgaos_unicos() -> list:
-    res = supabase.table("vw_orgaos_distintos").select("orgao").execute()
+def listar_orgaos_unicos(token: str):
+    client = get_auth_client(token)
+    res = client.table("vw_orgaos_distintos").select("orgao").execute()
     return [row["orgao"] for row in res.data or []]
 
 @st.cache_data(ttl=120)
-def consultar_por_orgao(orgao: str) -> pd.DataFrame:
+def consultar_por_orgao(orgao: str, token: str) -> pd.DataFrame:
+    client = get_auth_client(token)
     try:
         q = (
-            supabase
+            client
             .table("movimentacao")
             .select("ano, mes, membro, designacao, observacao")
             .eq("orgao", orgao)
@@ -277,7 +279,7 @@ supabase = create_client(
 #st.markdown("### Filtro")
 st.markdown('<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">Filtro</h3>', unsafe_allow_html=True)
 
-orgaos = listar_orgaos_unicos()
+orgaos = listar_orgaos_unicos(st.session_state.token)
 df_orgao = pd.DataFrame()  # evita NameError
 
 col1, col2 = st.columns([3, 1])
@@ -297,7 +299,7 @@ with col2:
 
 if consultar and orgao_sel:
     # ---- Tabela 1: resultados do órgão selecionado ----
-    df_orgao = consultar_por_orgao(orgao_sel)
+    df_orgao = consultar_por_orgao(orgao_sel, st.session_state.token)
 
     #st.subheader(f"Resultado: **{orgao_sel}**")
     st.markdown(
