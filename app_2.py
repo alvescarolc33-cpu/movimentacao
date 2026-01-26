@@ -138,16 +138,20 @@ def tela_login():
     if st.button("Entrar"):
 
         try:
+            # 👇 PEGA CLIENTE
             supabase = get_supabase()
+
             res = supabase.auth.sign_in_with_password({
                 "email": email,
                 "password": senha
             })
-            supabase.auth.set_session(
-            res.session.access_token,
-            res.session.refresh_token
-            )
 
+            if not res.session:
+                st.error("Usuário ou senha inválidos")
+                return
+
+            # 👇 SALVA TOKEN
+            st.session_state.token = res.session.access_token
             st.session_state.user = res.user
 
             st.success("Login realizado!")
