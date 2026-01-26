@@ -13,6 +13,21 @@ from utils.helpers import (
 
 
 def pagina_consulta():
+    
+    st.set_page_config(
+        page_title="Consulta por Órgão",
+        page_icon="🏛️",
+        layout="wide",
+        menu_items={
+            "Get Help": None,
+            "Report a bug": None,
+            "About": "Consulta de Membros • v1.0",
+        },
+    )
+
+    # 1) Título
+    st.title("🏛️ Consulta de Membros por Órgão")
+    st.caption("Selecione um Órgão. Em seguida, o app busca automaticamente onde os Membros aparecem no(s) mês(es).")
     st.markdown(
         '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">Filtro</h3>',
         unsafe_allow_html=True,
