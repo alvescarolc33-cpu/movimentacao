@@ -176,7 +176,7 @@ def mostrar_erro(ex: Exception, contexto: str = ""):
 #@st.cache_data(ttl=600)
 def listar_orgaos_unicos():
     #client = get_auth_client(token)
-    res = client.table("vw_orgaos_distintos").select("orgao").execute()
+    res = supabase.table("vw_orgaos_distintos").select("orgao").execute()
     return [row["orgao"] for row in res.data or []]
 
 #@st.cache_data(ttl=120)
