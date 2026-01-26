@@ -136,7 +136,6 @@ def get_anon_client():
     return create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 def get_auth_client():
-    st.write("Token:", st.session_state.token[:30])
     if "token" in st.session_state and st.session_state.token:
         return create_client(
             SUPABASE_URL,
