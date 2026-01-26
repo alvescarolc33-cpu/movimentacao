@@ -143,7 +143,8 @@ def get_auth_client():
     if "token" in st.session_state and st.session_state.token:
         options = ClientOptions(
             headers={
-                "Authorization": f"Bearer {st.session_state.token}"
+                auto_refresh_token=False,
+                persist_session=False,
             }
         )
         return create_client(
@@ -152,6 +153,8 @@ def get_auth_client():
             options=options
         )
     return get_anon_client()
+
+admin_auth_client = supabase.auth.admin
 
 def get_supabase():
     return get_auth_client()
