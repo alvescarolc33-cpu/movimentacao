@@ -138,6 +138,7 @@ def tela_login():
     if st.button("Entrar"):
 
         try:
+            supabase = get_supabase()
             res = supabase.auth.sign_in_with_password({
                 "email": email,
                 "password": senha
@@ -153,7 +154,7 @@ def tela_login():
             st.rerun()
 
         except Exception as e:
-            st.error(f"Erro no login: {email, senha} {e}")
+            st.error(f"Erro no login: {e}")
 
 if "user" not in st.session_state:
     st.session_state.user = None
