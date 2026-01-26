@@ -153,21 +153,23 @@ if not SUPABASE_URL or not SUPABASE_ANON_KEY:
     st.stop()
 
 # -------------------- Cliente Supabase (cache) --------------------ALTERAÇÃO DO CHAT
+from supabase import create_client
+
 @st.cache_resource
 def get_anon_client():
     return create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 anon_client = get_anon_client()
 
-from supabase import create_client
 
-def get_supabase_client():
+def get_auth_client():
     if "token" in st.session_state and st.session_state.token:
         return create_client(SUPABASE_URL, st.session_state.token)
-    else:
-        return create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
+    return anon_client
 
-supabase = get_supabase_client()
+
+def get_supabase():
+    return get_auth_client()
 
 # -------------------- Utilitários --------------------
 def mostrar_erro(ex: Exception, contexto: str = ""):
@@ -266,10 +268,7 @@ if not st.session_state.user:
     tela_login()
     st.stop()
 
-supabase = create_client(
-    SUPABASE_URL,
-    st.session_state.token
-)
+supabase = get_supabase()
 
 # -------------------- Interface --------------------
 #st.markdown("### Filtro")
@@ -295,7 +294,7 @@ with col2:
 
 if consultar and orgao_sel:
     # ---- Tabela 1: resultados do órgão selecionado ----
-    df_orgao = consultar_por_orgao(orgao)
+    df_orgao = consultar_por_orgao(orgao_sel)
 
     #st.subheader(f"Resultado: **{orgao_sel}**")
     st.markdown(
