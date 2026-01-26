@@ -2,7 +2,8 @@ import os
 import io
 import pandas as pd
 import streamlit as st
-from supabase import create_client, Client
+from supabase import create_client
+from supabase.lib.client_options import ClientOptions
 
 #-------INCLUSÃO DO CHAT
 if "user" not in st.session_state:
@@ -138,17 +139,17 @@ def get_anon_client():
 anon_client = get_anon_client()
 
 def get_auth_client():
+
     if "token" in st.session_state and st.session_state.token:
+        options = ClientOptions(
+            headers={
+                "Authorization": f"Bearer {st.session_state.token}"
+            }
+        )
         return create_client(
             SUPABASE_URL,
             SUPABASE_ANON_KEY,
-            options={
-                "global": {
-                    "headers": {
-                        "Authorization": f"Bearer {st.session_state.token}"
-                    }
-                }
-            }
+            options=options
         )
     return get_anon_client()
 
