@@ -161,53 +161,50 @@ anon_client = get_anon_client()
 
 from supabase import create_client
 
-def get_auth_client(token: str):
-    return create_client(
-        SUPABASE_URL,
-        token
-    )
+def get_supabase_client():
+    if "token" in st.session_state and st.session_state.token:
+        return create_client(SUPABASE_URL, st.session_state.token)
+    else:
+        return create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-if st.session_state.token:
-    supabase = get_auth_client(st.session_state.token)
-else:
-    supabase = anon_client
+supabase = get_supabase_client()
 
 # -------------------- Utilitários --------------------
 def mostrar_erro(ex: Exception, contexto: str = ""):
     st.error(f"❌ Ocorreu um erro {('em ' + contexto) if contexto else ''}: {ex}")
 
-@st.cache_data(ttl=600)
-def listar_orgaos_unicos(token: str):
-    client = get_auth_client(token)
+#@st.cache_data(ttl=600)
+def listar_orgaos_unicos():
+    #client = get_auth_client(token)
     res = client.table("vw_orgaos_distintos").select("orgao").execute()
     return [row["orgao"] for row in res.data or []]
 
-@st.cache_data(ttl=120)
-def consultar_por_orgao(orgao: str, token: str) -> pd.DataFrame:
-    client = get_auth_client(token)
+#@st.cache_data(ttl=120)
+def consultar_por_orgao(orgao: str) -> pd.DataFrame:
     try:
         q = (
-            client
+            supabase
             .table("movimentacao")
             .select("ano, mes, membro, designacao, observacao")
             .eq("orgao", orgao)
-            .order("mes", desc=False)
-            .order("membro", desc=False)
+            .order("mes")
+            .order("membro")
         )
-        res = q.execute()
-        rows = res.data if hasattr(res, "data") else []
-        df = pd.DataFrame(rows)
-        cols = [c for c in ["ano", "mes", "membro", "designacao", "observacao"] if c in df.columns]
-        df = df[cols] if not df.empty else df
 
-        #Ordena pela ordem customizada
+        res = q.execute()
+        df = pd.DataFrame(res.data or [])
+
+        if df.empty:
+            return df
+
         df = ordenar_por_mes_e_designacao(df)
         return df
+
     except Exception as ex:
         mostrar_erro(ex, "na consulta por órgão")
         return pd.DataFrame([])
 
-@st.cache_data(ttl=120)
+#@st.cache_data(ttl=120)
 def consultar_membros_mes_outros_orgaos_pares(df_orgao: pd.DataFrame, orgao_sel: str) -> pd.DataFrame:
     #Usa os membros e meses da Tabela 1 e busca todas as ocorrências em outros órgãos, mas só retorna registros que casem exatamente o PAR (membro, mes) da Tabela 1. Exclui sempre membro = 'VAGO'.
     if df_orgao.empty or "membro" not in df_orgao.columns or "mes" not in df_orgao.columns:
@@ -279,7 +276,7 @@ supabase = create_client(
 #st.markdown("### Filtro")
 st.markdown('<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">Filtro</h3>', unsafe_allow_html=True)
 
-orgaos = listar_orgaos_unicos(st.session_state.token)
+orgaos = listar_orgaos_unicos()
 df_orgao = pd.DataFrame()  # evita NameError
 
 col1, col2 = st.columns([3, 1])
@@ -299,7 +296,7 @@ with col2:
 
 if consultar and orgao_sel:
     # ---- Tabela 1: resultados do órgão selecionado ----
-    df_orgao = consultar_por_orgao(orgao_sel, st.session_state.token)
+    df_orgao = consultar_por_orgao(orgao)
 
     #st.subheader(f"Resultado: **{orgao_sel}**")
     st.markdown(
