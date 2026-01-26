@@ -153,6 +153,7 @@ def tela_login():
             st.rerun()
 
         except Exception as e:
+            print(email, senha)
             st.error(f"Erro no login: {e}")
 
 if "user" not in st.session_state:
