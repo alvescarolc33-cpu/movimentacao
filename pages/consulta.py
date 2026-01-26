@@ -1,7 +1,6 @@
 import io
 import pandas as pd
 import streamlit as st
-from services.supabase_client import get_supabase
 
 from utils.helpers import (
     is_vago,

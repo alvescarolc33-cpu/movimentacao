@@ -1,4 +1,7 @@
 import pandas as pd
+from services.supabase_client import get_supabase
+
+supabase = get_supabase()
 
 #-------------------- VAGO / NORMALIZAÇÃO
 
