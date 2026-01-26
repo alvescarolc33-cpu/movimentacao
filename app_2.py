@@ -141,18 +141,15 @@ anon_client = get_anon_client()
 def get_auth_client():
 
     if "token" in st.session_state and st.session_state.token:
-        options = ClientOptions(
-            headers={
-                auto_refresh_token: False,
-                persist_session: False,
-            }
-        )
         return create_client(
             SUPABASE_URL,
             SUPABASE_ANON_KEY,
-            options=options
+            options=ClientOptions(
+                auto_refresh_token: False,
+                persist_session: False,
+            )
         )
-    return get_anon_client()
+    return anon_client
 
 def get_supabase():
     return get_auth_client()
