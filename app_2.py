@@ -162,6 +162,7 @@ def tela_login():
     if st.button("Entrar"):
 
         try:
+            supabase = get_supabase()
             res = supabase.auth.sign_in_with_password({
                 "email": email,
                 "password": senha
