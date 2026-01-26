@@ -8,6 +8,7 @@ from utils.helpers import (
     ordenar_por_mes_e_designacao,
     consultar_membros_mes_outros_orgaos_pares,
     listar_orgaos_unicos,
+    consultar_por_orgao
 )
 
 
