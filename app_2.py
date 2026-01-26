@@ -129,7 +129,7 @@ if not SUPABASE_URL or not SUPABASE_ANON_KEY:
 
 #-------INCLUSÃO DO CHAT
 def tela_login():
-
+    supabase = get_supabase()
     st.title("🔐 Login")
 
     email = st.text_input("Email")
@@ -276,8 +276,6 @@ def consultar_membros_mes_outros_orgaos_pares(df_orgao: pd.DataFrame, orgao_sel:
 if not st.session_state.user:
     tela_login()
     st.stop()
-
-supabase = get_supabase()
 
 # -------------------- Interface --------------------
 #st.markdown("### Filtro")
