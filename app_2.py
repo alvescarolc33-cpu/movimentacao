@@ -145,8 +145,8 @@ def get_auth_client():
             SUPABASE_URL,
             SUPABASE_ANON_KEY,
             options=ClientOptions(
-                auto_refresh_token: False,
-                persist_session: False,
+                auto_refresh_token = False,
+                persist_session = False,
             )
         )
     return anon_client
