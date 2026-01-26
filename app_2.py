@@ -4,8 +4,6 @@ import pandas as pd
 import streamlit as st
 from supabase import create_client, Client
 
-supabase = get_supabase()
-
 #-------INCLUSÃO DO CHAT
 if "user" not in st.session_state:
     st.session_state.user = None
@@ -144,7 +142,6 @@ def tela_login():
                 "email": email,
                 "password": senha
             })
-
             supabase.auth.set_session(
             res.session.access_token,
             res.session.refresh_token
@@ -166,7 +163,8 @@ if not st.session_state.user:
     st.stop()
 
 # -------------------- Cliente Supabase (cache) --------------------ALTERAÇÃO DO CHAT
-from supabase import create_client
+
+# from supabase import create_client
 
 @st.cache_resource
 def get_anon_client():
@@ -278,6 +276,8 @@ def consultar_membros_mes_outros_orgaos_pares(df_orgao: pd.DataFrame, orgao_sel:
 if not st.session_state.user:
     tela_login()
     st.stop()
+
+supabase = get_supabase()
 
 # -------------------- Interface --------------------
 #st.markdown("### Filtro")
