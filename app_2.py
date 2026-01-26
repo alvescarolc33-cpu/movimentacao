@@ -175,9 +175,8 @@ def mostrar_erro(ex: Exception, contexto: str = ""):
 
 #@st.cache_data(ttl=600)
 def listar_orgaos_unicos():
-    #client = get_auth_client(token)
-    res = supabase.table("vw_orgaos_distintos").select("orgao").execute()
-    return [row["orgao"] for row in res.data or []]
+    res = supabase.table("orgaos_distintos").select("orgao").execute()
+    return [r["orgao"] for r in res.data or []]
 
 #@st.cache_data(ttl=120)
 def consultar_por_orgao(orgao: str) -> pd.DataFrame:
