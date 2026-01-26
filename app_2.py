@@ -156,6 +156,13 @@ def tela_login():
         except Exception as e:
             st.error(f"Erro no login: {e}")
 
+if "user" not in st.session_state:
+    st.session_state.user = None
+
+if not st.session_state.user:
+    tela_login()
+    st.stop()
+
 # -------------------- Cliente Supabase (cache) --------------------ALTERAÇÃO DO CHAT
 from supabase import create_client
 
@@ -271,6 +278,7 @@ if not st.session_state.user:
     st.stop()
 
 supabase = get_supabase()
+print(supabase)
 
 # -------------------- Interface --------------------
 #st.markdown("### Filtro")
