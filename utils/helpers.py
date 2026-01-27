@@ -1,6 +1,4 @@
 import pandas as pd
-import streamlit as st
-
 from services.supabase_client import get_supabase
 
 supabase = get_supabase()
@@ -69,7 +67,6 @@ def mostrar_erro(ex: Exception, contexto: str = ""):
     st.error(f"❌ Ocorreu um erro {('em ' + contexto) if contexto else ''}: {ex}")
 
 def listar_orgaos_unicos():
-    supabase = get_supabase()
     res = supabase.table("orgaos_distintos").select("orgao").execute()
     return [r["orgao"] for r in res.data or []]
 

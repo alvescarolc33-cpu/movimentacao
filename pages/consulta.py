@@ -20,7 +20,7 @@ def pagina_consulta():
     #     unsafe_allow_html=True,
     # )
 
-    orgaos = listar_orgaos_unicos()    
+    orgaos = [1,2,3,4]
     df_orgao = pd.DataFrame()  # evita NameError
 
     col1, col2 = st.columns([3, 1])
