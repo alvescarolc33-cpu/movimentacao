@@ -69,11 +69,13 @@ def mostrar_erro(ex: Exception, contexto: str = ""):
     st.error(f"❌ Ocorreu um erro {('em ' + contexto) if contexto else ''}: {ex}")
 
 def listar_orgaos_unicos():
+    supabase = get_supabase()
     res = supabase.table("orgaos_distintos").select("orgao").execute()
     return [r["orgao"] for r in res.data or []]
 
 def consultar_por_orgao(orgao: str) -> pd.DataFrame:
     try:
+        supabase = get_supabase()
         q = (
             supabase
             .table("movimentacao")
@@ -97,6 +99,7 @@ def consultar_por_orgao(orgao: str) -> pd.DataFrame:
         return pd.DataFrame([])
 
 def consultar_membros_mes_outros_orgaos_pares(df_orgao: pd.DataFrame, orgao_sel: str) -> pd.DataFrame:
+    supabase = get_supabase()
     #Usa os membros e meses da Tabela 1 e busca todas as ocorrências em outros órgãos, mas só retorna registros que casem exatamente o PAR (membro, mes) da Tabela 1. Exclui sempre membro = 'VAGO'.
 
     if df_orgao.empty or "membro" not in df_orgao.columns or "mes" not in df_orgao.columns:
