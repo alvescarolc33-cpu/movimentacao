@@ -1,4 +1,5 @@
 import pandas as pd
+import streamlit as st
 from services.supabase_client import get_supabase
 
 #supabase = get_supabase()
@@ -114,7 +115,7 @@ def consultar_membros_mes_outros_orgaos_pares(df_orgao: pd.DataFrame, orgao_sel:
     #Usa os membros e meses da Tabela 1 e busca todas as ocorrências em outros órgãos, mas só retorna registros que casem exatamente o PAR (membro, mes) da Tabela 1. Exclui sempre membro = 'VAGO'.
     
     supabase = get_supabase()   # <-- AQUI
-    
+
     if df_orgao.empty or "membro" not in df_orgao.columns or "mes" not in df_orgao.columns:
         return pd.DataFrame([])
 
