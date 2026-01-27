@@ -13,12 +13,12 @@ from utils.helpers import (
 
 def pagina_consulta():
 
-    st.title("🏛️ Consulta de Membros por Órgão")
-    st.caption("Selecione um Órgão. Em seguida, o app busca automaticamente onde os Membros aparecem no(s) mês(es).")
-    st.markdown(
-        '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">Filtro</h3>',
-        unsafe_allow_html=True,
-    )
+    # st.title("🏛️ Consulta de Membros por Órgão")
+    # st.caption("Selecione um Órgão. Em seguida, o app busca automaticamente onde os Membros aparecem no(s) mês(es).")
+    # st.markdown(
+    #     '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">Filtro</h3>',
+    #     unsafe_allow_html=True,
+    # )
 
     orgaos = listar_orgaos_unicos()
     df_orgao = pd.DataFrame()  # evita NameError
