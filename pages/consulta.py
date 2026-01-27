@@ -21,13 +21,13 @@ def pagina_consulta():
     # )
 
     orgaos = listar_orgaos_unicos()
+    st.write(orgaos)
     df_orgao = pd.DataFrame()  # evita NameError
 
     col1, col2 = st.columns([3, 1])
 
     with col1:
         if not orgaos:
-            st.write(orgaos)
             st.warning("Não há Órgãos cadastrados ou houve erro ao carregar a lista.")
             orgao_sel = None
         else:
