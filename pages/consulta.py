@@ -27,6 +27,7 @@ def pagina_consulta():
 
     with col1:
         if not orgaos:
+            st.write(orgaos)
             st.warning("Não há Órgãos cadastrados ou houve erro ao carregar a lista.")
             orgao_sel = None
         else:
