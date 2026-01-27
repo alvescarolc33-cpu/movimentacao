@@ -3,7 +3,7 @@ import streamlit as st
 
 from services.supabase_client import get_supabase
 
-# supabase = get_supabase()
+supabase = get_supabase()
 
 #-------------------- VAGO / NORMALIZAÇÃO
 def is_vago(valor) -> bool:
