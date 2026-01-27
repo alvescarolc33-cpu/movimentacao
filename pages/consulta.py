@@ -155,16 +155,8 @@ def consultar_membros_mes_outros_orgaos_pares(df_orgao: pd.DataFrame, orgao_sel:
 # --------------------------- Interface Página
 
 def pagina_consulta():
-
-    # st.title("🏛️ Consulta de Membros por Órgão")
-    # st.caption("Selecione um Órgão. Em seguida, o app busca automaticamente onde os Membros aparecem no(s) mês(es).")
-    # st.markdown(
-    #     '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">Filtro</h3>',
-    #     unsafe_allow_html=True,
-    # )
-
     orgaos = listar_orgaos_unicos()
-    df_orgao = pd.DataFrame()  # evita NameError
+    df_orgao = pd.DataFrame()
 
     col1, col2 = st.columns([3, 1])
 
@@ -184,10 +176,8 @@ def pagina_consulta():
         consultar = st.button("🔎 Consultar", use_container_width=True)
 
     if consultar and orgao_sel:
-        # ---- Tabela 1: resultados do órgão selecionado ----
+        # ---- Tabela 1: resultados do órgão selecionado
         df_orgao = consultar_por_orgao(orgao_sel)
-
-        # st.subheader(f"Resultado: **{orgao_sel}**")
         st.markdown(
             f'<h3 style="font-size:1.1rem;margin:0;">Resultado: <strong>{orgao_sel}</strong></h3>',
             unsafe_allow_html=True,
@@ -197,7 +187,7 @@ def pagina_consulta():
         else:
             st.dataframe(df_orgao, use_container_width=True)
 
-        # ---- Tabela 2: mesmos membros no(s) mesmo(s) mês(es) em outros órgãos (pareamento exato) ----
+        # ---- Tabela 2: mesmos membros no(s) mesmo(s) mês(es) em outros órgãos (pareamento exato)
         st.markdown(
             '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">🔁 Ocorrências em outros Órgãos</h3>',
             unsafe_allow_html=True,
@@ -210,7 +200,7 @@ def pagina_consulta():
         else:
             st.dataframe(df_outros, use_container_width=True)
 
-        # -------------------- Downloads ÚNICOS --------------------
+        # -------------------- Downloads ÚNICOS
         st.divider()
         st.markdown(
             '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">⬇️ Exportação consolidada</h3>',
@@ -260,7 +250,7 @@ def pagina_consulta():
                 use_container_width=True,
             )
 
-        # -------------------- Análises de Auxílios --------------------
+        # -------------------- Análises de Auxílios
         st.divider()
         st.markdown(
             '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">📊 Análises de Auxílios (Órgão selecionado)</h3>',
@@ -331,7 +321,7 @@ def pagina_consulta():
             )
             st.dataframe(qtd_por_mes, use_container_width=True)
 
-        # -------------------- Análise: designacao == 'DESIGNAÇÃO' --------------------
+        # -------------------- Análise: designacao == 'DESIGNAÇÃO'
         st.divider()
         st.markdown(
             '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">🧾 Ocorrências com Designação</h3>',
@@ -398,7 +388,7 @@ def pagina_consulta():
             )
             st.dataframe(qtd_designacao_mes, use_container_width=True)
 
-        # -------------------- Análise: membro == 'VAGO' --------------------
+        # -------------------- Análise: membro == 'VAGO'
         st.divider()
         st.markdown(
             '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">🚫 Ocorrências com Órgão VAGO</h3>',
