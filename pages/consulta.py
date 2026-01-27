@@ -20,24 +20,23 @@ def pagina_consulta():
     #     unsafe_allow_html=True,
     # )
 
-    orgaos = listar_orgaos_unicos()
-    if orgaos :
-        st.write(orgaos)
-    else :
-        "Nada"
-    
+    orgaos = listar_orgaos_unicos()    
     df_orgao = pd.DataFrame()  # evita NameError
 
     col1, col2 = st.columns([3, 1])
 
     with col1:
-        if not orgaos:
-            st.warning("Não há Órgãos cadastrados ou houve erro ao carregar a lista.")
-            orgao_sel = None
-        else:
-            orgao_sel = st.selectbox(
-                "Órgão/Promotoria", options=orgaos, index=0, key="orgao_sel_top"
-            )
+        if orgaos :
+            st.write(orgaos)
+        else :
+            "Nada"
+        # if not orgaos:
+        #     st.warning("Não há Órgãos cadastrados ou houve erro ao carregar a lista.")
+        #     orgao_sel = None
+        # else:
+        #     orgao_sel = st.selectbox(
+        #         "Órgão/Promotoria", options=orgaos, index=0, key="orgao_sel_top"
+        #     )
 
     with col2:
         # spacer para alinhar verticalmente o botão com o selectbox
