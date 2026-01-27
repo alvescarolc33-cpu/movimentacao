@@ -44,7 +44,6 @@ if menu == "Consulta":
 
     pagina_consulta()
 
-
 elif menu == "Sair":
 
     st.session_state.user = None
