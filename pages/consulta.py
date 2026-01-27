@@ -11,7 +11,6 @@ from utils.helpers import (
     consultar_por_orgao
 )
 
-
 def pagina_consulta():
     
     st.set_page_config(
