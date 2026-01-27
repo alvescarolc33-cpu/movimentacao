@@ -1,5 +1,5 @@
 import pandas as pd
-#import streamlit as st
+import streamlit as st
 
 from services.supabase_client import get_supabase
 
