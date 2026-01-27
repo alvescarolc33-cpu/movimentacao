@@ -8,23 +8,11 @@ from utils.helpers import (
     ordenar_por_mes_e_designacao,
     consultar_membros_mes_outros_orgaos_pares,
     listar_orgaos_unicos,
-    consultar_por_orgao
+    consultar_por_orgao,
 )
 
 def pagina_consulta():
-    
-    st.set_page_config(
-        page_title="Consulta por Órgão",
-        page_icon="🏛️",
-        layout="wide",
-        menu_items={
-            "Get Help": None,
-            "Report a bug": None,
-            "About": "Consulta de Membros • v1.0",
-        },
-    )
 
-    # 1) Título
     st.title("🏛️ Consulta de Membros por Órgão")
     st.caption("Selecione um Órgão. Em seguida, o app busca automaticamente onde os Membros aparecem no(s) mês(es).")
     st.markdown(

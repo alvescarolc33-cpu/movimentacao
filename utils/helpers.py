@@ -1,5 +1,5 @@
 import pandas as pd
-import streamlit as st
+#import streamlit as st
 
 from services.supabase_client import get_supabase
 
@@ -66,7 +66,6 @@ def ordenar_por_mes_e_designacao(df: pd.DataFrame) -> pd.DataFrame:
 
     return df
 
-#---------------#
 def mostrar_erro(ex: Exception, contexto: str = ""):
     st.error(f"❌ Ocorreu um erro {('em ' + contexto) if contexto else ''}: {ex}")
 
