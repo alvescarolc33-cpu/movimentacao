@@ -21,7 +21,7 @@ def pagina_consulta():
     # )
 
     orgaos = listar_orgaos_unicos()
-    if (orgaos) :
+    if orgaos :
         st.write(orgaos)
     else :
         "Nada"
