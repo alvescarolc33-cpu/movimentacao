@@ -71,7 +71,6 @@ def listar_orgaos_unicos():
 
 def consultar_por_orgao(orgao: str) -> pd.DataFrame:
     try:
-        supabase = get_supabase()
         q = (
             supabase
             .table("movimentacao")
@@ -164,7 +163,7 @@ def pagina_consulta():
     #     unsafe_allow_html=True,
     # )
 
-    orgaos = [1, 2, 3, 4]
+    orgaos = listar_orgaos_unicos()
     df_orgao = pd.DataFrame()  # evita NameError
 
     col1, col2 = st.columns([3, 1])
