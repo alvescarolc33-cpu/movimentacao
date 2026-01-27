@@ -66,8 +66,8 @@ def mostrar_erro(ex: Exception, contexto: str = ""):
     st.error(f"❌ Ocorreu um erro {('em ' + contexto) if contexto else ''}: {ex}")
 
 def listar_orgaos_unicos():
-    st.write(supabase.table("orgaos_distintos").select("orgao").execute())
-    return supabase.table("orgaos_distintos").select("orgao").execute()
+    res = supabase.table("orgaos_distintos").select("orgao").execute()
+    return st.write([r["orgao"] for r in res.data or []])
 
 def consultar_por_orgao(orgao: str) -> pd.DataFrame:
     try:
