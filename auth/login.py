@@ -23,3 +23,5 @@ def tela_login():
 
         except Exception as e:
             st.error(f"Erro no login: {e}")
+
+supabase = get_supabase()
