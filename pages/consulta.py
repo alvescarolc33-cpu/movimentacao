@@ -65,10 +65,10 @@ def ordenar_por_mes_e_designacao(df: pd.DataFrame) -> pd.DataFrame:
 def mostrar_erro(ex: Exception, contexto: str = ""):
     st.error(f"❌ Ocorreu um erro {('em ' + contexto) if contexto else ''}: {ex}")
 
+st.write(supabase.table("orgaos_distintos").select("orgao").execute())
+
 def listar_orgaos_unicos():
-    # res = supabase.table("orgaos_distintos").select("orgao").execute()
-    # return [r["orgao"] for r in res.data or []]
-    return [1, 2, 3, 4, 5]
+    return supabase.table("orgaos_distintos").select("orgao").execute()
 
 def consultar_por_orgao(orgao: str) -> pd.DataFrame:
     try:
