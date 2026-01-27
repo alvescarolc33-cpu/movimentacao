@@ -21,7 +21,11 @@ def pagina_consulta():
     # )
 
     orgaos = listar_orgaos_unicos()
-    st.write(orgaos)
+    if (orgaos) :
+        st.write(orgaos)
+    else :
+        "Nada"
+    
     df_orgao = pd.DataFrame()  # evita NameError
 
     col1, col2 = st.columns([3, 1])
