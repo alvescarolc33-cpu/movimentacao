@@ -1,0 +1,15 @@
+# Ignore all log files
+*.log
+
+# Ignore the build directory
+build/
+
+# Ignore the environment variables file
+.env
+services/
+
+# Ignore editor-specific temporary files
+.vscode/
+
+#Ignore docker folders
+.devcontainer/
