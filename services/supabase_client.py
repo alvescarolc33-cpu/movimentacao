@@ -1,6 +1,9 @@
 import os
 import streamlit as st
-from supabase import create_client, ClientOptions
+from supabase import Client, create_client, ClientOptions
+from dotenv import load_dotenv
+
+load_dotenv()
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY")
@@ -24,11 +27,21 @@ def get_auth_client():
                 headers={
                     "Authorization": f"Bearer {st.session_state.token}"
                 },
-                auto_refresh_token=False,
-                persist_session=False
+                auto_refresh_token=True,
+                persist_session=True
             )
         )
     return get_anon_client()
 
-def get_supabase():
+def get_supabase() -> Client:
     return get_auth_client()
+
+def get_user():
+    """Recupera o usuário logado da sessão"""
+    if "user" in st.session_state:
+        return st.session_state.user
+    return None
+
+def is_authenticated():
+    """Verifica se há um usuário autenticado"""
+    return get_user() is not None

@@ -17,6 +17,7 @@ def tela_login():
 
             st.session_state.user = res.user
             st.session_state.token = res.session.access_token
+            st.session_state.refresh_token = res.session.refresh_token
 
             st.success("Login realizado!")
             st.rerun()
