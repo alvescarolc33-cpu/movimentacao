@@ -2,13 +2,8 @@ import io
 import pandas as pd
 import streamlit as st
 from services.supabase_client import get_supabase
-
-supabase = get_supabase()
-
-from utils.helpers import (
-    is_vago,
-    normalize_str
-)
+from utils.helpers import is_vago, normalize_str
+import xlsxwriter
 
 # -------------------- ORDENAMENTO
 
@@ -66,12 +61,20 @@ def mostrar_erro(ex: Exception, contexto: str = ""):
     st.error(f"❌ Ocorreu um erro {('em ' + contexto) if contexto else ''}: {ex}")
 
 def listar_orgaos_unicos():
-    st.write(supabase.table("orgaos_distintos").select("orgao").execute())
-    res = supabase.table("orgaos_distintos").select("orgao").execute()
-    return st.write([r["orgao"] for r in res.data or []])
+    try:
+        supabase = get_supabase()
+        res = supabase.table("orgaos_distintos").select("orgao").order("orgao").execute()
+        dados = [r["orgao"] for r in res.data or []]
+        if not dados:
+            st.warning("⚠️ Nenhum órgão encontrado na tabela 'orgaos_distintos'")
+        return dados
+    except Exception as e:
+        mostrar_erro(e, "ao listar órgãos")
+        return []
 
 def consultar_por_orgao(orgao: str) -> pd.DataFrame:
     try:
+        supabase = get_supabase()
         q = (
             supabase
             .table("movimentacao")

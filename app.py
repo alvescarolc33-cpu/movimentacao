@@ -3,7 +3,6 @@ import streamlit as st
 from auth.login import tela_login
 from pages.consulta import pagina_consulta
 
-
 # ---------------- SESSION ----------------
 
 if "user" not in st.session_state:
@@ -11,6 +10,9 @@ if "user" not in st.session_state:
 
 if "token" not in st.session_state:
     st.session_state.token = None
+
+if "refresh_token" not in st.session_state:
+    st.session_state.refresh_token = None
 
 
 # ---------------- CONFIG ----------------
@@ -25,7 +27,6 @@ st.set_page_config(
 # ---------------- AUTH ----------------
 
 if not st.session_state.user:
-
     tela_login()
     st.stop()
 
@@ -37,6 +38,11 @@ menu = st.sidebar.radio(
     ["Consulta", "Sair"]
 )
 
+# Mostrar informações do usuário logado
+with st.sidebar:
+    st.divider()
+    if st.session_state.user:
+        st.caption(f"✅ Logado como: {st.session_state.user.email}")
 
 # ---------------- ROUTER ----------------
 
@@ -48,5 +54,6 @@ elif menu == "Sair":
 
     st.session_state.user = None
     st.session_state.token = None
+    st.session_state.refresh_token = None
 
     st.rerun()
