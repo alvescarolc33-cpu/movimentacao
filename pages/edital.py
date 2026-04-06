@@ -98,15 +98,6 @@ def pagina_edital():
     st.title("📊 Análise de Ocorrências")
 
     itens = ["Todos"] + listar_itens()
-
-    #----- Botão
-
-    if st.button("🔄 Limpar filtros"):
-        st.session_state.filtro_item = "Todos"
-        st.session_state.filtro_ano = "Todos"
-        st.session_state.filtro_cargo = "Todos"
-        st.session_state.filtro_membro = ""
-        st.rerun()
         
     #----- Filtros
 
@@ -161,6 +152,15 @@ def pagina_edital():
                 df = df[
                     df["membro"].str.contains(membro, case=False, na=False)
                 ]
+
+    #----- Botão
+
+        if st.button("🔄 Limpar filtros"):
+            st.session_state.filtro_item = "Todos"
+            st.session_state.filtro_ano = "Todos"
+            st.session_state.filtro_cargo = "Todos"
+            st.session_state.filtro_membro = ""
+            st.rerun()
 
     #------ Resultado
         if df.empty:
