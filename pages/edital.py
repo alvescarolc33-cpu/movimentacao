@@ -96,22 +96,21 @@ def pagina_edital():
 
     membro = st.text_input("Filtrar por membro:")
 
-
     if item:
         df = buscar_ocorrencias(item)
 
     #---- Aplicar Filtros Adicionais
         if not df.empty:
 
-            # filtro por ano
+        # filtro por ano
             if ano != "Todos":
                 df = df[df["ano"].astype(str) == ano]
 
-            # filtro por cargo
+        # filtro por cargo
             if cargo != "Todos":
                 df = df[df["cargo"] == cargo]
 
-            # filtro por membro (busca parcial)
+        # filtro por membro
             if membro:
                 df = df[
                     df["membro"].str.contains(membro, case=False, na=False)
