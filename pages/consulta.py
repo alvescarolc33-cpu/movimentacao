@@ -32,7 +32,7 @@ def ordenar_por_mes_e_designacao(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
 
     if "ano" in df.columns:
-        df["__ano_ord__"] = df["ano"].map(ANO_MAP).fillna(999)
+        df["__ano_ord__"] = df["ano"].astype(str).map(ANO_MAP).fillna(999)
 
     if "mes" in df.columns:
         df["__mes_ord__"] = df["mes"].map(MESES_MAP).fillna(999)
@@ -61,9 +61,7 @@ def ordenar_por_mes_e_designacao(df: pd.DataFrame) -> pd.DataFrame:
     if sort_cols:
         df = df.sort_values(by=sort_cols, ascending=ascending, kind="mergesort")
 
-    for c in ["__ano_ord__", "__mes_ord__", "__des_ord__"]:
-        if c in df.columns:
-            df.drop(columns=c, inplace=True)
+    df.drop(columns=[c for c in ["__ano_ord__", "__mes_ord__", "__des_ord__"] if c in df.columns], inplace=True)
 
     return df
 
