@@ -53,13 +53,23 @@ def listar_itens():
 def buscar_ocorrencias(item):
     supabase = get_supabase()
     try:
+        #response = (
+        #    supabase
+        #    .table(TABELA_2)
+        #    .select(",".join(COLUNAS_RESULTADO))
+        #    .or_(f'orgao_disponivel.eq."{item}",orgao_titular.eq."{item}"')
+        #    .execute()
+        #)
+
         response = (
             supabase
-            .table(TABELA_2)
-            .select(",".join(COLUNAS_RESULTADO))
-            .or_(f'orgao_disponivel.eq."{item}",orgao_titular.eq."{item}"')
+            .table("edital")
+            .select("*")
+            .limit(1)
             .execute()
         )
+
+        st.write(response.data)
 
         dados = response.data
 
