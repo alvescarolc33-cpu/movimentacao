@@ -50,7 +50,6 @@ def listar_itens():
 
 def buscar_ocorrencias(item):
     supabase = get_supabase()
-
     try:
         response = supabase.table(TABELA_2) \
             .select(",".join(COLUNAS_RESULTADO)) \
