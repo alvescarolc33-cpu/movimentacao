@@ -4,7 +4,7 @@ from services.supabase_client import get_supabase
 
 #---- Tabelas
 TABELA_1 = "orgaos_distintos_2"
-TABELA_2 = "tedital"
+TABELA_2 = "edital"
 
 COLUNA_SELECT = "orgao"
 
@@ -80,7 +80,7 @@ def buscar_ocorrencias(item):
 
     #----- Ordenar por data
     if "data_sessao" in df.columns:
-        df["data_sessao"] = pd.to_datetime(df["data_sessao"], format="%d/%m/%Y", errors="coerce")
+        df["data_sessao"] = pd.to_datetime(df["data_sessao"], format="%Y/%m/%d", errors="coerce")
         df = df.sort_values(by="data_sessao", ascending=True)
 
     return df
