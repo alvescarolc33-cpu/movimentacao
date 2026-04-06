@@ -117,9 +117,11 @@ def consultar_membros_mes_outros_orgaos_pares(df_orgao: pd.DataFrame, orgao_sel:
     df_pairs["membro_norm"] = df_pairs["membro"].apply(normalize_str)
     df_pairs["mes_norm"] = df_pairs["mes"].apply(normalize_str)
     df_pairs = df_pairs[~df_pairs["membro_norm"].apply(is_vago)]
+    df_pairs["ano_norm"] = df_pairs["ano"].astype(str).apply(normalize_str)
 
     membros = sorted(df_pairs["membro_norm"].dropna().unique().tolist())
     meses = sorted(df_pairs["mes_norm"].dropna().unique().tolist())
+    anos = sorted(df_pairs["ano_norm"].dropna().unique().tolist())
 
     if not membros or not meses:
         return pd.DataFrame([])
@@ -131,6 +133,7 @@ def consultar_membros_mes_outros_orgaos_pares(df_orgao: pd.DataFrame, orgao_sel:
         .select("mes, ano, orgao, cod_orgao, membro, designacao, observacao")
         .in_("membro", membros)
         .in_("mes", meses)
+        .in_("ano", anos)
         .neq("orgao", orgao_sel)
         .neq("membro", "VAGO")
         .order("mes", desc=False)
@@ -147,12 +150,13 @@ def consultar_membros_mes_outros_orgaos_pares(df_orgao: pd.DataFrame, orgao_sel:
     # Normaliza os campos para comparação de pares
     df_raw["membro_norm"] = df_raw["membro"].apply(normalize_str)
     df_raw["mes_norm"] = df_raw["mes"].apply(normalize_str)
+    df_raw["ano_norm"] = df_raw["ano"].astype(str).apply(normalize_str)
 
     # Conjunto de pares válidos da Tabela 1
-    pairs_set = set(zip(df_pairs["membro_norm"], df_pairs["mes_norm"]))
+    pairs_set = set(zip(df_pairs["membro_norm"], df_pairs["mes_norm"],df_pairs["ano_norm"]))
 
     # Filtra mantendo apenas (membro, mes) que existam na Tabela 1
-    df_outros = df_raw[df_raw.apply(lambda r: (r["membro_norm"], r["mes_norm"]) in pairs_set, axis=1)].copy()
+    df_outros = df_raw[df_raw.apply(lambda r: (r["membro_norm"], r["mes_norm"],r["ano_norm"]) in pairs_set, axis=1)].copy()
     
     # Garante ordem e remove colunas auxiliares
     cols = [c for c in ["ano", "mes", "membro", "designacao", "orgao", "observacao"] if c in df_outros.columns]
