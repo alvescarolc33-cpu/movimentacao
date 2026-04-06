@@ -65,7 +65,7 @@ def buscar_ocorrencias(item):
 
     df = pd.DataFrame(response.data)
 
-    # 🔥 filtro seguro (resolve seu problema)
+    if item != "Todos":
     df = df[
         (df["orgao_disponivel"] == item) |
         (df["orgao_titular"] == item)
@@ -84,7 +84,7 @@ def buscar_ocorrencias(item):
 def pagina_edital():
     st.title("📊 Análise de Ocorrências")
 
-    itens = listar_itens()
+    itens = ["Todos"] + listar_itens()
 
     #----- Filtros
 
