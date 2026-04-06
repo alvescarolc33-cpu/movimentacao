@@ -54,19 +54,26 @@ def buscar_ocorrencias(item):
     supabase = get_supabase()
     try:
         response = (
-        supabase
-        .table(TABELA_2)
-        .select(",".join(COLUNAS_RESULTADO))
-        .or_(f"orgao_disponivel.eq."{item}",orgao_titular.eq."{item}"")
-        .execute()
-    )
+            supabase
+            .table(TABELA_2)
+            .select(",".join(COLUNAS_RESULTADO))
+            .or_(f'orgao_disponivel.eq."{item}",orgao_titular.eq."{item}"')
+            .execute()
+        )
 
         dados = response.data
 
-    except:
-        response = supabase.table(TABELA_2)
+    except Exception as e:
+        import traceback
+        print("ERRO REAL:")
+        print(traceback.format_exc())
+
+        response = (
+            supabase
+            .table(TABELA_2)
             .select(",".join(COLUNAS_RESULTADO))
             .execute()
+        )
 
         df = pd.DataFrame(response.data)
 
