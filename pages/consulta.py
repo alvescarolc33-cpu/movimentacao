@@ -19,8 +19,8 @@ MESES_MAP = {
 
 DESIGNACAO_MAP = {
     "TITULAR": 1,
-    "DESIGNAÇÃO": 2,
-    "DESIGNAÇÃO TEMPORÁRIA": 3,
+    "DESIGNAÇÃO TEMPORÁRIA": 2,
+    "DESIGNAÇÃO": 3,
     "AUXÍLIO": 4,
     "AUXÍLIO TEMPORÁRIO": 5,
 }
