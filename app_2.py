@@ -2,6 +2,7 @@ import streamlit as st
 
 from auth.login import tela_login
 from pages.consulta import pagina_consulta
+from pages.edital import pagina_edital
 
 # ---------------- SESSION ----------------
 
@@ -35,7 +36,7 @@ if not st.session_state.user:
 
 menu = st.sidebar.radio(
     "Menu",
-    ["Consulta", "Sair"]
+    ["Consulta", "Edital", "Sair"]
 )
 
 # Mostrar informações do usuário logado
@@ -49,6 +50,10 @@ with st.sidebar:
 if menu == "Consulta":
 
     pagina_consulta()
+
+elif menu == "Edital":
+    
+    pagina_edital()
 
 elif menu == "Sair":
 
