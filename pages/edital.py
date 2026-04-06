@@ -77,7 +77,20 @@ def buscar_ocorrencias(item):
         df = df.sort_values(by="data_sessao", ascending=True)
 
     return df
-    
+
+# --------------------------- Valores definidos
+
+if "filtro_item" not in st.session_state:
+    st.session_state.filtro_item = "Todos"
+
+if "filtro_ano" not in st.session_state:
+    st.session_state.filtro_ano = "Todos"
+
+if "filtro_cargo" not in st.session_state:
+    st.session_state.filtro_cargo = "Todos"
+
+if "filtro_membro" not in st.session_state:
+    st.session_state.filtro_membro = ""
 
 # --------------------------- Interface Página
 
@@ -86,15 +99,51 @@ def pagina_edital():
 
     itens = ["Todos"] + listar_itens()
 
+    #----- Botão
+
+    if st.button("🔄 Limpar filtros"):
+    st.session_state.filtro_item = "Todos"
+    st.session_state.filtro_ano = "Todos"
+    st.session_state.filtro_cargo = "Todos"
+    st.session_state.filtro_membro = ""
+    st.rerun()
+    
     #----- Filtros
 
-    item = st.selectbox("Selecione o órgão:", itens)
+    #item = st.selectbox("Selecione o órgão:", itens)
 
-    ano = st.selectbox("Filtrar por ano:", ANOS_FIXOS)
+    #ano = st.selectbox("Filtrar por ano:", ANOS_FIXOS)
 
-    cargo = st.selectbox("Filtrar por cargo:", CARGOS_FIXOS)
+    #cargo = st.selectbox("Filtrar por cargo:", CARGOS_FIXOS)
 
-    membro = st.text_input("Filtrar por membro:")
+    #membro = st.text_input("Filtrar por membro:")
+
+    item = st.selectbox(
+        "Selecione o órgão:",
+        itens,
+        index=itens.index(st.session_state.filtro_item),
+        key="filtro_item"
+    )
+
+    ano = st.selectbox(
+        "Filtrar por ano:",
+        ANOS_FIXOS,
+        index=ANOS_FIXOS.index(st.session_state.filtro_ano),
+        key="filtro_ano"
+    )
+
+    cargo = st.selectbox(
+        "Filtrar por cargo:",
+        CARGOS_FIXOS,
+        index=CARGOS_FIXOS.index(st.session_state.filtro_cargo),
+        key="filtro_cargo"
+    )
+
+    membro = st.text_input(
+        "Filtrar por membro:",
+        value=st.session_state.filtro_membro,
+        key="filtro_membro"
+    )
 
     if item:
         df = buscar_ocorrencias(item)
