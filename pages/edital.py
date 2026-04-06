@@ -52,59 +52,32 @@ def listar_itens():
 
 def buscar_ocorrencias(item):
     supabase = get_supabase()
-    try:
-        #response = (
-        #    supabase
-        #    .table(TABELA_2)
-        #    .select(",".join(COLUNAS_RESULTADO))
-        #    .or_(f'orgao_disponivel.eq."{item}",orgao_titular.eq."{item}"')
-        #    .execute()
-        #)
 
-        response = (
-            supabase
-            .table("edital")
-            .select("*")
-            .limit(1)
-            .execute()
-        )
+    response = (
+        supabase
+        .table("edital")
+        .select(",".join(COLUNAS_RESULTADO))
+        .execute()
+    )
 
-        st.write(response.data)
-
-        dados = response.data
-
-    except Exception as e:
-        import traceback
-        print("ERRO REAL:")
-        print(traceback.format_exc())
-
-        response = (
-            supabase
-            .table(TABELA_2)
-            .select(",".join(COLUNAS_RESULTADO))
-            .execute()
-        )
-
-        df = pd.DataFrame(response.data)
-
-        df = df[
-            (df["orgao_disponivel"] == item) |
-            (df["orgao_titular"] == item)
-        ]
-
-        dados = df.to_dict("records")
-    
-    if not dados:
+    if not response.data:
         return pd.DataFrame()
 
-    df = pd.DataFrame(dados)
+    df = pd.DataFrame(response.data)
 
-    #----- Ordenar por data
+    # 🔥 filtro seguro (resolve seu problema)
+    df = df[
+        (df["orgao_disponivel"] == item) |
+        (df["orgao_titular"] == item)
+    ]
+
+    # ordenar por data
     if "data_sessao" in df.columns:
-        df["data_sessao"] = pd.to_datetime(df["data_sessao"], format="%Y/%m/%d", errors="coerce")
+        df["data_sessao"] = pd.to_datetime(df["data_sessao"], errors="coerce")
         df = df.sort_values(by="data_sessao", ascending=True)
 
     return df
+    
 
 # --------------------------- Interface Página
 
