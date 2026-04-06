@@ -3,10 +3,7 @@ import streamlit as st
 from services.supabase_client import get_supabase
 
 #---- Tabelas
-TABELA_1 = "orgaos_distintos_2"
 TABELA_2 = "edital"
-
-COLUNA_SELECT = "orgao"
 
 COLUNAS_RESULTADO = [
     "data_sessao",
