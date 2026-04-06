@@ -25,8 +25,8 @@ ANOS_FIXOS = ["Todos", "2023", "2024", "2025", "2026"]
 
 CARGOS_FIXOS = [
     "Todos",
-    "Procurador de Justiça",
-    "Promotor de Justiça"
+    "PCJ",
+    "PJ"
 ]
 
 
