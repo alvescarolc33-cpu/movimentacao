@@ -102,12 +102,12 @@ def pagina_edital():
     #----- Botão
 
     if st.button("🔄 Limpar filtros"):
-    st.session_state.filtro_item = "Todos"
-    st.session_state.filtro_ano = "Todos"
-    st.session_state.filtro_cargo = "Todos"
-    st.session_state.filtro_membro = ""
-    st.rerun()
-    
+        st.session_state.filtro_item = "Todos"
+        st.session_state.filtro_ano = "Todos"
+        st.session_state.filtro_cargo = "Todos"
+        st.session_state.filtro_membro = ""
+        st.rerun()
+        
     #----- Filtros
 
     #item = st.selectbox("Selecione o órgão:", itens)
