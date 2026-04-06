@@ -66,10 +66,10 @@ def buscar_ocorrencias(item):
     df = pd.DataFrame(response.data)
 
     if item != "Todos":
-    df = df[
-        (df["orgao_disponivel"] == item) |
-        (df["orgao_titular"] == item)
-    ]
+        df = df[
+            (df["orgao_disponivel"] == item) |
+            (df["orgao_titular"] == item)
+        ]
 
     # ordenar por data
     if "data_sessao" in df.columns:
