@@ -7,10 +7,14 @@ import xlsxwriter
 
 # -------------------- ORDENAMENTO
 
+ANO_MAP = {
+    "2026": 1, "2025": 2, "2024": 3, "2023": 4
+}
+
 MESES_MAP = {
-    "JANEIRO": 1, "FEVEREIRO": 2, "MARÇO": 3, "ABRIL": 4,
-    "MAIO": 5, "JUNHO": 6, "JULHO": 7, "AGOSTO": 8,
-    "SETEMBRO": 9, "OUTUBRO": 10, "NOVEMBRO": 11, "DEZEMBRO": 12
+    "Janeiro": 1, "Fevereiro": 2, "Março": 3, "Abril": 4,
+    "Maio": 5, "Junho": 6, "Julho": 7, "Agosto": 8,
+    "Setembro": 9, "Outubro": 10, "Novembro": 11, "Dezembro": 12
 }
 
 DESIGNACAO_MAP = {
@@ -27,6 +31,9 @@ def ordenar_por_mes_e_designacao(df: pd.DataFrame) -> pd.DataFrame:
 
     df = df.copy()
 
+    if "ano" in df.columns:
+        df["__ano_ord__"] = df["ano"].map(ANO_MAP).fillna(999)
+
     if "mes" in df.columns:
         df["__mes_ord__"] = df["mes"].map(MESES_MAP).fillna(999)
 
@@ -36,6 +43,9 @@ def ordenar_por_mes_e_designacao(df: pd.DataFrame) -> pd.DataFrame:
     sort_cols = []
     ascending = []
 
+    if "__ano_ord__" in df.columns:
+        sort_cols.append("__ano_ord__"); ascending.append(True)
+    
     if "__mes_ord__" in df.columns:
         sort_cols.append("__mes_ord__"); ascending.append(True)
 
@@ -51,7 +61,7 @@ def ordenar_por_mes_e_designacao(df: pd.DataFrame) -> pd.DataFrame:
     if sort_cols:
         df = df.sort_values(by=sort_cols, ascending=ascending, kind="mergesort")
 
-    for c in ["__mes_ord__", "__des_ord__"]:
+    for c in ["__ano_ord__", "__mes_ord__", "__des_ord__"]:
         if c in df.columns:
             df.drop(columns=c, inplace=True)
 
