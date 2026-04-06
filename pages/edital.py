@@ -35,12 +35,17 @@ CARGOS_FIXOS = [
 def listar_itens():
     supabase = get_supabase()
 
-    response = supabase.table(TABELA_1).select(COLUNA_SELECT).execute()
+    response = (
+        supabase
+        .table("orgaos_distintos_2")
+        .select("orgao")
+        .execute()
+    )
 
     itens = [
-        row[COLUNA_SELECT]
+        row["orgao"]
         for row in response.data
-        if row.get(COLUNA_SELECT)
+        if row.get("orgao")
     ]
 
     return sorted(itens)
