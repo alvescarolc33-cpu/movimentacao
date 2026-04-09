@@ -517,57 +517,6 @@ def pagina_consulta():
 
                 st.dataframe(qtd_por_mes_designacao, use_container_width=True)
 
-        # -------------------- Análise: membro == 'VAGO'
-        #st.divider()
-        #st.markdown(
-        #    '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">🚫 Ocorrências com Órgão VAGO</h3>',
-        #    unsafe_allow_html=True,
-        #)
-
-        #df_vago = df_orgao.copy()
-        #if not df_vago.empty:
-        #    df_vago["membro"] = df_vago["membro"].fillna("").str.strip()
-        #    df_vago = df_vago[df_vago["membro"].str.upper() == "VAGO"]
-        #else:
-        #    df_vago = pd.DataFrame([])
-
-        #if df_vago.empty:
-        #    st.info("Não há ocorrências com membro igual a 'VAGO'.")
-        #else:
-            # Normaliza 'mes' -> 'ano_mes'
-        #    df_vago["ano_mes"] = (
-        #        pd.to_datetime(df_vago["mes"], errors="coerce")
-        #        .dt.to_period("M")
-        #        .astype(str)
-        #    )
-        #    df_vago["ano_mes"] = df_vago["ano_mes"].mask(
-        #        df_vago["ano_mes"].isin(["NaT", "nan"]), df_vago["mes"]
-        #    )
-
-            # Métricas
-        #    total_vago = len(df_vago)
-        #    meses_vago = df_vago["ano_mes"].nunique()
-
-            # Contagem por mês + gráfico compacto
-        #    qtd_vago_mes = (
-        #        df_vago.groupby("ano_mes", as_index=False)
-        #        .size()
-        #        .rename(columns={"size": "quantidade"})
-        #    )
-        #    qtd_vago_mes["ord"] = pd.to_datetime(
-        #        qtd_vago_mes["ano_mes"], errors="coerce"
-        #    )
-        #    qtd_vago_mes = qtd_vago_mes.sort_values(["ord", "ano_mes"]).drop(
-        #        columns=["ord"]
-        #    )
-
-            # --- Tabela resumo ---
-        #    st.markdown(
-        #        '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">Resumo por mês</h3>',
-        #        unsafe_allow_html=True,
-        #    )
-        #    st.dataframe(qtd_vago_mes, use_container_width=True)
-
                 # -------------------- Análise: NOVO VAGO
         st.divider()
 
