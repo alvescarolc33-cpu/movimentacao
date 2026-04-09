@@ -286,7 +286,6 @@ def pagina_consulta():
 
             mask_aux = df_auxilio["designacao"].str.contains(
                 r"aux", case=False, na=False
-                & ~df_auxilio["designacao"].str.contains(r"tempor", case=False, na=False)
             )
 
             df_auxilio = df_auxilio[mask_aux].copy()
@@ -395,10 +394,11 @@ def pagina_consulta():
         if not df_designacao.empty:
             df_designacao["designacao"] = df_designacao["designacao"].fillna("")
 
-            mask_desig = df_designacao["designacao"].str.contains(
-                r"designa", case=False, na=False
-                & ~df_designacao["designacao"].str.contains(r"tempor", case=False, na=False)
-            )
+            #mask_desig = df_designacao["designacao"].str.contains(
+            #    r"designa", case=False, na=False
+            #)
+
+            mask_desig = df_designacao["designacao"].str.strip().str.upper() == "DESIGNAÇÃO"
 
             df_designacao = df_designacao[mask_desig].copy()
         else:
