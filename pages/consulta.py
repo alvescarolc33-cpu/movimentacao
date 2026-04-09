@@ -290,13 +290,9 @@ def pagina_consulta():
         else:
             df_auxilio = pd.DataFrame([])
 
-        # -------------------- Verificação
         if df_auxilio.empty:
             st.info("Não há registros de auxílio para o Órgão selecionado.")
         else:
-            # -------------------- Tratamento robusto de datas
-
-            # Remove nulos
             df_auxilio = df_auxilio.dropna(subset=["ano", "mes"])
 
             # Converter mês (aceita número, texto, etc.)
@@ -315,7 +311,6 @@ def pagina_consulta():
                 "dez": "12", "dezembro": "12"
             }
 
-            # Normalizar mês
             df_auxilio["mes"] = (
                 df_auxilio["mes"]
                 .astype(str)
@@ -324,23 +319,18 @@ def pagina_consulta():
                 .replace(mes_map)
             )
 
-            # Se ainda for número, padroniza
             df_auxilio["mes"] = df_auxilio["mes"].str.extract(r"(\d+)")[0]
             df_auxilio["mes"] = df_auxilio["mes"].str.zfill(2)
 
-            # Converter ano
             df_auxilio["ano"] = df_auxilio["ano"].astype(str).str.extract(r"(\d{4})")[0]
 
-            # Criar data
             df_auxilio["ano_mes"] = pd.to_datetime(
                 df_auxilio["ano"] + "-" + df_auxilio["mes"],
                 errors="coerce"
             )
 
-            # Remover inválidos
             df_auxilio = df_auxilio[df_auxilio["ano_mes"].notna()]
 
-            # Se após limpeza ficou vazio
             if df_auxilio.empty:
                 st.warning("Os dados de auxílio existem, mas possuem datas inválidas.")
             else:
@@ -375,11 +365,9 @@ def pagina_consulta():
                     .reset_index(name="quantidade")
                 )
 
-                # Ordenar corretamente
                 qtd_por_mes["ord"] = pd.to_datetime(qtd_por_mes["ano_mes_str"], errors="coerce")
                 qtd_por_mes = qtd_por_mes.sort_values("ord")
 
-                # Criar colunas finais
                 qtd_por_mes["ano"] = qtd_por_mes["ord"].dt.year
                 qtd_por_mes["mes"] = qtd_por_mes["ord"].dt.month.astype(str).str.zfill(2)
 
