@@ -380,77 +380,6 @@ def pagina_consulta():
                 )
 
                 st.dataframe(qtd_por_mes, use_container_width=True)
-    
-    # -------------------- Análises de Auxílios
-        #st.divider()
-        #st.markdown(
-        #    '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">📊 Análises de Auxílios (Órgão selecionado)</h3>',
-        #    unsafe_allow_html=True,
-        #)
-
-        # Cópia defensiva e filtro por 'auxílio' na designação (case-insensitive, com e sem acento)
-        #df_auxilio = df_orgao.copy()
-        #if not df_auxilio.empty:
-        #    df_auxilio["designacao"] = df_auxilio["designacao"].fillna("")
-        #    mask_aux = df_auxilio["designacao"].str.contains(
-        #        r"aux[ií]lio", case=False, regex=True
-        #    )
-        #    df_auxilio = df_auxilio[mask_aux].copy()
-        #else:
-        #    df_auxilio = pd.DataFrame([])
-
-        #if df_auxilio.empty:
-        #    st.info("Não há registros de auxílio para o Órgão selecionado.")
-        #else:
-            # Normaliza 'mes' para 'ano_mes' (AAAA-MM) quando possível; senão, mantém o original
-            # Tenta converter valores comuns (AAAA-MM, AAAA/MM, AAAA-MM-DD, DD/MM/AAAA, etc.)
-        #    df_auxilio["ano_mes"] = (
-        #        pd.to_datetime(df_auxilio["mes"], errors="coerce")
-        #        .dt.to_period("M")
-        #        .astype(str)
-        #    )
-            # Se não conseguiu converter (NaT), usa o valor original de 'mes'
-        #    df_auxilio["ano_mes"] = df_auxilio["ano_mes"].mask(
-        #        df_auxilio["ano_mes"].isin(["NaT", "nan"]), df_auxilio["mes"]
-        #    )
-
-            # --- Métricas rápidas ---
-        #    total_reg_auxilio = len(df_auxilio)
-        #    meses_com_auxilio = df_auxilio["ano_mes"].nunique()
-        #    membros_distintos_auxilio = df_auxilio["membro"].nunique()
-
-        #    colm1, colm2, colm3 = st.columns(3)
-        #    with colm1:
-        #        st.metric("Registros de auxílio", value=f"{total_reg_auxilio}")
-        #    with colm2:
-        #        st.metric(
-        #            "Meses com ocorrência de auxílio", value=f"{meses_com_auxilio}"
-        #        )
-        #    with colm3:
-        #        st.metric(
-        #            "Membros distintos (com auxílio)",
-        #            value=f"{membros_distintos_auxilio}",
-        #        )
-
-            # --- Quantidade por mês ---
-        #    qtd_por_mes = (
-        #        df_auxilio.groupby("ano_mes", as_index=False)
-        #        .size()
-        #        .rename(columns={"size": "quantidade"})
-        #    )
-
-            # Ordena cronologicamente quando possível
-        #    qtd_por_mes["ord"] = pd.to_datetime(qtd_por_mes["ano_mes"], errors="coerce")
-        #    qtd_por_mes = qtd_por_mes.sort_values(
-        #        ["ord", "ano_mes"], ascending=[True, True]
-        #    ).drop(columns=["ord"])
-
-            # --- Tabela resumo ---
-        #    st.markdown(
-        #        '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">Resumo por mês</h3>',
-        #        unsafe_allow_html=True,
-        #    )
-        #    st.dataframe(qtd_por_mes, use_container_width=True)
 
         # -------------------- Análise: designacao == 'DESIGNAÇÃO'
         st.divider()
@@ -460,64 +389,175 @@ def pagina_consulta():
         )
 
         df_designacao = df_orgao.copy()
+
         if not df_designacao.empty:
-            # Comparação exata, ignorando espaços/acento comuns
-            df_designacao["designacao"] = (
-                df_designacao["designacao"].fillna("").str.strip()
-            )
-            df_designacao = df_designacao[
-                df_designacao["designacao"].str.upper() == "DESIGNAÇÃO"
-            ]
+            df_designacao["auxilio"] = df_designacao["auxilio"].fillna("")
+            mask_desig - df_designacao["auxilio"].str.contains(
+		r"aux", case=False, na=False
+	    )
+
+            df_designacao = df_designacao[mask_desig].copy()
         else:
             df_designacao = pd.DataFrame([])
 
         if df_designacao.empty:
-            st.info("Não há ocorrências com designação igual a 'DESIGNAÇÃO'.")
+            st.info("Não há ocorrências com designação para o Órgãos selecionado.")
         else:
-            # Normaliza 'mes' -> 'ano_mes' (AAAA-MM), mantendo original quando não parseável
-            df_designacao["ano_mes"] = (
-                pd.to_datetime(df_designacao["mes"], errors="coerce")
-                .dt.to_period("M")
+            df_designacao = df_designacao.dropna(subset=["ano","mes"])
+
+            # Converter mês (aceita número, texto, etc.)
+            mes_map = {
+                "jan": "01", "janeiro": "01",
+                "fev": "02", "fevereiro": "02",
+                "mar": "03", "março": "03", "marco": "03",
+                "abr": "04", "abril": "04",
+                "mai": "05", "maio": "05",
+                "jun": "06", "junho": "06",
+                "jul": "07", "julho": "07",
+                "ago": "08", "agosto": "08",
+                "set": "09", "setembro": "09",
+                "out": "10", "outubro": "10",
+                "nov": "11", "novembro": "11",
+                "dez": "12", "dezembro": "12"
+            }
+
+            df_designacao["mes"] = (
+                df_designacao["mes"]
                 .astype(str)
-            )
-            df_designacao["ano_mes"] = df_designacao["ano_mes"].mask(
-                df_designacao["ano_mes"].isin(["NaT", "nan"]), df_designacao["mes"]
+                .str.lower()
+                .str.strip()
+                .replace(mes_map)
             )
 
-            # Métricas
-            total_designacao = len(df_designacao)
-            meses_designacao = df_designacao["ano_mes"].nunique()
-            membros_designacao = df_designacao["membro"].nunique()
+            df_designacao["mes"] = df_designacao["mes"].str.extract(r"(\d+)")[0]
+            df_designacao["mes"] = df_designacao["mes"].str.zfill(2)
 
-            c1, c2, c3 = st.columns(3)
-            with c1:
-                st.metric("Registros 'DESIGNAÇÃO'", value=total_designacao)
-            with c2:
-                st.metric("Meses com 'DESIGNAÇÃO'", value=meses_designacao)
-            with c3:
-                st.metric(
-                    "Membros distintos (com 'DESIGNAÇÃO')", value=membros_designacao
+            df_designacao["ano"] = df_designacao["ano"].astype(str).str.extract(r"(\d{4})")[0]
+
+            df_designacao["ano_mes"] = pd.to_datetime(
+                df_designacao["ano"] + "-" + df_designacao["mes"],
+                errors="coerce"
+            )
+
+            df_designacao = df_designacao[df_designacao["ano_mes"].notna()]
+
+            if df_designacao.empty:
+                st.warning("Os dados de designação existem, mas possuem datas inválidas.")
+            else:
+                # -------------------- Métricas
+                total_reg_designacao = len(df_designacao)
+                meses_com_designacao = df_auxilio["ano_mes"].dt.to_period("M").nunique()
+                membros_distintos_designacao = df_designacao["membro"].nunique()
+
+                colm1, colm2, colm3 = st.columns(3)
+
+                with colm1:
+                    st.metric("Designações concedidos", value=total_reg_designacao)
+
+                with colm2:
+                    st.metric(
+                        "Quantidade de Meses com Designação",
+                        value=meses_com_designacao
+                    )
+
+                with colm3:
+                    st.metric(
+                        "Membros distintos",
+                        value=membros_distintos_designacao
+                    )
+
+                # -------------------- Agrupamento por mês
+                df_designacao["ano_mes_str"] = df_designacao["ano_mes"].dt.to_period("M").astype(str)
+
+                qtd_por_mes_designacao = (
+                    df_designacao.groupby("ano_mes_str")
+                    .size()
+                    .reset_index(name="quantidade")
                 )
 
+                qtd_por_mes_designacao["ord"] = pd.to_datetime(qtd_por_mes_designacao["ano_mes_str"], errors="coerce")
+                qtd_por_mes_designacao = qtd_por_mes_designacao.sort_values("ord")
+
+                qtd_por_mes_designacao["ano"] = qtd_por_mes_designacao["ord"].dt.year
+                qtd_por_mes_designacao["mes"] = qtd_por_mes_designacao["ord"].dt.month.astype(str).str.zfill(2)
+
+                qtd_por_mes_designacao = qtd_por_mes_designacao[["ano", "mes", "quantidade"]]
+
+                # -------------------- Tabela
+                st.markdown(
+                    '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">Resumo por mês</h3>',
+                    unsafe_allow_html=True,
+                )
+
+                st.dataframe(qtd_por_mes_designacao, use_container_width=True)
+
+
+        # -------------------- Análise: designacao == 'DESIGNAÇÃO'
+    #    st.divider()
+    #    st.markdown(
+    #        '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">🧾 Ocorrências com Designação</h3>',
+    #        unsafe_allow_html=True,
+    #    )
+
+    #    df_designacao = df_orgao.copy()
+    #    if not df_designacao.empty:
+            # Comparação exata, ignorando espaços/acento comuns
+    #        df_designacao["designacao"] = (
+    #            df_designacao["designacao"].fillna("").str.strip()
+    #        )
+    #        df_designacao = df_designacao[
+    #            df_designacao["designacao"].str.upper() == "DESIGNAÇÃO"
+    #        ]
+    #    else:
+    #        df_designacao = pd.DataFrame([])
+
+    #    if df_designacao.empty:
+    #        st.info("Não há ocorrências com designação igual a 'DESIGNAÇÃO'.")
+    #    else:
+            # Normaliza 'mes' -> 'ano_mes' (AAAA-MM), mantendo original quando não parseável
+    #        df_designacao["ano_mes"] = (
+    #            pd.to_datetime(df_designacao["mes"], errors="coerce")
+    #            .dt.to_period("M")
+    #            .astype(str)
+    #        )
+    #        df_designacao["ano_mes"] = df_designacao["ano_mes"].mask(
+    #            df_designacao["ano_mes"].isin(["NaT", "nan"]), df_designacao["mes"]
+    #        )
+
+            # Métricas
+    #        total_designacao = len(df_designacao)
+    #        meses_designacao = df_designacao["ano_mes"].nunique()
+    #        membros_designacao = df_designacao["membro"].nunique()
+
+    #        c1, c2, c3 = st.columns(3)
+    #        with c1:
+    #            st.metric("Registros 'DESIGNAÇÃO'", value=total_designacao)
+    #        with c2:
+    #            st.metric("Meses com 'DESIGNAÇÃO'", value=meses_designacao)
+    #        with c3:
+    #            st.metric(
+    #                "Membros distintos (com 'DESIGNAÇÃO')", value=membros_designacao
+    #            )
+
             # Contagem por mês + gráfico compacto
-            qtd_designacao_mes = (
-                df_designacao.groupby("ano_mes", as_index=False)
-                .size()
-                .rename(columns={"size": "quantidade"})
-            )
-            qtd_designacao_mes["ord"] = pd.to_datetime(
-                qtd_designacao_mes["ano_mes"], errors="coerce"
-            )
-            qtd_designacao_mes = qtd_designacao_mes.sort_values(
-                ["ord", "ano_mes"]
-            ).drop(columns=["ord"])
+    #        qtd_designacao_mes = (
+    #            df_designacao.groupby("ano_mes", as_index=False)
+    #            .size()
+    #            .rename(columns={"size": "quantidade"})
+    #        )
+    #        qtd_designacao_mes["ord"] = pd.to_datetime(
+    #            qtd_designacao_mes["ano_mes"], errors="coerce"
+    #        )
+    #        qtd_designacao_mes = qtd_designacao_mes.sort_values(
+    #            ["ord", "ano_mes"]
+    #        ).drop(columns=["ord"])
 
             # --- Tabela resumo ---
-            st.markdown(
-                '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">Resumo por mês</h3>',
-                unsafe_allow_html=True,
-            )
-            st.dataframe(qtd_designacao_mes, use_container_width=True)
+    #        st.markdown(
+    #            '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">Resumo por mês</h3>',
+    #            unsafe_allow_html=True,
+    #        )
+    #        st.dataframe(qtd_designacao_mes, use_container_width=True)
 
         # -------------------- Análise: membro == 'VAGO'
         st.divider()
