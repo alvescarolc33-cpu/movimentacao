@@ -279,6 +279,13 @@ def pagina_consulta():
 
         excel_buffer_all.seek(0)
 
+        st.download_button(
+            label="📥 Baixar Excel Consolidado",
+            data=excel_buffer_all,
+            file_name="consolidado.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+)
+
         # 1) CSV único com as duas tabelas empilhadas e coluna de origem
         #df_orgao_com_tag = df_orgao.copy()
         #df_orgao_com_tag["_tabela"] = "Tabela 1 - Órgão Selecionado"
