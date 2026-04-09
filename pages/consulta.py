@@ -323,9 +323,9 @@ def pagina_consulta():
 
             # --- Quantidade por mês
             qtd_por_mes = (
-                df_auxilio.groupby("ano_mes", as_index=False)
+                df_auxilio.groupby("ano_mes")
                 .size()
-                .rename(columns={"size": "quantidade"})
+                .reset_index(name="quantidade")
             )
 
             # Ordena ANTES de quebrar em ano/mês
