@@ -266,8 +266,8 @@ def pagina_consulta():
             workbook = writer.book
             worksheet = writer.sheets["Consolidado"]
 
-            format_orgao = workbook.add_format({"bg_color": "#E06666"})
-            format_outros = workbook.add_format({"bg_color": "#6D9EEB"})
+            format_orgao = workbook.add_format({"bg_color": "#FFFFFF"})
+            format_outros = workbook.add_format({"bg_color": "#FAFAFD"})
 
             # Aplicar cores por linha
             for i, tipo in enumerate(df_final["tipo"], start=1):  # start=1 por causa do header
