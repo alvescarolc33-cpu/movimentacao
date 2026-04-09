@@ -1,7 +1,7 @@
 import streamlit as st
 
 from auth.login import tela_login
-#from pages.consulta import pagina_consulta
+from pages.consulta import pagina_consulta
 from pages.edital import pagina_edital
 
 # ---------------- SESSION ----------------
