@@ -36,7 +36,7 @@ if not st.session_state.user:
 
 menu = st.sidebar.radio(
     "Menu",
-    ["Consulta", "Edital", "Sair"]
+    ["Movimentação", "Edital", "Atos TJ", "Sair"]
 )
 
 # Mostrar informações do usuário logado
@@ -47,7 +47,7 @@ with st.sidebar:
 
 # ---------------- ROUTER ----------------
 
-if menu == "Consulta":
+if menu == "Movimentação":
 
     pagina_consulta()
 
