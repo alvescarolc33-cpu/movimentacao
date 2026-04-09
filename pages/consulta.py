@@ -664,8 +664,6 @@ def pagina_consulta():
         #    total_vago = len(df_vago)
         #    meses_vago = df_vago["ano_mes"].nunique()
 
-        #    st.metric("Meses VAGO", value=meses_vago)
-
             # Contagem por mês + gráfico compacto
         #    qtd_vago_mes = (
         #        df_vago.groupby("ano_mes", as_index=False)
