@@ -328,19 +328,17 @@ def pagina_consulta():
                 .reset_index(name="quantidade")
             )
 
-            # Ordena ANTES de quebrar em ano/mês
-            qtd_por_mes["ord"] = pd.to_datetime(qtd_por_mes["ano_mes"], errors="coerce")
-            qtd_por_mes = qtd_por_mes.sort_values("ord").drop(columns=["ord"])
-
-            # Separa ano e mês em colunas distintas
+            # Converter para datetime
             qtd_por_mes["ord"] = pd.to_datetime(qtd_por_mes["ano_mes"], errors="coerce")
 
+            # Ordenar
+            qtd_por_mes = qtd_por_mes.sort_values("ord")
+
+            # Criar ano e mês com segurança
             qtd_por_mes["ano"] = qtd_por_mes["ord"].dt.year
             qtd_por_mes["mes"] = qtd_por_mes["ord"].dt.month.astype(str).str.zfill(2)
 
-            qtd_por_mes = qtd_por_mes.drop(columns=["ord"])
-
-            # Reorganiza as colunas
+            # Limpeza final
             qtd_por_mes = qtd_por_mes[["ano", "mes", "quantidade"]]
 
             # --- Tabela resumo
