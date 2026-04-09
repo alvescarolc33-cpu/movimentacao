@@ -294,18 +294,50 @@ def pagina_consulta():
         if df_auxilio.empty:
             st.info("Não há registros de auxílio para o Órgão selecionado.")
         else:
-            # -------------------- Tratamento de dados
+            # -------------------- Tratamento robusto de datas
+
+            # Remove nulos
             df_auxilio = df_auxilio.dropna(subset=["ano", "mes"])
 
-            df_auxilio["mes"] = df_auxilio["mes"].astype(str).str.zfill(2)
+            # Converter mês (aceita número, texto, etc.)
+            mes_map = {
+                "jan": "01", "janeiro": "01",
+                "fev": "02", "fevereiro": "02",
+                "mar": "03", "março": "03", "marco": "03",
+                "abr": "04", "abril": "04",
+                "mai": "05", "maio": "05",
+                "jun": "06", "junho": "06",
+                "jul": "07", "julho": "07",
+                "ago": "08", "agosto": "08",
+                "set": "09", "setembro": "09",
+                "out": "10", "outubro": "10",
+                "nov": "11", "novembro": "11",
+                "dez": "12", "dezembro": "12"
+            }
 
-            # Criar ano_mes seguro
+            # Normalizar mês
+            df_auxilio["mes"] = (
+                df_auxilio["mes"]
+                .astype(str)
+                .str.lower()
+                .str.strip()
+                .replace(mes_map)
+            )
+
+            # Se ainda for número, padroniza
+            df_auxilio["mes"] = df_auxilio["mes"].str.extract(r"(\d+)")[0]
+            df_auxilio["mes"] = df_auxilio["mes"].str.zfill(2)
+
+            # Converter ano
+            df_auxilio["ano"] = df_auxilio["ano"].astype(str).str.extract(r"(\d{4})")[0]
+
+            # Criar data
             df_auxilio["ano_mes"] = pd.to_datetime(
-                df_auxilio["ano"].astype(str) + "-" + df_auxilio["mes"],
+                df_auxilio["ano"] + "-" + df_auxilio["mes"],
                 errors="coerce"
             )
 
-            # Remover datas inválidas
+            # Remover inválidos
             df_auxilio = df_auxilio[df_auxilio["ano_mes"].notna()]
 
             # Se após limpeza ficou vazio
