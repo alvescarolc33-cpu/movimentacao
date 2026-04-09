@@ -381,8 +381,9 @@ def pagina_consulta():
 
                 st.dataframe(qtd_por_mes, use_container_width=True)
 
-        # -------------------- Análise: designacao == 'DESIGNAÇÃO'
+        # -------------------- Análise: Designação
         st.divider()
+
         st.markdown(
             '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">🧾 Ocorrências com Designação</h3>',
             unsafe_allow_html=True,
@@ -390,22 +391,25 @@ def pagina_consulta():
 
         df_designacao = df_orgao.copy()
 
+        # -------------------- Filtro
         if not df_designacao.empty:
-            df_designacao["auxilio"] = df_designacao["auxilio"].fillna("")
-            mask_desig - df_designacao["auxilio"].str.contains(
-		r"aux", case=False, na=False
-	    )
+            df_designacao["designacao"] = df_designacao["designacao"].fillna("")
+
+            mask_desig = df_designacao["designacao"].str.contains(
+                r"designa", case=False, na=False
+            )
 
             df_designacao = df_designacao[mask_desig].copy()
         else:
             df_designacao = pd.DataFrame([])
 
+        # -------------------- Verificação
         if df_designacao.empty:
-            st.info("Não há ocorrências com designação para o Órgãos selecionado.")
+            st.info("Não há ocorrências com designação para o Órgão selecionado.")
         else:
-            df_designacao = df_designacao.dropna(subset=["ano","mes"])
+            df_designacao = df_designacao.dropna(subset=["ano", "mes"])
 
-            # Converter mês (aceita número, texto, etc.)
+            # -------------------- Tratamento de mês
             mes_map = {
                 "jan": "01", "janeiro": "01",
                 "fev": "02", "fevereiro": "02",
@@ -434,6 +438,7 @@ def pagina_consulta():
 
             df_designacao["ano"] = df_designacao["ano"].astype(str).str.extract(r"(\d{4})")[0]
 
+            # -------------------- Data
             df_designacao["ano_mes"] = pd.to_datetime(
                 df_designacao["ano"] + "-" + df_designacao["mes"],
                 errors="coerce"
@@ -446,13 +451,13 @@ def pagina_consulta():
             else:
                 # -------------------- Métricas
                 total_reg_designacao = len(df_designacao)
-                meses_com_designacao = df_auxilio["ano_mes"].dt.to_period("M").nunique()
+                meses_com_designacao = df_designacao["ano_mes"].dt.to_period("M").nunique()
                 membros_distintos_designacao = df_designacao["membro"].nunique()
 
                 colm1, colm2, colm3 = st.columns(3)
 
                 with colm1:
-                    st.metric("Designações concedidos", value=total_reg_designacao)
+                    st.metric("Designações concedidas", value=total_reg_designacao)
 
                 with colm2:
                     st.metric(
@@ -466,7 +471,7 @@ def pagina_consulta():
                         value=membros_distintos_designacao
                     )
 
-                # -------------------- Agrupamento por mês
+                # -------------------- Agrupamento
                 df_designacao["ano_mes_str"] = df_designacao["ano_mes"].dt.to_period("M").astype(str)
 
                 qtd_por_mes_designacao = (
@@ -475,7 +480,10 @@ def pagina_consulta():
                     .reset_index(name="quantidade")
                 )
 
-                qtd_por_mes_designacao["ord"] = pd.to_datetime(qtd_por_mes_designacao["ano_mes_str"], errors="coerce")
+                qtd_por_mes_designacao["ord"] = pd.to_datetime(
+                    qtd_por_mes_designacao["ano_mes_str"], errors="coerce"
+                )
+
                 qtd_por_mes_designacao = qtd_por_mes_designacao.sort_values("ord")
 
                 qtd_por_mes_designacao["ano"] = qtd_por_mes_designacao["ord"].dt.year
@@ -490,7 +498,6 @@ def pagina_consulta():
                 )
 
                 st.dataframe(qtd_por_mes_designacao, use_container_width=True)
-
 
         # -------------------- Análise: designacao == 'DESIGNAÇÃO'
     #    st.divider()
