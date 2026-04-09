@@ -286,6 +286,7 @@ def pagina_consulta():
 
             mask_aux = df_auxilio["designacao"].str.contains(
                 r"aux", case=False, na=False
+                & ~df_auxilio["designacao"].str.contains(r"tempor", case=False, na=False)
             )
 
             df_auxilio = df_auxilio[mask_aux].copy()
@@ -396,6 +397,7 @@ def pagina_consulta():
 
             mask_desig = df_designacao["designacao"].str.contains(
                 r"designa", case=False, na=False
+                & ~df_designacao["designacao"].str.contains(r"tempor", case=False, na=False)
             )
 
             df_designacao = df_designacao[mask_desig].copy()
