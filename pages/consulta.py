@@ -266,7 +266,7 @@ def pagina_consulta():
                 use_container_width=True,
             )
 
-    # -------------------- Análises de Auxílios
+        # -------------------- Análises de Auxílios
 
         st.divider()
 
@@ -277,77 +277,89 @@ def pagina_consulta():
 
         df_auxilio = df_orgao.copy()
 
+        # -------------------- Filtro de auxílio
         if not df_auxilio.empty:
             df_auxilio["designacao"] = df_auxilio["designacao"].fillna("")
 
+            # MAIS FLEXÍVEL (evita perder registros)
             mask_aux = df_auxilio["designacao"].str.contains(
-                r"aux[ií]lio", case=False, regex=True
+                r"aux", case=False, na=False
             )
 
             df_auxilio = df_auxilio[mask_aux].copy()
         else:
             df_auxilio = pd.DataFrame([])
 
+        # -------------------- Verificação
         if df_auxilio.empty:
             st.info("Não há registros de auxílio para o Órgão selecionado.")
         else:
-            # Ajuste mês/ano
+            # -------------------- Tratamento de dados
+            df_auxilio = df_auxilio.dropna(subset=["ano", "mes"])
+
             df_auxilio["mes"] = df_auxilio["mes"].astype(str).str.zfill(2)
 
+            # Criar ano_mes seguro
             df_auxilio["ano_mes"] = pd.to_datetime(
                 df_auxilio["ano"].astype(str) + "-" + df_auxilio["mes"],
                 errors="coerce"
-            ).dt.to_period("M").astype(str)
-
-            # --- Métricas rápidas
-            total_reg_auxilio = len(df_auxilio)
-            meses_com_auxilio = df_auxilio["ano_mes"].nunique()
-            membros_distintos_auxilio = df_auxilio["membro"].nunique()
-
-            colm1, colm2, colm3 = st.columns(3)
-
-            with colm1:
-                st.metric("Auxílios concedidos", value=f"{total_reg_auxilio}")
-
-            with colm2:
-                st.metric(
-                    "Quantidade de Meses com Auxílio",
-                    value=f"{meses_com_auxilio}"
-                )
-
-            with colm3:
-                st.metric(
-                    "Membros distintos",
-                    value=f"{membros_distintos_auxilio}",
-                )
-
-            # --- Quantidade por mês
-            qtd_por_mes = (
-                df_auxilio.groupby("ano_mes")
-                .size()
-                .reset_index(name="quantidade")
             )
 
-            # Converter para datetime
-            qtd_por_mes["ord"] = pd.to_datetime(qtd_por_mes["ano_mes"], errors="coerce")
+            # Remover datas inválidas
+            df_auxilio = df_auxilio[df_auxilio["ano_mes"].notna()]
 
-            # Ordenar
-            qtd_por_mes = qtd_por_mes.sort_values("ord")
+            # Se após limpeza ficou vazio
+            if df_auxilio.empty:
+                st.warning("Os dados de auxílio existem, mas possuem datas inválidas.")
+            else:
+                # -------------------- Métricas
+                total_reg_auxilio = len(df_auxilio)
+                meses_com_auxilio = df_auxilio["ano_mes"].dt.to_period("M").nunique()
+                membros_distintos_auxilio = df_auxilio["membro"].nunique()
 
-            # Criar ano e mês com segurança
-            qtd_por_mes["ano"] = qtd_por_mes["ord"].dt.year
-            qtd_por_mes["mes"] = qtd_por_mes["ord"].dt.month.astype(str).str.zfill(2)
+                colm1, colm2, colm3 = st.columns(3)
 
-            # Limpeza final
-            qtd_por_mes = qtd_por_mes[["ano", "mes", "quantidade"]]
+                with colm1:
+                    st.metric("Auxílios concedidos", value=total_reg_auxilio)
 
-            # --- Tabela resumo
-            st.markdown(
-                '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">Resumo por mês</h3>',
-                unsafe_allow_html=True,
-            )
+                with colm2:
+                    st.metric(
+                        "Quantidade de Meses com Auxílio",
+                        value=meses_com_auxilio
+                    )
 
-            st.dataframe(qtd_por_mes, use_container_width=True)
+                with colm3:
+                    st.metric(
+                        "Membros distintos",
+                        value=membros_distintos_auxilio
+                    )
+
+                # -------------------- Agrupamento por mês
+                df_auxilio["ano_mes_str"] = df_auxilio["ano_mes"].dt.to_period("M").astype(str)
+
+                qtd_por_mes = (
+                    df_auxilio.groupby("ano_mes_str")
+                    .size()
+                    .reset_index(name="quantidade")
+                )
+
+                # Ordenar corretamente
+                qtd_por_mes["ord"] = pd.to_datetime(qtd_por_mes["ano_mes_str"], errors="coerce")
+                qtd_por_mes = qtd_por_mes.sort_values("ord")
+
+                # Criar colunas finais
+                qtd_por_mes["ano"] = qtd_por_mes["ord"].dt.year
+                qtd_por_mes["mes"] = qtd_por_mes["ord"].dt.month.astype(str).str.zfill(2)
+
+                qtd_por_mes = qtd_por_mes[["ano", "mes", "quantidade"]]
+
+                # -------------------- Tabela
+                st.markdown(
+                    '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">Resumo por mês</h3>',
+                    unsafe_allow_html=True,
+                )
+
+                st.dataframe(qtd_por_mes, use_container_width=True)
     
     # -------------------- Análises de Auxílios
         #st.divider()
