@@ -254,7 +254,6 @@ def pagina_consulta():
             if not g_outros.empty:
                 lista_final.append(g_outros)
 
-        # IMPORTANTE: manter "tipo" para formatação
         df_final = pd.concat(lista_final, ignore_index=True)
 
         # -------------------- Gerar Excel
@@ -274,7 +273,6 @@ def pagina_consulta():
                 fmt = format_orgao if tipo == "orgao" else format_outros
                 worksheet.set_row(i, cell_format=fmt)
 
-        # Remover coluna tipo APÓS formatação (opcional)
         df_final = df_final.drop(columns="tipo")
 
         excel_buffer_all.seek(0)
@@ -285,49 +283,6 @@ def pagina_consulta():
             file_name="consolidado.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 )
-
-        # 1) CSV único com as duas tabelas empilhadas e coluna de origem
-        #df_orgao_com_tag = df_orgao.copy()
-        #df_orgao_com_tag["_tabela"] = "Tabela 1 - Órgão Selecionado"
-
-        #df_outros_com_tag = df_outros.copy()
-        #df_outros_com_tag["_tabela"] = "Tabela 2 - Outros Órgãos"
-
-        #df_consolidado = pd.concat(
-        #    [df_orgao_com_tag, df_outros_com_tag], ignore_index=True, sort=False
-        #)
-
-        #csv_bytes_all = df_consolidado.to_csv(index=False).encode("utf-8")
-
-        # 2) Excel único com duas abas (mais organizado para leitura)
-        #excel_buffer_all = io.BytesIO()
-        #with pd.ExcelWriter(excel_buffer_all, engine="xlsxwriter") as writer:
-        #    # Se quiser preservar o DataFrame original sem a coluna `_tabela`:
-        #    df_orgao.to_excel(writer, index=False, sheet_name="Órgão Selecionado")
-        #    df_outros.to_excel(writer, index=False, sheet_name="Outros Órgãos")
-
-            # Opcional: também incluir a aba consolidada com a coluna `_tabela`
-            # df_consolidado.to_excel(writer, index=False, sheet_name="Consolidado")
-
-        #excel_buffer_all.seek(0)
-
-        #col_dl_csv, col_dl_xlsx = st.columns(2)
-        #with col_dl_csv:
-        #    st.download_button(
-        #        label="⬇️ Baixar CSV (Consolidado)",
-        #        data=csv_bytes_all,
-        #        file_name=f"consolidado_{orgao_sel}.csv",
-        #        mime="text/csv",
-        #        use_container_width=True,
-        #    )
-        #with col_dl_xlsx:
-        #    st.download_button(
-        #        label="⬇️ Baixar Excel (2 abas)",
-        #        data=excel_buffer_all.getvalue(),
-        #        file_name=f"consolidado_{orgao_sel}.xlsx",
-        #        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        #        use_container_width=True,
-        #    )
 
         # -------------------- Análises de Auxílios
 
