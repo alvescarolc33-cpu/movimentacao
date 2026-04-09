@@ -47,13 +47,17 @@ with st.sidebar:
 
 # ---------------- ROUTER ----------------
 
-if menu == "Consulta":
+if menu == "Movimentação":
 
     pagina_consulta()
 
 elif menu == "Edital":
     
     pagina_edital()
+
+elif menu == "Atos TJ":
+    
+    pagina_atos()
 
 elif menu == "Sair":
 
