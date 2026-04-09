@@ -47,7 +47,7 @@ with st.sidebar:
 
 # ---------------- ROUTER ----------------
 
-if menu == "Movimentação":
+if menu == "Consulta":
 
     pagina_consulta()
 
