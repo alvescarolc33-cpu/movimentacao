@@ -385,7 +385,7 @@ def pagina_consulta():
         st.divider()
 
         st.markdown(
-            '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">🧾 Ocorrências com Designação</h3>',
+            '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">🧾 Ocorrências com Designação/Designação Temporária</h3>',
             unsafe_allow_html=True,
         )
 
