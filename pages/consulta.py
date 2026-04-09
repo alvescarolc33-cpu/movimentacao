@@ -284,9 +284,11 @@ def pagina_consulta():
         if not df_auxilio.empty:
             df_auxilio["designacao"] = df_auxilio["designacao"].fillna("")
 
-            mask_aux = df_auxilio["designacao"].str.contains(
-                r"aux", case=False, na=False
-            )
+            #mask_aux = df_auxilio["designacao"].str.contains(
+            #    r"aux", case=False, na=False
+            #)
+
+            mask_aux = df_auxilio["designacao"].str.strip().str.upper() == "AUXÍLIO"
 
             df_auxilio = df_auxilio[mask_aux].copy()
         else:
