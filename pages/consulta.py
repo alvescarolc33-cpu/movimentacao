@@ -107,12 +107,10 @@ def consultar_por_orgao(orgao: str) -> pd.DataFrame:
 
 def consultar_membros_mes_outros_orgaos_pares(df_orgao: pd.DataFrame, orgao_sel: str) -> pd.DataFrame:
     supabase = get_supabase()
-    #Usa os membros e meses da Tabela 1 e busca todas as ocorrências em outros órgãos, mas só retorna registros que casem exatamente o PAR (membro, mes) da Tabela 1. Exclui sempre membro = 'VAGO'.
 
     if df_orgao.empty or "membro" not in df_orgao.columns or "mes" not in df_orgao.columns:
         return pd.DataFrame([])
 
-    # Extrai pares (membro, mes) da Tabela 1, excluindo 'VAGO'
     df_pairs = df_orgao.copy()
     df_pairs["membro_norm"] = df_pairs["membro"].apply(normalize_str)
     df_pairs["mes_norm"] = df_pairs["mes"].apply(normalize_str)
@@ -126,7 +124,6 @@ def consultar_membros_mes_outros_orgaos_pares(df_orgao: pd.DataFrame, orgao_sel:
     if not membros or not meses:
         return pd.DataFrame([])
 
-    # Consulta bruta no Supabase (limitada por conjuntos), excluindo o órgão selecionado e 'VAGO'
     q = (
         supabase
         .table("movimentacao")
@@ -147,22 +144,17 @@ def consultar_membros_mes_outros_orgaos_pares(df_orgao: pd.DataFrame, orgao_sel:
     if df_raw.empty:
         return df_raw
 
-    # Normaliza os campos para comparação de pares
     df_raw["membro_norm"] = df_raw["membro"].apply(normalize_str)
     df_raw["mes_norm"] = df_raw["mes"].apply(normalize_str)
     df_raw["ano_norm"] = df_raw["ano"].astype(str).apply(normalize_str)
 
-    # Conjunto de pares válidos da Tabela 1
     pairs_set = set(zip(df_pairs["membro_norm"], df_pairs["mes_norm"],df_pairs["ano_norm"]))
 
-    # Filtra mantendo apenas (membro, mes) que existam na Tabela 1
     df_outros = df_raw[df_raw.apply(lambda r: (r["membro_norm"], r["mes_norm"],r["ano_norm"]) in pairs_set, axis=1)].copy()
     
-    # Garante ordem e remove colunas auxiliares
     cols = [c for c in ["ano", "mes", "membro", "designacao", "orgao", "observacao"] if c in df_outros.columns]
     df_outros = df_outros[cols]
 
-    #Ordena pela ordem customizada
     df_outros = ordenar_por_mes_e_designacao(df_outros)
 
     df_outros.reset_index(drop=True, inplace=True)
@@ -186,9 +178,8 @@ def pagina_consulta():
             )
 
     with col2:
-        # spacer para alinhar verticalmente o botão com o selectbox
-        st.write("")  # primeira linha vazia
-        st.write("")  # segunda linha vazia (ajusta a altura)
+        st.write("")
+        st.write("")
         consultar = st.button("🔎 Consultar", use_container_width=True)
 
     if consultar and orgao_sel:
@@ -223,14 +214,11 @@ def pagina_consulta():
             unsafe_allow_html=True,
         )
 
-        # -------------------- Garantir mesma estrutura
         df_orgao["tipo"] = "orgao"
         df_outros["tipo"] = "outros"
 
-        # -------------------- Juntar tudo
         df_all = pd.concat([df_orgao, df_outros], ignore_index=True)
 
-        # -------------------- Ordenar meses corretamente
         ordem_meses = [
             "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
             "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
@@ -242,7 +230,6 @@ def pagina_consulta():
             ordered=True
         )
 
-        # -------------------- Montar tabela final
         lista_final = []
 
         for (ano, mes), grupo in df_all.groupby(["ano", "mes"], sort=True):
@@ -268,7 +255,6 @@ def pagina_consulta():
             format_orgao = workbook.add_format({"bg_color": "#FFFFFF"})
             format_outros = workbook.add_format({"bg_color": "#FAFAFD"})
 
-            # Aplicar cores por linha
             for i, tipo in enumerate(df_final["tipo"], start=1):  # start=1 por causa do header
                 fmt = format_orgao if tipo == "orgao" else format_outros
                 worksheet.set_row(i, cell_format=fmt)
@@ -295,11 +281,9 @@ def pagina_consulta():
 
         df_auxilio = df_orgao.copy()
 
-        # -------------------- Filtro de auxílio
         if not df_auxilio.empty:
             df_auxilio["designacao"] = df_auxilio["designacao"].fillna("")
 
-            # MAIS FLEXÍVEL (evita perder registros)
             mask_aux = df_auxilio["designacao"].str.contains(
                 r"aux", case=False, na=False
             )
@@ -313,7 +297,6 @@ def pagina_consulta():
         else:
             df_auxilio = df_auxilio.dropna(subset=["ano", "mes"])
 
-            # Converter mês (aceita número, texto, etc.)
             mes_map = {
                 "jan": "01", "janeiro": "01",
                 "fev": "02", "fevereiro": "02",
@@ -352,7 +335,6 @@ def pagina_consulta():
             if df_auxilio.empty:
                 st.warning("Os dados de auxílio existem, mas possuem datas inválidas.")
             else:
-                # -------------------- Métricas
                 total_reg_auxilio = len(df_auxilio)
                 meses_com_auxilio = df_auxilio["ano_mes"].dt.to_period("M").nunique()
                 membros_distintos_auxilio = df_auxilio["membro"].nunique()
@@ -374,7 +356,6 @@ def pagina_consulta():
                         value=membros_distintos_auxilio
                     )
 
-                # -------------------- Agrupamento por mês
                 df_auxilio["ano_mes_str"] = df_auxilio["ano_mes"].dt.to_period("M").astype(str)
 
                 qtd_por_mes = (
@@ -421,13 +402,11 @@ def pagina_consulta():
         else:
             df_designacao = pd.DataFrame([])
 
-        # -------------------- Verificação
         if df_designacao.empty:
             st.info("Não há ocorrências com designação para o Órgão selecionado.")
         else:
             df_designacao = df_designacao.dropna(subset=["ano", "mes"])
 
-            # -------------------- Tratamento de mês
             mes_map = {
                 "jan": "01", "janeiro": "01",
                 "fev": "02", "fevereiro": "02",
@@ -456,7 +435,6 @@ def pagina_consulta():
 
             df_designacao["ano"] = df_designacao["ano"].astype(str).str.extract(r"(\d{4})")[0]
 
-            # -------------------- Data
             df_designacao["ano_mes"] = pd.to_datetime(
                 df_designacao["ano"] + "-" + df_designacao["mes"],
                 errors="coerce"
@@ -467,7 +445,6 @@ def pagina_consulta():
             if df_designacao.empty:
                 st.warning("Os dados de designação existem, mas possuem datas inválidas.")
             else:
-                # -------------------- Métricas
                 total_reg_designacao = len(df_designacao)
                 meses_com_designacao = df_designacao["ano_mes"].dt.to_period("M").nunique()
                 membros_distintos_designacao = df_designacao["membro"].nunique()
@@ -489,7 +466,6 @@ def pagina_consulta():
                         value=membros_distintos_designacao
                     )
 
-                # -------------------- Agrupamento
                 df_designacao["ano_mes_str"] = df_designacao["ano_mes"].dt.to_period("M").astype(str)
 
                 qtd_por_mes_designacao = (
@@ -517,7 +493,7 @@ def pagina_consulta():
 
                 st.dataframe(qtd_por_mes_designacao, use_container_width=True)
 
-                # -------------------- Análise: NOVO VAGO
+        # -------------------- Análise: NOVO VAGO
         st.divider()
 
         st.markdown(
@@ -527,7 +503,6 @@ def pagina_consulta():
 
         df_vagos = df_orgao.copy()
 
-        # -------------------- Filtro
         if not df_vagos.empty:
             df_vagos["membro"] = df_vagos["membro"].astype(str).fillna("")
 
@@ -539,13 +514,11 @@ def pagina_consulta():
         else:
             df_vagos = pd.DataFrame([])
 
-        # -------------------- Verificação
         if df_vagos.empty:
             st.info("Não há ocorrências de vacância para o Órgão selecionado.")
         else:
             df_vagos = df_vagos.dropna(subset=["ano", "mes"])
 
-            # -------------------- Tratamento de mês
             mes_map = {
                 "jan": "01", "janeiro": "01",
                 "fev": "02", "fevereiro": "02",
@@ -585,14 +558,11 @@ def pagina_consulta():
                 errors="coerce"
             )
 
-            # -------------------- Data
-
             df_vagos = df_vagos[df_vagos["ano_mes"].notna()]
 
             if df_vagos.empty:
                 st.warning("Os dados de vacância existem, mas possuem datas inválidas.")
             else:
-                # -------------------- Métricas
                 total_reg_vagos = len(df_vagos)
                 meses_com_vagos = df_vagos["ano_mes"].dt.to_period("M").nunique()
                 membros_distintos_vagos = df_vagos["membro"].nunique()
@@ -602,7 +572,6 @@ def pagina_consulta():
                 with col1:
                 st.metric("Meses Vagos", meses_com_vagos)
 
-                # -------------------- Agrupamento
                 df_vagos["ano_mes_str"] = df_vagos["ano_mes"].dt.to_period("M").astype(str)
 
                 qtd_por_mes_vagos = (
