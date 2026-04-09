@@ -333,7 +333,12 @@ def pagina_consulta():
             qtd_por_mes = qtd_por_mes.sort_values("ord").drop(columns=["ord"])
 
             # Separa ano e mês em colunas distintas
-            qtd_por_mes[["ano", "mes"]] = qtd_por_mes["ano_mes"].str.split("-", expand=True)
+            qtd_por_mes["ord"] = pd.to_datetime(qtd_por_mes["ano_mes"], errors="coerce")
+
+            qtd_por_mes["ano"] = qtd_por_mes["ord"].dt.year
+            qtd_por_mes["mes"] = qtd_por_mes["ord"].dt.month.astype(str).str.zfill(2)
+
+            qtd_por_mes = qtd_por_mes.drop(columns=["ord"])
 
             # Reorganiza as colunas
             qtd_por_mes = qtd_por_mes[["ano", "mes", "quantidade"]]
