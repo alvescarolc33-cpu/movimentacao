@@ -570,7 +570,7 @@ def pagina_consulta():
                 col1, = st.columns(1)
 
                 with col1:
-                st.metric("Meses Vagos", meses_com_vagos)
+                    st.metric("Meses Vagos", meses_com_vagos)
 
                 df_vagos["ano_mes_str"] = df_vagos["ano_mes"].dt.to_period("M").astype(str)
 
