@@ -517,55 +517,171 @@ def pagina_consulta():
 
                 st.dataframe(qtd_por_mes_designacao, use_container_width=True)
 
-        # -------------------- Análise: membro == 'VAGO'
+        # -------------------- Análise: VAGO
         st.divider()
+
         st.markdown(
-            '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">🚫 Ocorrências com Órgão VAGO</h3>',
+            '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">🚫 Ocorrências - Vacância</h3>',
             unsafe_allow_html=True,
         )
 
-        df_vago = df_orgao.copy()
-        if not df_vago.empty:
-            df_vago["membro"] = df_vago["membro"].fillna("").str.strip()
-            df_vago = df_vago[df_vago["membro"].str.upper() == "VAGO"]
-        else:
-            df_vago = pd.DataFrame([])
+        df_vagos = df_orgao.copy()
 
-        if df_vago.empty:
-            st.info("Não há ocorrências com membro igual a 'VAGO'.")
+        # -------------------- Filtro
+        if not df_vagos.empty:
+            df_vagos["membro"] = df_vagos["membro"].astype(str).fillna("")
+
+            mask_vagos = df_vagos["membro"].str.contains(
+                r"VAGO", case=False, na=False
+            )
+
+            df_vagos = df_vagos[mask_vagos].copy()
         else:
-            # Normaliza 'mes' -> 'ano_mes'
-            df_vago["ano_mes"] = (
-                pd.to_datetime(df_vago["mes"], errors="coerce")
-                .dt.to_period("M")
+            df_vagos = pd.DataFrame([])
+
+        # -------------------- Verificação
+        if df_vagos.empty:
+            st.info("Não há ocorrências de vacância para o Órgão selecionado.")
+        else:
+            df_vagos = df_vagos.dropna(subset=["ano", "mes"])
+
+            # -------------------- Tratamento de mês
+            mes_map = {
+                "jan": "01", "janeiro": "01",
+                "fev": "02", "fevereiro": "02",
+                "mar": "03", "março": "03", "marco": "03",
+                "abr": "04", "abril": "04",
+                "mai": "05", "maio": "05",
+                "jun": "06", "junho": "06",
+                "jul": "07", "julho": "07",
+                "ago": "08", "agosto": "08",
+                "set": "09", "setembro": "09",
+                "out": "10", "outubro": "10",
+                "nov": "11", "novembro": "11",
+                "dez": "12", "dezembro": "12"
+            }
+
+            df_vagos["mes"] = (
+                df_vagos["mes"]
                 .astype(str)
+                .str.lower()
+                .str.strip()
+                .replace(mes_map)
             )
-            df_vago["ano_mes"] = df_vago["ano_mes"].mask(
-                df_vago["ano_mes"].isin(["NaT", "nan"]), df_vago["mes"]
+
+            df_vagos["mes"] = df_vagos["mes"].str.extract(r"(\d+)")[0]
+            df_vagos["mes"] = df_vagos["mes"].str.zfill(2)
+
+            df_vagos["ano"] = (
+                df_vagos["ano"]
+                .astype(str)
+                .str.extract(r"(\d{4})")[0]
             )
+
+            df_vagos = df_vagos[df_vagos["ano"].notna()]
+
+            df_vagos["ano_mes"] = pd.to_datetime(
+                df_vagos["ano"] + "-" + df_vagos["mes"],
+                errors="coerce"
+            )
+
+            # -------------------- Data
+
+            df_vagos = df_vagos[df_vagos["ano_mes"].notna()]
+
+            if df_vagos.empty:
+                st.warning("Os dados de vacância existem, mas possuem datas inválidas.")
+            else:
+                # -------------------- Métricas
+                total_reg_vagos = len(df_vagos)
+                meses_com_vagos = df_vagos["ano_mes"].dt.to_period("M").nunique()
+                membros_distintos_vagos = df_vagos["membro"].nunique()
+
+                colm3 = st.columns(1)
+               
+                with colm3:
+                    st.metric(
+                        "Meses Vagos",
+                        value=meses_com_vagos
+                    )
+
+                # -------------------- Agrupamento
+                df_vagos["ano_mes_str"] = df_vagos["ano_mes"].dt.to_period("M").astype(str)
+
+                qtd_por_mes_vagos = (
+                    df_vagos.groupby("ano_mes_str")
+                    .size()
+                    .reset_index(name="quantidade")
+                )
+
+                qtd_por_mes_vagos["ord"] = pd.to_datetime(
+                    qtd_por_mes_vagos["ano_mes_str"], errors="coerce"
+                )
+
+                qtd_por_mes_vagos = qtd_por_mes_vagos.sort_values("ord")
+
+                qtd_por_mes_vagos["ano"] = qtd_por_mes_vagos["ord"].dt.year
+                qtd_por_mes_vagos["mes"] = qtd_por_mes_vagos["ord"].dt.month.astype(str).str.zfill(2)
+
+                qtd_por_mes_vagos = qtd_por_mes_vagos[["ano", "mes", "quantidade"]]
+
+                # -------------------- Tabela
+                st.markdown(
+                    '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">Resumo por mês</h3>',
+                    unsafe_allow_html=True,
+                )
+
+                st.dataframe(qtd_por_mes_vagos, use_container_width=True)
+
+        # -------------------- Análise: membro == 'VAGO'
+        #st.divider()
+        #st.markdown(
+        #    '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">🚫 Ocorrências com Órgão VAGO</h3>',
+        #    unsafe_allow_html=True,
+        #)
+
+        #df_vago = df_orgao.copy()
+        #if not df_vago.empty:
+        #    df_vago["membro"] = df_vago["membro"].fillna("").str.strip()
+        #    df_vago = df_vago[df_vago["membro"].str.upper() == "VAGO"]
+        #else:
+        #    df_vago = pd.DataFrame([])
+
+        #if df_vago.empty:
+        #    st.info("Não há ocorrências com membro igual a 'VAGO'.")
+        #else:
+            # Normaliza 'mes' -> 'ano_mes'
+        #    df_vago["ano_mes"] = (
+        #        pd.to_datetime(df_vago["mes"], errors="coerce")
+        #        .dt.to_period("M")
+        #        .astype(str)
+        #    )
+        #    df_vago["ano_mes"] = df_vago["ano_mes"].mask(
+        #        df_vago["ano_mes"].isin(["NaT", "nan"]), df_vago["mes"]
+        #    )
 
             # Métricas
-            total_vago = len(df_vago)
-            meses_vago = df_vago["ano_mes"].nunique()
+        #    total_vago = len(df_vago)
+        #    meses_vago = df_vago["ano_mes"].nunique()
 
-            st.metric("Meses VAGO", value=meses_vago)
+        #    st.metric("Meses VAGO", value=meses_vago)
 
             # Contagem por mês + gráfico compacto
-            qtd_vago_mes = (
-                df_vago.groupby("ano_mes", as_index=False)
-                .size()
-                .rename(columns={"size": "quantidade"})
-            )
-            qtd_vago_mes["ord"] = pd.to_datetime(
-                qtd_vago_mes["ano_mes"], errors="coerce"
-            )
-            qtd_vago_mes = qtd_vago_mes.sort_values(["ord", "ano_mes"]).drop(
-                columns=["ord"]
-            )
+        #    qtd_vago_mes = (
+        #        df_vago.groupby("ano_mes", as_index=False)
+        #        .size()
+        #        .rename(columns={"size": "quantidade"})
+        #    )
+        #    qtd_vago_mes["ord"] = pd.to_datetime(
+        #        qtd_vago_mes["ano_mes"], errors="coerce"
+        #    )
+        #    qtd_vago_mes = qtd_vago_mes.sort_values(["ord", "ano_mes"]).drop(
+        #        columns=["ord"]
+        #    )
 
             # --- Tabela resumo ---
-            st.markdown(
-                '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">Resumo por mês</h3>',
-                unsafe_allow_html=True,
-            )
-            st.dataframe(qtd_vago_mes, use_container_width=True)
+        #    st.markdown(
+        #        '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">Resumo por mês</h3>',
+        #        unsafe_allow_html=True,
+        #    )
+        #    st.dataframe(qtd_vago_mes, use_container_width=True)
