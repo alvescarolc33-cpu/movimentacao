@@ -266,20 +266,24 @@ def pagina_consulta():
                 use_container_width=True,
             )
 
-        # -------------------- Análises de Auxílios
+    # -------------------- Análises de Auxílios
+
         st.divider()
+
         st.markdown(
-            '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">📊 Análises de Auxílios (Órgão selecionado)</h3>',
+            '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">📊 Análises de Auxílios</h3>',
             unsafe_allow_html=True,
         )
 
-        # Cópia defensiva e filtro por 'auxílio' na designação (case-insensitive, com e sem acento)
         df_auxilio = df_orgao.copy()
+
         if not df_auxilio.empty:
             df_auxilio["designacao"] = df_auxilio["designacao"].fillna("")
+
             mask_aux = df_auxilio["designacao"].str.contains(
                 r"aux[ií]lio", case=False, regex=True
             )
+
             df_auxilio = df_auxilio[mask_aux].copy()
         else:
             df_auxilio = pd.DataFrame([])
@@ -287,55 +291,131 @@ def pagina_consulta():
         if df_auxilio.empty:
             st.info("Não há registros de auxílio para o Órgão selecionado.")
         else:
-            # Normaliza 'mes' para 'ano_mes' (AAAA-MM) quando possível; senão, mantém o original
-            # Tenta converter valores comuns (AAAA-MM, AAAA/MM, AAAA-MM-DD, DD/MM/AAAA, etc.)
-            df_auxilio["ano_mes"] = (
-                pd.to_datetime(df_auxilio["mes"], errors="coerce")
-                .dt.to_period("M")
-                .astype(str)
-            )
-            # Se não conseguiu converter (NaT), usa o valor original de 'mes'
-            df_auxilio["ano_mes"] = df_auxilio["ano_mes"].mask(
-                df_auxilio["ano_mes"].isin(["NaT", "nan"]), df_auxilio["mes"]
-            )
+            # Ajuste mês/ano
+            df_auxilio["mes"] = df_auxilio["mes"].astype(str).str.zfill(2)
 
-            # --- Métricas rápidas ---
+            df_auxilio["ano_mes"] = pd.to_datetime(
+                df_auxilio["ano"].astype(str) + "-" + df_auxilio["mes"],
+                errors="coerce"
+            ).dt.to_period("M").astype(str)
+
+            # --- Métricas rápidas
             total_reg_auxilio = len(df_auxilio)
             meses_com_auxilio = df_auxilio["ano_mes"].nunique()
             membros_distintos_auxilio = df_auxilio["membro"].nunique()
 
             colm1, colm2, colm3 = st.columns(3)
+
             with colm1:
-                st.metric("Registros de auxílio", value=f"{total_reg_auxilio}")
+                st.metric("Auxílios concedidos", value=f"{total_reg_auxilio}")
+
             with colm2:
                 st.metric(
-                    "Meses com ocorrência de auxílio", value=f"{meses_com_auxilio}"
+                    "Quantidade de Meses com Auxílio",
+                    value=f"{meses_com_auxilio}"
                 )
+
             with colm3:
                 st.metric(
-                    "Membros distintos (com auxílio)",
+                    "Membros distintos",
                     value=f"{membros_distintos_auxilio}",
                 )
 
-            # --- Quantidade por mês ---
+            # --- Quantidade por mês
             qtd_por_mes = (
                 df_auxilio.groupby("ano_mes", as_index=False)
                 .size()
                 .rename(columns={"size": "quantidade"})
             )
 
-            # Ordena cronologicamente quando possível
+            # Ordena ANTES de quebrar em ano/mês
             qtd_por_mes["ord"] = pd.to_datetime(qtd_por_mes["ano_mes"], errors="coerce")
-            qtd_por_mes = qtd_por_mes.sort_values(
-                ["ord", "ano_mes"], ascending=[True, True]
-            ).drop(columns=["ord"])
+            qtd_por_mes = qtd_por_mes.sort_values("ord").drop(columns=["ord"])
 
-            # --- Tabela resumo ---
+            # Separa ano e mês em colunas distintas
+            qtd_por_mes[["ano", "mes"]] = qtd_por_mes["ano_mes"].str.split("-", expand=True)
+
+            # Reorganiza as colunas
+            qtd_por_mes = qtd_por_mes[["ano", "mes", "quantidade"]]
+
+            # --- Tabela resumo
             st.markdown(
                 '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">Resumo por mês</h3>',
                 unsafe_allow_html=True,
             )
+
             st.dataframe(qtd_por_mes, use_container_width=True)
+    
+    # -------------------- Análises de Auxílios
+        #st.divider()
+        #st.markdown(
+        #    '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">📊 Análises de Auxílios (Órgão selecionado)</h3>',
+        #    unsafe_allow_html=True,
+        #)
+
+        # Cópia defensiva e filtro por 'auxílio' na designação (case-insensitive, com e sem acento)
+        #df_auxilio = df_orgao.copy()
+        #if not df_auxilio.empty:
+        #    df_auxilio["designacao"] = df_auxilio["designacao"].fillna("")
+        #    mask_aux = df_auxilio["designacao"].str.contains(
+        #        r"aux[ií]lio", case=False, regex=True
+        #    )
+        #    df_auxilio = df_auxilio[mask_aux].copy()
+        #else:
+        #    df_auxilio = pd.DataFrame([])
+
+        #if df_auxilio.empty:
+        #    st.info("Não há registros de auxílio para o Órgão selecionado.")
+        #else:
+            # Normaliza 'mes' para 'ano_mes' (AAAA-MM) quando possível; senão, mantém o original
+            # Tenta converter valores comuns (AAAA-MM, AAAA/MM, AAAA-MM-DD, DD/MM/AAAA, etc.)
+        #    df_auxilio["ano_mes"] = (
+        #        pd.to_datetime(df_auxilio["mes"], errors="coerce")
+        #        .dt.to_period("M")
+        #        .astype(str)
+        #    )
+            # Se não conseguiu converter (NaT), usa o valor original de 'mes'
+        #    df_auxilio["ano_mes"] = df_auxilio["ano_mes"].mask(
+        #        df_auxilio["ano_mes"].isin(["NaT", "nan"]), df_auxilio["mes"]
+        #    )
+
+            # --- Métricas rápidas ---
+        #    total_reg_auxilio = len(df_auxilio)
+        #    meses_com_auxilio = df_auxilio["ano_mes"].nunique()
+        #    membros_distintos_auxilio = df_auxilio["membro"].nunique()
+
+        #    colm1, colm2, colm3 = st.columns(3)
+        #    with colm1:
+        #        st.metric("Registros de auxílio", value=f"{total_reg_auxilio}")
+        #    with colm2:
+        #        st.metric(
+        #            "Meses com ocorrência de auxílio", value=f"{meses_com_auxilio}"
+        #        )
+        #    with colm3:
+        #        st.metric(
+        #            "Membros distintos (com auxílio)",
+        #            value=f"{membros_distintos_auxilio}",
+        #        )
+
+            # --- Quantidade por mês ---
+        #    qtd_por_mes = (
+        #        df_auxilio.groupby("ano_mes", as_index=False)
+        #        .size()
+        #        .rename(columns={"size": "quantidade"})
+        #    )
+
+            # Ordena cronologicamente quando possível
+        #    qtd_por_mes["ord"] = pd.to_datetime(qtd_por_mes["ano_mes"], errors="coerce")
+        #    qtd_por_mes = qtd_por_mes.sort_values(
+        #        ["ord", "ano_mes"], ascending=[True, True]
+        #    ).drop(columns=["ord"])
+
+            # --- Tabela resumo ---
+        #    st.markdown(
+        #        '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">Resumo por mês</h3>',
+        #        unsafe_allow_html=True,
+        #    )
+        #    st.dataframe(qtd_por_mes, use_container_width=True)
 
         # -------------------- Análise: designacao == 'DESIGNAÇÃO'
         st.divider()
