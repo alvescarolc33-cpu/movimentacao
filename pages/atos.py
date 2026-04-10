@@ -28,10 +28,10 @@ def pagina_atos():
             # Inserir no Supabase
             response = supabase.table("atos_tj").insert({
                 "ato": ato,
-                "numero": numero_int,
+                "numero": numero,
                 "ementa": ementa,
                 "data_doe": data_doe.strftime("%Y-%m-%d"),
-                "folha_doe": folha_int,
+                "folha_doe": folha_doe,
                 "link_doe": link_doe,
                 "comentarios": comentarios,
             }).execute()
