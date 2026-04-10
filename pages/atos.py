@@ -6,6 +6,8 @@ from services.supabase_client import get_supabase
 def pagina_atos():
     st.title("⚖️ Atos TJRJ")
 
+    supabase = get_supabase()
+
     with st.form("cadastro_atos", clear_on_submit=True):
         st.subheader("Novo Ato")
         ato = st.text_input("Ato/Origem")
