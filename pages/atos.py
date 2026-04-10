@@ -7,7 +7,6 @@ from services.supabase_client import get_supabase
 def pagina_atos():
 	st.title("⚖️ Atos TJRJ")
 
-    supabase = get_supabase()
 
 # ---- Formulário de Cadastro
 
