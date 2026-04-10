@@ -13,10 +13,10 @@ def pagina_atos():
 with st.form("cadastro_atos", clear_on_submit=True):
     st.subheader("Novo Ato")
     ato = st.text_input("Ato/Origem")
-    numero = st.text_input("Número")
+    numero = st.number_input("Número")
     ementa = st.text_input("Ementa")
-    data_doe = st.text_input(“Data DOe")
-    folha_doe = st.text_input("Folha DOe")
+    data_doe = st.date_input("Data DOe")
+    folha_doe = st.number_input("Folha DOe")
     link_doe = st.text_input("Link DOe")
     comentarios = st.text_input("Comentário")
     
