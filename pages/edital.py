@@ -26,6 +26,12 @@ CARGOS_FIXOS = [
     "PJ"
 ]
 
+CONCURSOS_FIXOS = [
+    "Todos",
+    "Promoção",
+    "Remoção"
+]
+
 
 #---- Carregar itens do seletor (Tabela1)
 
@@ -89,13 +95,16 @@ if "filtro_ano" not in st.session_state:
 if "filtro_cargo" not in st.session_state:
     st.session_state.filtro_cargo = "Todos"
 
+if "filtro_concurso" not in st.session_state:
+    st.session_state.filtro_concurso = "Todos"
+
 if "filtro_membro" not in st.session_state:
     st.session_state.filtro_membro = ""
 
 # --------------------------- Interface Página
 
 def pagina_edital():
-    st.title("📊 Análise de Ocorrências")
+    st.title("📊 Análise de Editais")
 
     itens = ["Todos"] + listar_itens()
 
@@ -104,6 +113,7 @@ def pagina_edital():
         st.session_state.filtro_item = "Todos"
         st.session_state.filtro_ano = "Todos"
         st.session_state.filtro_cargo = "Todos"
+        st.session_state.filtro_concurso = "Todos"
         st.session_state.filtro_membro = ""
         st.rerun()
 
@@ -129,6 +139,13 @@ def pagina_edital():
         key="filtro_cargo"
     )
 
+    concurso = st.selectbox(
+        "Filtrar por concurso:",
+        CONCURSOS_FIXOS,
+        index=CONCURSOS_FIXOS.index(st.session_state.filtro_concurso),
+        key="filtro_concurso"
+    )
+
     membro = st.text_input(
         "Filtrar por membro:",
         value=st.session_state.filtro_membro,
@@ -146,6 +163,9 @@ def pagina_edital():
 
             if cargo != "Todos":
                 df = df[df["cargo"] == cargo]
+
+            if concurso != "Todos":
+                df = df[df["concurso"] == concurso]
 
             if membro:
                 df = df[
