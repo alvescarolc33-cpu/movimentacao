@@ -163,6 +163,7 @@ def consultar_membros_mes_outros_orgaos_pares(df_orgao: pd.DataFrame, orgao_sel:
 # --------------------------- Interface Página
 
 def pagina_consulta():
+    st.title("📊 Análise de Movimentações")
     orgaos = listar_orgaos_unicos()
     df_orgao = pd.DataFrame()
 
@@ -275,7 +276,7 @@ def pagina_consulta():
         st.divider()
 
         st.markdown(
-            '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">📊 Análises de Auxílios</h3>',
+            '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">📊 Ocorrências de Auxílio</h3>',
             unsafe_allow_html=True,
         )
 
@@ -386,7 +387,7 @@ def pagina_consulta():
         st.divider()
 
         st.markdown(
-            '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">🧾 Ocorrências com Designação/Designação Temporária</h3>',
+            '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">🧾 Ocorrências de Designação</h3>',
             unsafe_allow_html=True,
         )
 
@@ -501,7 +502,7 @@ def pagina_consulta():
         st.divider()
 
         st.markdown(
-            '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">🚫 Ocorrências - Vacância</h3>',
+            '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">🚫 Ocorrências de Vacância</h3>',
             unsafe_allow_html=True,
         )
 
