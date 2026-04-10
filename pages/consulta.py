@@ -579,27 +579,46 @@ def pagina_consulta():
 
                 df_vagos["ano_mes_str"] = df_vagos["ano_mes"].dt.to_period("M").astype(str)
 
-                qtd_por_mes_vagos = (
-                    df_vagos.groupby("ano_mes_str")
-                    .size()
-                    .reset_index(name="quantidade")
-                )
+            #    qtd_por_mes_vagos = (
+            #        df_vagos.groupby("ano_mes_str")
+            #        .size()
+            #        .reset_index(name="quantidade")
+            #    )
 
-                qtd_por_mes_vagos["ord"] = pd.to_datetime(
-                    qtd_por_mes_vagos["ano_mes_str"], errors="coerce"
-                )
+            #    qtd_por_mes_vagos["ord"] = pd.to_datetime(
+            #        qtd_por_mes_vagos["ano_mes_str"], errors="coerce"
+            #    )
 
-                qtd_por_mes_vagos = qtd_por_mes_vagos.sort_values("ord")
+            #    qtd_por_mes_vagos = qtd_por_mes_vagos.sort_values("ord")
 
-                qtd_por_mes_vagos["ano"] = qtd_por_mes_vagos["ord"].dt.year
-                qtd_por_mes_vagos["mes"] = qtd_por_mes_vagos["ord"].dt.month.astype(str).str.zfill(2)
+            #    qtd_por_mes_vagos["ano"] = qtd_por_mes_vagos["ord"].dt.year
+            #    qtd_por_mes_vagos["mes"] = qtd_por_mes_vagos["ord"].dt.month.astype(str).str.zfill(2)
 
-                qtd_por_mes_vagos = qtd_por_mes_vagos[["ano", "mes", "quantidade"]]
+            #    qtd_por_mes_vagos = qtd_por_mes_vagos[["ano", "mes", "quantidade"]]
 
                 # -------------------- Tabela
+            #    st.markdown(
+            #        '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">Resumo por mês</h3>',
+            #        unsafe_allow_html=True,
+            #    )
+
+            #    st.dataframe(qtd_por_mes_vagos, use_container_width=True)
+
+                # -------------------- Agrupamento por ANO (quantos meses vagos)
+                df_vagos["ano"] = df_vagos["ano_mes"].dt.year
+                df_vagos["mes"] = df_vagos["ano_mes"].dt.month
+
+                qtd_por_ano_vagos = (
+                    df_vagos.groupby("ano")["mes"]
+                    .nunique()  # 👈 conta meses distintos
+                    .reset_index(name="qtd_meses_vagos")
+                )
+
+                qtd_por_ano_vagos = qtd_por_ano_vagos.sort_values("ano")
+
                 st.markdown(
-                    '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">Resumo por mês</h3>',
+                    '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">Meses vagos por ano</h3>',
                     unsafe_allow_html=True,
                 )
 
-                st.dataframe(qtd_por_mes_vagos, use_container_width=True)
+                st.dataframe(qtd_por_ano_vagos, use_container_width=True)
