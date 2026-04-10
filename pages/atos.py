@@ -47,4 +47,4 @@ def pagina_atos():
     response = supabase.table("atos_tj").select("*").order("created_at", desc=True).limit(20).execute()
     if response.data:
         df = pd.DataFrame(response.data)
-        st.dataframe(df[['ato', 'numero', 'ementa', 'data_doe', 'folha_doe', 'link_doe', 'comentarios', 'created_at']], use_container_width=True)
+        st.dataframe(df[['ato', 'numero', 'ementa', 'data_doe', 'folha_doe', 'link_doe', 'comentarios']], use_container_width=True)
