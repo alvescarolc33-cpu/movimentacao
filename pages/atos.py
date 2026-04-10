@@ -4,7 +4,7 @@ from services.supabase_client import get_supabase
 
 # --------------------------- Interface Página
 
-def pagina_cadastro_atos():
+def pagina_atos():
 	st.title("⚖️ Atos TJRJ")
 
 
