@@ -12,10 +12,10 @@ def pagina_atos():
 
         st.subheader("Novo Ato")
         ato = st.text_input("Ato/Origem")
-        numero = st.number_input("Número")
+        numero = st.text_input("Número")
         ementa = st.text_input("Ementa")
         data_doe = st.date_input("Data DOe")
-        folha_doe = st.number_input("Folha DOe")
+        folha_doe = st.text_input("Folha DOe")
         link_doe = st.text_input("Link DOe")
         comentarios = st.text_input("Comentário")
         
@@ -28,10 +28,10 @@ def pagina_atos():
             # Inserir no Supabase
             response = supabase.table("atos_tj").insert({
                 "ato": ato,
-                "numero": numero,
+                "numero": numero_inter,
                 "ementa": ementa,
                 "data_doe": data_doe.strftime("%Y-%m-%d"),
-                "folha_doe": folha_doe,
+                "folha_doe": folha_inter,
                 "link_doe": link_doe,
                 "comentarios": comentarios,
             }).execute()
