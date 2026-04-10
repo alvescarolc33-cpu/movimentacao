@@ -41,9 +41,7 @@ def pagina_atos():
             else:
                 st.error("Erro ao cadastrar.")
 
-
     # ---- Visualização dos últimos processos
-
     st.divider()
     st.subheader("Atos Cadastrados")
     response = supabase.table("atos_tj").select("*").order("created_at", desc=True).limit(20).execute()
