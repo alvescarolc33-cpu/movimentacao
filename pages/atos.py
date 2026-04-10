@@ -9,6 +9,7 @@ def pagina_atos():
     supabase = get_supabase()
 
     with st.form("cadastro_atos", clear_on_submit=True):
+
         st.subheader("Novo Ato")
         ato = st.text_input("Ato/Origem")
         numero = st.number_input("Número")
