@@ -597,72 +597,25 @@ def pagina_consulta():
             unsafe_allow_html=True,
         )
 
-        if "membro" in df_outros.columns:
+        if "membro" in df_outros.columns and not df_outros.empty:
 
             df_rep = df_outros.copy()
             df_rep["membro"] = df_rep["membro"].astype(str).str.strip()
+            df_rep = df_rep[~df_rep["membro"].str.upper().eq("VAGO")]
 
-            # -------------------- Filtros
-            colf1, colf2 = st.columns(2)
-
-            with colf1:
-                anos = ["Todos"] + sorted(df_rep["ano"].dropna().astype(str).unique().tolist())
-                ano_sel = st.selectbox("Filtrar por Ano", anos, key="filtro_ano_outros")
-
-            # --------- MÊS DEPENDENTE DO ANO
-            with colf2:
-                if ano_sel == "Todos":
-                    df_mes_base = df_rep.copy()
-                else:
-                    df_mes_base = df_rep[df_rep["ano"].astype(str) == ano_sel]
-
-                #meses = ["Todos"] + sorted(
-                #    df_mes_base["mes"].dropna().astype(str).unique().tolist()
-                #)
-                ordem_meses = {
-                    "01": 1, "02": 2, "03": 3, "04": 4,
-                    "05": 5, "06": 6, "07": 7, "08": 8,
-                    "09": 9, "10": 10, "11": 11, "12": 12
-                }
-
-                meses = ["Todos"] + sorted(
-                    df_mes_base["mes"].dropna().astype(str).unique().tolist(),
-                    key=lambda x: ordem_meses.get(x, 99)
-                )
-
-                mes_sel = st.selectbox("Filtrar por Mês", meses, key="filtro_mes_outros")
-
-            # -------------------- Aplicar filtros
-            if ano_sel != "Todos":
-                df_rep = df_rep[df_rep["ano"].astype(str) == ano_sel]
-
-            if mes_sel != "Todos":
-                df_rep = df_rep[df_rep["mes"].astype(str) == mes_sel]
-
-            # -------------------- Verificação
             if df_rep.empty:
-                st.info("Nenhum dado encontrado para os filtros selecionados.")
+                st.info("Não há dados válidos para análise.")
             else:
-                # (opcional) remover VAGO
-                df_rep = df_rep[~df_rep["membro"].str.upper().eq("VAGO")]
-
                 repeticoes = (
                     df_rep["membro"]
                     .value_counts()
                     .reset_index()
                     .rename(columns={"index": "membro", "membro": "quantidade"})
-                )
-
-                repeticoes = repeticoes.sort_values(by="quantidade", ascending=False)
-
-                # Métrica
-                st.metric(
-                    "Maior repetição",
-                    value=repeticoes["quantidade"].max()
+                    .sort_values(by="quantidade", ascending=False)
                 )
 
                 # Tabela
                 st.dataframe(repeticoes, use_container_width=True)
 
         else:
-            st.warning("Coluna 'membro' não encontrada na Tabela 2.")
+            st.info("Nenhuma ocorrência em outros Órgãos para análise.")
