@@ -588,3 +588,41 @@ def pagina_consulta():
                 )
 
                 st.dataframe(qtd_por_ano_vagos, use_container_width=True)
+        
+        
+        # -------------------- Análise: Repetição de Membros (Tabela 2)
+        st.divider()
+
+        st.markdown(
+            '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">🔁 Repetição de Membros (Outros Órgãos)</h3>',
+            unsafe_allow_html=True,
+        )
+
+        if "membro" in df_outros.columns:
+            df_rep = df_outros.copy()
+
+            # Limpeza básica (evita problemas de comparação)
+            df_rep["membro"] = df_rep["membro"].astype(str).str.strip()
+
+            # Contagem de repetições
+            repeticoes = (
+                df_rep["membro"]
+                .value_counts()
+                .reset_index()
+                .rename(columns={"index": "membro", "membro": "quantidade"})
+            )
+
+            # Ordenar do maior para o menor
+            repeticoes = repeticoes.sort_values(by="quantidade", ascending=False)
+
+            # Métrica principal
+            st.metric(
+                "Maior repetição",
+                value=repeticoes["quantidade"].max()
+            )
+
+            # Tabela
+            st.dataframe(repeticoes, use_container_width=True)
+
+        else:
+            st.warning("Coluna 'membro' não encontrada na Tabela 2.")
