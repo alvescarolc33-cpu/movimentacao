@@ -244,7 +244,6 @@ def pagina_consulta():
 
         df_final = pd.concat(lista_final, ignore_index=True)
 
-        # -------------------- Gerar Excel
         excel_buffer_all = io.BytesIO()
 
         with pd.ExcelWriter(excel_buffer_all, engine="xlsxwriter") as writer:
@@ -256,7 +255,7 @@ def pagina_consulta():
             format_orgao = workbook.add_format({"bg_color": "#FFFFFF"})
             format_outros = workbook.add_format({"bg_color": "#FAFAFD"})
 
-            for i, tipo in enumerate(df_final["tipo"], start=1):  # start=1 por causa do header
+            for i, tipo in enumerate(df_final["tipo"], start=1):
                 fmt = format_orgao if tipo == "orgao" else format_outros
                 worksheet.set_row(i, cell_format=fmt)
 
@@ -284,10 +283,6 @@ def pagina_consulta():
 
         if not df_auxilio.empty:
             df_auxilio["designacao"] = df_auxilio["designacao"].fillna("")
-
-            #mask_aux = df_auxilio["designacao"].str.contains(
-            #    r"aux", case=False, na=False
-            #)
 
             mask_aux = df_auxilio["designacao"].str.strip().str.upper() == "AUXÍLIO"
 
@@ -396,10 +391,6 @@ def pagina_consulta():
         # -------------------- Filtro
         if not df_designacao.empty:
             df_designacao["designacao"] = df_designacao["designacao"].fillna("")
-
-            #mask_desig = df_designacao["designacao"].str.contains(
-            #    r"designa", case=False, na=False
-            #)
 
             mask_desig = df_designacao["designacao"].str.strip().str.upper() == "DESIGNAÇÃO"
 
@@ -578,31 +569,6 @@ def pagina_consulta():
                     st.metric("Meses Vagos", meses_com_vagos)
 
                 df_vagos["ano_mes_str"] = df_vagos["ano_mes"].dt.to_period("M").astype(str)
-
-            #    qtd_por_mes_vagos = (
-            #        df_vagos.groupby("ano_mes_str")
-            #        .size()
-            #        .reset_index(name="quantidade")
-            #    )
-
-            #    qtd_por_mes_vagos["ord"] = pd.to_datetime(
-            #        qtd_por_mes_vagos["ano_mes_str"], errors="coerce"
-            #    )
-
-            #    qtd_por_mes_vagos = qtd_por_mes_vagos.sort_values("ord")
-
-            #    qtd_por_mes_vagos["ano"] = qtd_por_mes_vagos["ord"].dt.year
-            #    qtd_por_mes_vagos["mes"] = qtd_por_mes_vagos["ord"].dt.month.astype(str).str.zfill(2)
-
-            #    qtd_por_mes_vagos = qtd_por_mes_vagos[["ano", "mes", "quantidade"]]
-
-                # -------------------- Tabela
-            #    st.markdown(
-            #        '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">Resumo por mês</h3>',
-            #        unsafe_allow_html=True,
-            #    )
-
-            #    st.dataframe(qtd_por_mes_vagos, use_container_width=True)
 
                 # -------------------- Agrupamento por ANO (quantos meses vagos)
                 df_vagos["ano"] = df_vagos["ano_mes"].dt.year
