@@ -171,7 +171,7 @@ def pagina_consulta():
 
     with col1:
         if not orgaos:
-            st.warning("Não há Órgãos cadastrados ou houve erro ao carregar a lista.")
+            st.warning("Não há órgãos cadastrados ou houve erro ao carregar a lista.")
             orgao_sel = None
         else:
             orgao_sel = st.selectbox(
@@ -191,27 +191,27 @@ def pagina_consulta():
             unsafe_allow_html=True,
         )
         if df_orgao.empty:
-            st.info("Nenhum registro encontrado para este Órgão.")
+            st.info("Nenhum registro encontrado para este órgão.")
         else:
             st.dataframe(df_orgao, use_container_width=True)
 
         # ---- Tabela 2: mesmos membros no(s) mesmo(s) mês(es) em outros órgãos (pareamento exato)
         st.markdown(
-            '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">🔁 Ocorrências em outros Órgãos</h3>',
+            '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">🔁 Acumulações (outros órgãos)</h3>',
             unsafe_allow_html=True,
         )
 
         df_outros = consultar_membros_mes_outros_orgaos_pares(df_orgao, orgao_sel)
 
         if df_outros.empty:
-            st.info("Nenhuma ocorrência em outros Órgãos.")
+            st.info("Nenhuma ocorrência em outros órgãos.")
         else:
             st.dataframe(df_outros, use_container_width=True)
 
         # -------------------- Downloads ÚNICOS
         st.divider()
         st.markdown(
-            '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">⬇️ Exportação consolidada</h3>',
+            '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">📥 Exportação consolidada</h3>',
             unsafe_allow_html=True,
         )
 
@@ -275,7 +275,7 @@ def pagina_consulta():
         st.divider()
 
         st.markdown(
-            '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">📊 Ocorrências de Auxílio</h3>',
+            '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">📈 Ocorrências de Auxílio</h3>',
             unsafe_allow_html=True,
         )
 
@@ -291,7 +291,7 @@ def pagina_consulta():
             df_auxilio = pd.DataFrame([])
 
         if df_auxilio.empty:
-            st.info("Não há registros de auxílio para o Órgão selecionado.")
+            st.info("Não há registros de auxílio para o órgão selecionado.")
         else:
             df_auxilio = df_auxilio.dropna(subset=["ano", "mes"])
 
@@ -382,7 +382,7 @@ def pagina_consulta():
         st.divider()
 
         st.markdown(
-            '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">🧾 Ocorrências de Designação</h3>',
+            '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">📄 Ocorrências de Designação</h3>',
             unsafe_allow_html=True,
         )
 
@@ -399,7 +399,7 @@ def pagina_consulta():
             df_designacao = pd.DataFrame([])
 
         if df_designacao.empty:
-            st.info("Não há ocorrências com designação para o Órgão selecionado.")
+            st.info("Não há ocorrências com designação para o órgão selecionado.")
         else:
             df_designacao = df_designacao.dropna(subset=["ano", "mes"])
 
@@ -511,7 +511,7 @@ def pagina_consulta():
             df_vagos = pd.DataFrame([])
 
         if df_vagos.empty:
-            st.info("Não há ocorrências de vacância para o Órgão selecionado.")
+            st.info("Não há ocorrências de vacância para o órgão selecionado.")
         else:
             df_vagos = df_vagos.dropna(subset=["ano", "mes"])
 
@@ -593,7 +593,7 @@ def pagina_consulta():
         st.divider()
 
         st.markdown(
-            '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">🔁 Repetição de Membros (Outros Órgãos)</h3>',
+            '<h3 style="font-size:0.95rem;line-height:1.2;margin:0 0 .5rem 0;">⏳ Repetição de Membros (Outros Órgãos)</h3>',
             unsafe_allow_html=True,
         )
 
@@ -618,4 +618,4 @@ def pagina_consulta():
                 st.dataframe(repeticoes, use_container_width=True)
 
         else:
-            st.info("Nenhuma ocorrência em outros Órgãos para análise.")
+            st.info("Nenhuma ocorrência em outros órgãos para análise.")
