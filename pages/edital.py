@@ -109,7 +109,7 @@ def pagina_edital():
     itens = ["Todos"] + listar_itens()
 
     #----- Botão
-    if st.button("🔄 Limpar filtros"):
+    if st.button("🗑️ Limpar filtros"):
         st.session_state.filtro_item = "Todos"
         st.session_state.filtro_ano = "Todos"
         st.session_state.filtro_cargo = "Todos"
