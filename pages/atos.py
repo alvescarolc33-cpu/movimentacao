@@ -10,7 +10,7 @@ def pagina_atos():
 
     with st.form("cadastro_atos", clear_on_submit=True):
 
-        st.subheader("Novo Ato")
+        st.subheader("Novo")
         ato = st.text_input("Ato/Origem")
         numero = st.text_input("Número")
         ementa = st.text_input("Ementa")
@@ -19,7 +19,7 @@ def pagina_atos():
         link_doe = st.text_input("Link DOe")
         comentarios = st.text_input("Comentário")
         
-        submit_button = st.form_submit_button("Cadastrar Ato")
+        submit_button = st.form_submit_button("✔️ Cadastrar Ato")
 
     if submit_button:
         if not numero:
@@ -37,7 +37,7 @@ def pagina_atos():
             }).execute()
             
             if response.data:
-                st.success("Ato cadastrado com sucesso!")
+                st.success("✔️ Ato cadastrado com sucesso!")
             else:
                 st.error("Erro ao cadastrar.")
 
