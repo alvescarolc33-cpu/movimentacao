@@ -270,20 +270,6 @@ def pagina_consulta():
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 )
 
-st.divider()
-
-st.markdown(
-    """
-    <div style="font-size:0.9rem; text-align:center;">
-        🔗 <b>Fonte dos dados:</b><br>
-        <a href="https://transparencia.mprj.mp.br/web/novo-portal-transparencia/plantoes_novo" target="_blank">
-            Acessar página oficial
-        </a>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
-
         # -------------------- Análises de Auxílios
 
         st.divider()
