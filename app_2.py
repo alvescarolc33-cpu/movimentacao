@@ -92,7 +92,7 @@ st.markdown(f"""
     text-align: center;
     padding: 8px;
     font-size: 0.85rem;
-    border-top: 1px solid #333;
+    border-top: 1px solid #F0F2F6;
     z-index: 999;
 }}
 .footer a {{
