@@ -46,6 +46,7 @@ with st.sidebar:
     if st.session_state.user:
         st.caption(f"✅ Logado como: {st.session_state.user.email}")
 
+
 # ---------------- ROUTER ----------------
 
 if menu == "Movimentação":
@@ -67,3 +68,41 @@ elif menu == "Sair":
     st.session_state.refresh_token = None
 
     st.rerun()
+
+# ---------------- RODAPÉ DINÂMICO ----------------
+
+link = ""
+
+if menu == "Movimentação":
+    link = "https://transparencia.mprj.mp.br/web/novo-portal-transparencia/plantoes_novo"
+elif menu == "Atos TJ":
+    link = "https://www3.tjrj.jus.br/sophia_web/acervo/detalhe/304686?guid=1729196909299&returnUrl=%2fsophia_web%2fresultado%2flistar%3fguid%3d1729196909299%26quantidadePaginas%3d1%26codigoRegistro%3d304686%23304686&i=1"
+elif menu == "Edital":
+    link = "https://www.mprj.mp.br/conheca-o-mprj/conselho-superior"
+
+st.markdown(f"""
+<style>
+.footer {{
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: #0E1117;
+    color: #FAFAFA;
+    text-align: center;
+    padding: 8px;
+    font-size: 0.85rem;
+    border-top: 1px solid #333;
+    z-index: 999;
+}}
+.footer a {{
+    color: #4EA1FF;
+    text-decoration: none;
+}}
+</style>
+
+<div class="footer">
+    🔗 <b>Fonte dos dados:</b>
+    <a href="{link}" target="_blank">Acessar página oficial</a>
+</div>
+""", unsafe_allow_html=True)
