@@ -164,6 +164,7 @@ def consultar_membros_mes_outros_orgaos_pares(df_orgao: pd.DataFrame, orgao_sel:
 
 def pagina_consulta():
     st.title("📊 Análise de Movimentações")
+    st.caption("Os dados abaixo compreendem o período de 2024 até o momento.")
     orgaos = listar_orgaos_unicos()
     df_orgao = pd.DataFrame()
 
