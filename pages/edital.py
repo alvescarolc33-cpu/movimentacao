@@ -18,12 +18,12 @@ COLUNAS_RESULTADO = [
     "orgao_titular"
 ]
 
-ANOS_FIXOS = ["Todos", "2023", "2024", "2025", "2026"]
+ANOS_FIXOS = ["Todos", "2024", "2025", "2026"]
 
 CARGOS_FIXOS = [
     "Todos",
-    "PCJ",
-    "PJ"
+    "Procurador de Justiça",
+    "Promotor de Justiça"
 ]
 
 CONCURSOS_FIXOS = [
@@ -105,6 +105,7 @@ if "filtro_membro" not in st.session_state:
 
 def pagina_edital():
     st.title("📊 Análise de Editais")
+    st.caption("Os dados abaixo compreendem sessões de 2024 até o momento.")
 
     itens = ["Todos"] + listar_itens()
 
