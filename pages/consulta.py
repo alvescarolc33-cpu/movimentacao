@@ -256,8 +256,8 @@ def pagina_consulta():
             workbook = writer.book
             worksheet = writer.sheets["Consolidado"]
 
-            format_orgao = workbook.add_format({"bg_color": "#FFFFFF"})
-            format_outros = workbook.add_format({"bg_color": "#FAFAFD"})
+            format_orgao = workbook.add_format({"bg_color": "#f79646"})
+            format_outros = workbook.add_format({"bg_color": "#fde9d9"})
 
             for i, tipo in enumerate(df_final["tipo"], start=1):
                 fmt = format_orgao if tipo == "orgao" else format_outros
