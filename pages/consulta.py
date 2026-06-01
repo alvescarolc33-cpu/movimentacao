@@ -22,7 +22,8 @@ DESIGNACAO_MAP = {
     "DESIGNAÇÃO TEMPORÁRIA": 2,
     "DESIGNAÇÃO": 3,
     "AUXÍLIO": 4,
-    "AUXÍLIO TEMPORÁRIO": 5,
+    "AUXÍLIO RECÍPROCO": 5,
+    "AUXÍLIO TEMPORÁRIO": 6,
 }
 
 def ordenar_por_mes_e_designacao(df: pd.DataFrame) -> pd.DataFrame:
