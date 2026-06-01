@@ -217,6 +217,8 @@ def pagina_consulta():
             unsafe_allow_html=True,
         )
 
+        #df_orgao["orgao"] = orgao_sel
+
         df_orgao["tipo"] = "orgao"
         df_outros["tipo"] = "outros"
 
