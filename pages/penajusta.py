@@ -8,18 +8,17 @@ from docx import Document
 # CONFIGURAÇÃO
 # ==================================================
 
-st.set_page_config(
-    page_title="Clipping de Diários",
-    layout="wide"
-)
-
-PALAVRAS = [
-    "SEPPEN",
-    "PENA JUSTA",
-    "CEPPRJ",
-    "GMF",
-    "superlotação prisional"
-]
+def pagina_penajusta():
+    st.title("Clipping de Diários")
+    st.caption("....")
+    
+    PALAVRAS = [
+        "SEPPEN",
+        "PENA JUSTA",
+        "CEPPRJ",
+        "GMF",
+        "superlotação prisional"
+    ]
 
 # ==================================================
 # FUNÇÕES
