@@ -164,7 +164,7 @@ def pagina_penajusta():
             "URL TJRJ"
         )
 
-        udata_ioerj = st.date_input(
+        data_ioerj = st.date_input(
             "Data do IOERJ"
         )
 
