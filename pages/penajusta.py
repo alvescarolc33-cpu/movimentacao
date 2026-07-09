@@ -124,14 +124,14 @@ def pagina_penajusta():
 
     def gerar_url_ioerj(data_yyyymmdd):
 
-    data_b64 = base64.b64encode(
-        data_yyyymmdd.encode()
-    ).decode()
-
-    return (
-        "https://www.ioerj.com.br/portal/modules/conteudoonline/"
-        f"do_seleciona_edicao.php?data={data_b64}"
-    )
+        data_b64 = base64.b64encode(
+            data_yyyymmdd.encode()
+        ).decode()
+    
+        return (
+            "https://www.ioerj.com.br/portal/modules/conteudoonline/"
+            f"do_seleciona_edicao.php?data={data_b64}"
+        )
 
     # ==================================================
     # SESSION STATE
