@@ -4,7 +4,7 @@ from auth.login import tela_login
 from pages.consulta import pagina_consulta
 from pages.edital import pagina_edital
 from pages.atos import pagina_atos
-#from pages.penajusta import pagina_penajusta
+from pages.penajusta import pagina_penajusta
 
 # ---------------- SESSION ----------------
 
@@ -62,9 +62,9 @@ elif menu == "Atos TJ":
     
     pagina_atos()
 
-#elif menu == "DOe Pena Justa":
+elif menu == "DOe Pena Justa":
     
-    #pagina_penajusta()
+    pagina_penajusta()
 
 elif menu == "Sair":
 
