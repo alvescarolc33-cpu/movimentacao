@@ -4,6 +4,7 @@ from auth.login import tela_login
 from pages.consulta import pagina_consulta
 from pages.edital import pagina_edital
 from pages.atos import pagina_atos
+from pages.doepj import pagina_doepj
 
 # ---------------- SESSION ----------------
 
@@ -37,7 +38,7 @@ if not st.session_state.user:
 
 menu = st.sidebar.radio(
     "Menu",
-    ["Movimentação", "Edital", "Atos TJ", "Sair"]
+    ["Movimentação", "Edital", "Atos TJ", "DOe Pena Justa", "Sair"]
 )
 
 # Mostrar informações do usuário logado
@@ -60,6 +61,10 @@ elif menu == "Edital":
 elif menu == "Atos TJ":
     
     pagina_atos()
+
+elif menu == "DOe Pena Justa":
+    
+    pagina_doepj()
 
 elif menu == "Sair":
 
