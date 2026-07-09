@@ -24,103 +24,103 @@ def pagina_penajusta():
 # FUNÇÕES
 # ==================================================
 
-def baixar_pdf(url, nome_arquivo):
-
-    resposta = requests.get(
-        url,
-        timeout=60
-    )
-
-    resposta.raise_for_status()
-
-    with open(nome_arquivo, "wb") as f:
-        f.write(resposta.content)
-
-    return nome_arquivo
-
-
-def extrair_texto(pdf_path):
-
-    texto = ""
-
-    with pdfplumber.open(pdf_path) as pdf:
-
-        for pagina in pdf.pages:
-
-            conteudo = pagina.extract_text()
-
-            if conteudo:
-                texto += conteudo + "\n"
-
-    return texto
-
-
-def obter_linhas(texto):
-
-    return [
-        linha.strip()
-        for linha in texto.split("\n")
-        if linha.strip()
-    ]
-
-
-def localizar_ocorrencias(linhas, palavras):
-
-    resultados = []
-
-    for indice, linha in enumerate(linhas):
-
-        for palavra in palavras:
-
-            if palavra.lower() in linha.lower():
-
-                resultados.append(
-                    {
-                        "linha": indice,
-                        "palavra": palavra,
-                        "texto": linha
-                    }
-                )
-
-    return resultados
-
-
-def gerar_word(blocos):
-
-    doc = Document()
-
-    doc.add_heading(
-        "CLIPPING DIÁRIO",
-        level=0
-    )
-
-    for i, bloco in enumerate(
-        blocos,
-        start=1
-    ):
-
+    def baixar_pdf(url, nome_arquivo):
+    
+        resposta = requests.get(
+            url,
+            timeout=60
+        )
+    
+        resposta.raise_for_status()
+    
+        with open(nome_arquivo, "wb") as f:
+            f.write(resposta.content)
+    
+        return nome_arquivo
+    
+    
+    def extrair_texto(pdf_path):
+    
+        texto = ""
+    
+        with pdfplumber.open(pdf_path) as pdf:
+    
+            for pagina in pdf.pages:
+    
+                conteudo = pagina.extract_text()
+    
+                if conteudo:
+                    texto += conteudo + "\n"
+    
+        return texto
+    
+    
+    def obter_linhas(texto):
+    
+        return [
+            linha.strip()
+            for linha in texto.split("\n")
+            if linha.strip()
+        ]
+    
+    
+    def localizar_ocorrencias(linhas, palavras):
+    
+        resultados = []
+    
+        for indice, linha in enumerate(linhas):
+    
+            for palavra in palavras:
+    
+                if palavra.lower() in linha.lower():
+    
+                    resultados.append(
+                        {
+                            "linha": indice,
+                            "palavra": palavra,
+                            "texto": linha
+                        }
+                    )
+    
+        return resultados
+    
+    
+    def gerar_word(blocos):
+    
+        doc = Document()
+    
         doc.add_heading(
-            f"Ocorrência {i}",
-            level=1
+            "CLIPPING DIÁRIO",
+            level=0
         )
-
-        doc.add_paragraph(
-            f"Documento: {bloco['documento']}"
-        )
-
-        doc.add_paragraph(
-            f"Palavra-chave: {bloco['palavra']}"
-        )
-
-        doc.add_paragraph(
-            bloco["conteudo"]
-        )
-
-    caminho = "clipping.docx"
-
-    doc.save(caminho)
-
-    return caminho
+    
+        for i, bloco in enumerate(
+            blocos,
+            start=1
+        ):
+    
+            doc.add_heading(
+                f"Ocorrência {i}",
+                level=1
+            )
+    
+            doc.add_paragraph(
+                f"Documento: {bloco['documento']}"
+            )
+    
+            doc.add_paragraph(
+                f"Palavra-chave: {bloco['palavra']}"
+            )
+    
+            doc.add_paragraph(
+                bloco["conteudo"]
+            )
+    
+        caminho = "clipping.docx"
+    
+        doc.save(caminho)
+    
+        return caminho
 
 
 # ==================================================
