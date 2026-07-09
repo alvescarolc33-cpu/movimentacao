@@ -2,6 +2,8 @@ import streamlit as st
 import pdfplumber
 import requests
 from docx import Document
+import base64
+from datetime import date
 
 # ==================================================
 # CONFIGURAÇÃO
@@ -120,6 +122,17 @@ def pagina_penajusta():
 
         return caminho
 
+    def gerar_url_ioerj(data_yyyymmdd):
+
+    data_b64 = base64.b64encode(
+        data_yyyymmdd.encode()
+    ).decode()
+
+    return (
+        "https://www.ioerj.com.br/portal/modules/conteudoonline/"
+        f"do_seleciona_edicao.php?data={data_b64}"
+    )
+
     # ==================================================
     # SESSION STATE
     # ==================================================
@@ -151,8 +164,8 @@ def pagina_penajusta():
             "URL TJRJ"
         )
 
-        url_ioerj = st.text_input(
-            "URL IOERJ"
+        udata_ioerj = st.date_input(
+            "Data do IOERJ"
         )
 
     processar = st.button(
@@ -165,6 +178,14 @@ def pagina_penajusta():
 
     if processar:
 
+        data_str = data_ioerj.strftime(
+            "%Y%m%d"
+        )
+
+        url_ioerj = gerar_url_ioerj(
+            data_str
+        )
+        
         documentos = [
 
             ("CNJ", url_cnj),
