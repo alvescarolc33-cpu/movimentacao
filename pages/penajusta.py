@@ -127,217 +127,217 @@ def pagina_penajusta():
 # SESSION STATE
 # ==================================================
 
-if "clipping" not in st.session_state:
-
-    st.session_state.clipping = []
+    if "clipping" not in st.session_state:
+    
+        st.session_state.clipping = []
 
 # ==================================================
 # INTERFACE
 # ==================================================
 
-st.title(
-    "📑 Clipping de Diários Oficiais"
-)
-
-col1, col2 = st.columns(2)
-
-with col1:
-
-    url_cnj = st.text_input(
-        "CNJ"
+    st.title(
+        "📑 Clipping de Diários Oficiais"
     )
-
-    url_cnmp = st.text_input(
-        "CNMP"
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+    
+        url_cnj = st.text_input(
+            "CNJ"
+        )
+    
+        url_cnmp = st.text_input(
+            "CNMP"
+        )
+    
+    with col2:
+    
+        url_tjrj = st.text_input(
+            "TJRJ"
+        )
+    
+        url_ioerj = st.text_input(
+            "IOERJ"
+        )
+    
+    processar = st.button(
+        "Processar Diários"
     )
-
-with col2:
-
-    url_tjrj = st.text_input(
-        "TJRJ"
-    )
-
-    url_ioerj = st.text_input(
-        "IOERJ"
-    )
-
-processar = st.button(
-    "Processar Diários"
-)
 
 # ==================================================
 # PROCESSAMENTO
 # ==================================================
 
-if processar:
-
-    documentos = [
-
-        ("CNJ", url_cnj),
-        ("CNMP", url_cnmp),
-        ("TJRJ", url_tjrj),
-        ("IOERJ", url_ioerj)
-
-    ]
-
-    for nome_doc, url in documentos:
-
-        if not url.strip():
-            continue
-
-        try:
-
-            caminho_pdf = f"{nome_doc}.pdf"
-
-            baixar_pdf(
-                url,
-                caminho_pdf
-            )
-
-            texto = extrair_texto(
-                caminho_pdf
-            )
-
-            linhas = obter_linhas(
-                texto
-            )
-
-            ocorrencias = localizar_ocorrencias(
-                linhas,
-                PALAVRAS
-            )
-
-            st.header(nome_doc)
-
-            st.success(
-                f"{len(ocorrencias)} ocorrência(s) encontrada(s)"
-            )
-
-            if len(ocorrencias) == 0:
-
-                st.warning(
-                    "Nenhuma palavra localizada."
+    if processar:
+    
+        documentos = [
+    
+            ("CNJ", url_cnj),
+            ("CNMP", url_cnmp),
+            ("TJRJ", url_tjrj),
+            ("IOERJ", url_ioerj)
+    
+        ]
+    
+        for nome_doc, url in documentos:
+    
+            if not url.strip():
+                continue
+    
+            try:
+    
+                caminho_pdf = f"{nome_doc}.pdf"
+    
+                baixar_pdf(
+                    url,
+                    caminho_pdf
                 )
-
-            else:
-
-                for indice, item in enumerate(
-                    ocorrencias
-                ):
-
-                    with st.expander(
-                        f"{item['palavra']} - Linha {item['linha']}"
+    
+                texto = extrair_texto(
+                    caminho_pdf
+                )
+    
+                linhas = obter_linhas(
+                    texto
+                )
+    
+                ocorrencias = localizar_ocorrencias(
+                    linhas,
+                    PALAVRAS
+                )
+    
+                st.header(nome_doc)
+    
+                st.success(
+                    f"{len(ocorrencias)} ocorrência(s) encontrada(s)"
+                )
+    
+                if len(ocorrencias) == 0:
+    
+                    st.warning(
+                        "Nenhuma palavra localizada."
+                    )
+    
+                else:
+    
+                    for indice, item in enumerate(
+                        ocorrencias
                     ):
-
-                        linha_chave = item["linha"]
-
-                        inicio = max(
-                            0,
-                            linha_chave - 20
-                        )
-
-                        fim = min(
-                            len(linhas),
-                            linha_chave + 30
-                        )
-
-                        contexto = "\n".join(
-                            linhas[inicio:fim]
-                        )
-
-                        st.text_area(
-                            "Contexto",
-                            contexto,
-                            height=250,
-                            key=f"{nome_doc}_{indice}"
-                        )
-
-                        if st.button(
-                            f"Adicionar ao clipping",
-                            key=f"add_{nome_doc}_{indice}"
+    
+                        with st.expander(
+                            f"{item['palavra']} - Linha {item['linha']}"
                         ):
-
-                            st.session_state.clipping.append(
-
-                                {
-                                    "documento": nome_doc,
-                                    "palavra": item["palavra"],
-                                    "conteudo": contexto
-                                }
-
+    
+                            linha_chave = item["linha"]
+    
+                            inicio = max(
+                                0,
+                                linha_chave - 20
                             )
-
-                            st.success(
-                                "Adicionado."
+    
+                            fim = min(
+                                len(linhas),
+                                linha_chave + 30
                             )
-
-        except Exception as erro:
-
-            st.error(
-                f"Erro em {nome_doc}: {erro}"
-            )
+    
+                            contexto = "\n".join(
+                                linhas[inicio:fim]
+                            )
+    
+                            st.text_area(
+                                "Contexto",
+                                contexto,
+                                height=250,
+                                key=f"{nome_doc}_{indice}"
+                            )
+    
+                            if st.button(
+                                f"Adicionar ao clipping",
+                                key=f"add_{nome_doc}_{indice}"
+                            ):
+    
+                                st.session_state.clipping.append(
+    
+                                    {
+                                        "documento": nome_doc,
+                                        "palavra": item["palavra"],
+                                        "conteudo": contexto
+                                    }
+    
+                                )
+    
+                                st.success(
+                                    "Adicionado."
+                                )
+    
+            except Exception as erro:
+    
+                st.error(
+                    f"Erro em {nome_doc}: {erro}"
+                )
 
 # ==================================================
 # CLIPPING
 # ==================================================
 
-st.divider()
-
-st.subheader(
-    "Clipping Atual"
-)
-
-if len(st.session_state.clipping) == 0:
-
-    st.info(
-        "Nenhum trecho selecionado."
+    st.divider()
+    
+    st.subheader(
+        "Clipping Atual"
     )
-
-else:
-
-    for i, bloco in enumerate(
-        st.session_state.clipping,
-        start=1
-    ):
-
-        with st.expander(
-            f"Trecho {i}"
+    
+    if len(st.session_state.clipping) == 0:
+    
+        st.info(
+            "Nenhum trecho selecionado."
+        )
+    
+    else:
+    
+        for i, bloco in enumerate(
+            st.session_state.clipping,
+            start=1
         ):
-
-            st.write(
-                f"Documento: {bloco['documento']}"
-            )
-
-            st.write(
-                f"Palavra: {bloco['palavra']}"
-            )
-
-            st.text(
-                bloco["conteudo"]
-            )
+    
+            with st.expander(
+                f"Trecho {i}"
+            ):
+    
+                st.write(
+                    f"Documento: {bloco['documento']}"
+                )
+    
+                st.write(
+                    f"Palavra: {bloco['palavra']}"
+                )
+    
+                st.text(
+                    bloco["conteudo"]
+                )
 
 # ==================================================
 # WORD
 # ==================================================
 
-if len(st.session_state.clipping) > 0:
-
-    if st.button(
-        "Gerar Word"
-    ):
-
-        arquivo_word = gerar_word(
-            st.session_state.clipping
-        )
-
-        with open(
-            arquivo_word,
-            "rb"
-        ) as f:
-
-            st.download_button(
-                "📥 Baixar Clipping",
-                data=f,
-                file_name="clipping.docx",
-                mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    if len(st.session_state.clipping) > 0:
+    
+        if st.button(
+            "Gerar Word"
+        ):
+    
+            arquivo_word = gerar_word(
+                st.session_state.clipping
             )
+    
+            with open(
+                arquivo_word,
+                "rb"
+            ) as f:
+    
+                st.download_button(
+                    "📥 Baixar Clipping",
+                    data=f,
+                    file_name="clipping.docx",
+                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                )
