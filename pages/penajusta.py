@@ -9,8 +9,6 @@ from docx import Document
 # ==================================================
 
 def pagina_penajusta():
-    st.title("Clipping de Diários")
-    st.caption("....")
     
     PALAVRAS = [
         "SEPPEN",
