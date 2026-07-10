@@ -16,7 +16,7 @@ def pagina_atos():
         ementa = st.text_input("Ementa")
         data_doe = st.date_input("Data DOe")
         folha_doe = st.text_input("Folha DOe")
-        link_doe = st.text_input("Link DOe")
+        link_doe = st.text_input("Disponível")
         comentarios = st.text_input("Comentário")
         
         submit_button = st.form_submit_button("✔️ Cadastrar Ato")
