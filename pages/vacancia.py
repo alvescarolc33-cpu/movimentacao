@@ -41,5 +41,4 @@ def pagina_vacancia():
     response = supabase.table("vacancias").select("*").order("created_at", desc=True).limit(20).execute()
     if response.data:
         df = pd.DataFrame(response.data)
-        st.write(df.columns.tolist())
         st.dataframe(df[['orgao', 'membro', 'vacancia', 'publicacao']], use_container_width=True)
