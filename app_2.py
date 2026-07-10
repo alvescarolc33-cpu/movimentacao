@@ -39,7 +39,7 @@ if not st.session_state.user:
 
 menu = st.sidebar.radio(
     "Menu",
-    ["Movimentação", "Edital", "Atos TJ", "Vacâncias", "DOe Pena Justa", "Sair"]
+    ["Movimentação", "Edital CSMP", "Atos TJ", "Vacâncias", "DOe Pena Justa", "Sair"]
 )
 
 # Mostrar informações do usuário logado
@@ -55,7 +55,7 @@ if menu == "Movimentação":
 
     pagina_consulta()
 
-elif menu == "Edital":
+elif menu == "Edital CSMP":
     
     pagina_edital()
 
