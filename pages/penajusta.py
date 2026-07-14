@@ -1,5 +1,4 @@
 import streamlit as st
-import pdfplumber
 import requests
 
 # ==================================================
@@ -22,7 +21,7 @@ def pagina_penajusta():
 
     st.title("📑 Clipping de Diários Oficiais")
 
-        st.sidebar.header("Consulta")
+    st.sidebar.header("Consulta")
     
     data = st.sidebar.date_input(
         "Data do Diário"
