@@ -6,3 +6,4 @@ xlsxwriter
 streamlit-authenticator
 bcrypt
 supabase>=2.0.0
+pdfplumber
