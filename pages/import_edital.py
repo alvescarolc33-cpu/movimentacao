@@ -2,6 +2,19 @@ import pandas as pd
 import streamlit as st
 from services.supabase_client import get_supabase
 
+import json
+
+registros = df.to_dict("records")
+
+for i, registro in enumerate(registros):
+    try:
+        json.dumps(registro)
+    except Exception as e:
+        st.error(f"Erro no registro {i}")
+        st.write(registro)
+        st.write(type(e).__name__, e)
+        raise
+        
 TABELA = "edital"
 
 COLUNAS_OBRIGATORIAS = [
@@ -150,20 +163,6 @@ def remover_duplicados(df):
     )
 
     return df[df["existe"] != True].drop(columns="existe")
-
-import json
-
-registros = df.to_dict("records")
-
-for i, registro in enumerate(registros):
-    try:
-        json.dumps(registro)
-    except Exception as e:
-        st.error(f"Erro no registro {i}")
-        st.write(registro)
-        st.write(type(e).__name__, e)
-        raise
-
 
 def importar(df):
 
