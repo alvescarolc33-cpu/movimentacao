@@ -323,7 +323,7 @@ def pagina_consulta():
                     worksheet.merge_range(
                         inicio,
                         COL_MES_ANO,
-                        fim - 1,
+                        fim,
                         COL_MES_ANO,
                         valor,
                         merge_format,
