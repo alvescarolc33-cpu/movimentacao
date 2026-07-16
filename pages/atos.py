@@ -58,4 +58,4 @@ def pagina_atos():
             'comentarios': 'Comentário'
         })
 
-    st.dataframe(df, use_container_width=True)
+    #st.dataframe(df, use_container_width=True)
