@@ -120,6 +120,26 @@ def remover_duplicados(df):
         "orgao_disponivel"
     ]
 
+    # Padroniza datas
+    df["data_sessao"] = pd.to_datetime(df["data_sessao"]).dt.date
+    banco["data_sessao"] = pd.to_datetime(banco["data_sessao"]).dt.date
+
+    # Padroniza textos
+    for col in ["sessao", "membro", "orgao_disponivel"]:
+        df[col] = (
+            df[col]
+            .fillna("")
+            .astype(str)
+            .str.strip()
+        )
+
+        banco[col] = (
+            banco[col]
+            .fillna("")
+            .astype(str)
+            .str.strip()
+        )
+
     banco["existe"] = True
 
     df = df.merge(
@@ -129,7 +149,7 @@ def remover_duplicados(df):
     )
 
     return df[df["existe"] != True].drop(columns="existe")
-
+    
 def importar(df):
 
     supabase = get_supabase()
