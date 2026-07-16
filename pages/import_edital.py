@@ -182,34 +182,41 @@ def importar(df):
 
     # Substitui NaN por None
     #df = df.replace({pd.NA: None, np.nan: None})
-    df = df.where(pd.notnull(df), None)
+    #df = df.where(pd.notnull(df), None)
+    df = df.astype(object).where(pd.notnull(df), None)
 
     for coluna in df.columns:
 
         if pd.api.types.is_integer_dtype(df[coluna]):
             df[coluna] = df[coluna].apply(
-            lambda x: int(x) if pd.notna(x) else None
+                    lambda x: int(x) if pd.notna(x) else None
         )
 
         elif pd.api.types.is_float_dtype(df[coluna]):
             df[coluna] = df[coluna].apply(
-            lambda x: float(x) if pd.notna(x) else None
+                    lambda x: float(x) if pd.notna(x) else None
         )
 
-    else:
-        df[coluna] = df[coluna].apply(
-            lambda x: None if pd.isna(x) else x
+        else:
+            df[coluna] = df[coluna].apply(
+                    lambda x: None if pd.isna(x) else x
         )
-    
-        registros = df.to_dict("records")
+
+    registros = df.to_dict("records")
 
     try:
 
-        resposta = (
-            supabase
-            .table("edital")
-            .insert(registros)
-            .execute()
+        LIMITE = 30
+
+        for i in range(0, len(registros), LIMITE):
+
+        lote = registros[i:i+LIMITE]
+
+        (
+                    supabase
+                    .table("edital")
+                    .insert(lote)
+                    .execute()
         )
 
         st.success("Importado com sucesso!")
