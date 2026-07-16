@@ -264,6 +264,12 @@ def pagina_consulta():
 
         df_final = pd.concat(lista_final, ignore_index=True)
         
+        df_final["mes_ano"] = (
+            df_final["mes"].astype(str)
+            + ", "
+            + df_final["ano"].astype(str)
+        )
+        
         excel_buffer_all = io.BytesIO()
 
         df_final = df_final[
@@ -326,12 +332,6 @@ def pagina_consulta():
                 inicio = fim + 1
 
         df_final = df_final.drop(columns="tipo")
-
-        df_final["mes_ano"] = (
-            df_final["mes"].astype(str)
-            + ", "
-            + df_final["ano"].astype(str)
-        )
 
         excel_buffer_all.seek(0)
 
