@@ -248,8 +248,8 @@ def pagina_consulta():
 
         df_final = pd.concat(lista_final, ignore_index=True)
 
-        df_all["orgao"] = df_all["orgao"].replace("", pd.NA)
-        df_all["orgao"] = df_all["orgao"].fillna(orgao_sel)
+        df_final["orgao"] = df_final["orgao"].replace("", pd.NA)
+        df_final["orgao"] = df_final["orgao"].fillna(orgao_sel)
 
         excel_buffer_all = io.BytesIO()
 
