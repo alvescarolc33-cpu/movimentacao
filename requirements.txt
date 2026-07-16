@@ -7,3 +7,4 @@ streamlit-authenticator
 bcrypt
 supabase>=2.0.0
 pdfplumber
+openpyxl>=3.1.2
