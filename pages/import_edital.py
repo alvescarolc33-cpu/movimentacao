@@ -182,7 +182,8 @@ def importar(df):
         )
 
     # Substitui NaN por None
-    df = df.replace({pd.NA: None, np.nan: None})
+    #df = df.replace({pd.NA: None, np.nan: None})
+    df = df.where(pd.notnull(df), None)
 
     registros = df.to_dict("records")
 
