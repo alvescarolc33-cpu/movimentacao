@@ -1,5 +1,6 @@
 import pandas as pd
 import streamlit as st
+import json
 from services.supabase_client import get_supabase
         
 TABELA = "edital"
@@ -155,29 +156,46 @@ def importar(df):
 
     supabase = get_supabase()
 
-    df = df.copy()
+    registros = []
 
-    # Converte todas as colunas de data
-    for coluna in ["data_sessao", "validade"]:
-        if coluna in df.columns:
-            df[coluna] = (
-                pd.to_datetime(df[coluna], errors="coerce")
-                .dt.strftime("%Y-%m-%d")
-            )
+    for _, row in df.iterrows():
 
-    # Troca NaN/NaT por None
-    df = df.where(pd.notnull(df), None)
+        registro = {}
 
-    registros = df.to_dict(orient="records")
+        for coluna, valor in row.items():
 
-    resposta = (
+            # valores vazios
+            if pd.isna(valor):
+                registro[coluna] = None
+
+            # datas
+            elif isinstance(valor, (pd.Timestamp,)):
+                registro[coluna] = valor.strftime("%Y-%m-%d")
+
+            # numpy.int64 / float64 / bool_
+            elif hasattr(valor, "item"):
+                registro[coluna] = valor.item()
+
+            else:
+                registro[coluna] = valor
+
+        registros.append(registro)
+
+    # Apenas para descobrir qual registro falha
+    try:
+        json.dumps(registros)
+        st.success("JSON válido!")
+    except Exception as e:
+        st.error(e)
+        st.write(registros[0])
+        raise
+
+    return (
         supabase
-        .table("edital")
+        .table(TABELA)
         .insert(registros)
         .execute()
     )
-
-    return resposta
 
 def pagina_import_edital():
 
