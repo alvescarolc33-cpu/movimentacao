@@ -1,6 +1,7 @@
 import pandas as pd
 import streamlit as st
 import json
+from postgrest.exceptions import APIError
 from services.supabase_client import get_supabase
         
 TABELA = "edital"
@@ -159,8 +160,6 @@ def remover_duplicados(df):
 
     return df[df["existe"] != True].drop(columns="existe")
 
-from postgrest.exceptions import APIError
-
 def importar(df):
 
     supabase = get_supabase()
@@ -185,7 +184,24 @@ def importar(df):
     #df = df.replace({pd.NA: None, np.nan: None})
     df = df.where(pd.notnull(df), None)
 
-    registros = df.to_dict("records")
+    for coluna in df.columns:
+
+        if pd.api.types.is_integer_dtype(df[coluna]):
+            df[coluna] = df[coluna].apply(
+            lambda x: int(x) if pd.notna(x) else None
+        )
+
+        elif pd.api.types.is_float_dtype(df[coluna]):
+            df[coluna] = df[coluna].apply(
+            lambda x: float(x) if pd.notna(x) else None
+        )
+
+    else:
+        df[coluna] = df[coluna].apply(
+            lambda x: None if pd.isna(x) else x
+        )
+    
+        registros = df.to_dict("records")
 
     try:
 
