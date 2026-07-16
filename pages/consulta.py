@@ -223,10 +223,8 @@ def pagina_consulta():
         df_orgao["tipo"] = "orgao"
         df_outros["tipo"] = "outros"
         
-        # Todas as linhas do órgão principal recebem o órgão pesquisado
         df_orgao["orgao"] = orgao_sel
         
-        # Nas demais, somente completa quando estiver vazio
         if "orgao" not in df_outros.columns:
             df_outros["orgao"] = orgao_sel
         else:
@@ -283,6 +281,12 @@ def pagina_consulta():
             ]
         ]
         
+        df_final["observacao"] = (
+            df_final["observacao"]
+            .fillna("")
+            .astype(str)
+        )
+        
         with pd.ExcelWriter(excel_buffer_all, engine="xlsxwriter") as writer:
             df_export = df_final.copy()
             df_export.drop(columns="tipo").to_excel(
@@ -323,12 +327,6 @@ def pagina_consulta():
             })
 
             for linha in range(len(df_final)):
-                
-            inicio = 1
-            
-            while inicio <= len(df_final):
-
-                for linha in range(len(df_final)):
 
                     excel_row = linha + 1
                 
@@ -337,38 +335,15 @@ def pagina_consulta():
                     else:
                         fmt = fmt_outro_orgao
                 
-                    # membro
-                   worksheet.write_string(
-                        excel_row,
-                        1,
-                        df_final.iloc[linha]["membro"],
-                        fmt
-                    )
+                worksheet.write_string(excel_row, 1, str(df_final.iloc[linha]["membro"]), fmt)
+                worksheet.write_string(excel_row, 2, str(df_final.iloc[linha]["designacao"]), fmt)
+                worksheet.write_string(excel_row, 3, str(df_final.iloc[linha]["orgao"]), fmt)
+                worksheet.write_string(excel_row, 4, str(df_final.iloc[linha]["observacao"]), fmt_normal)
                 
-                    # designacao
-                    worksheet.write_string(
-                        excel_row,
-                        2,
-                        df_final.iloc[linha]["designacao"],
-                        fmt
-                    )
-                
-                    # orgao
-                    worksheet.write_stringe(
-                        excel_row,
-                        3,
-                        df_final.iloc[linha]["orgao"],
-                        fmt
-                    )
-                
-                    # observacao (sem cor)
-                    worksheet.write_string(
-                        excel_row,
-                        4,
-                        df_final.iloc[linha]["observacao"],
-                        fmt_normal
-                    )
+            inicio = 1
             
+            while inicio <= len(df_final):
+                         
                 valor = df_final.iloc[inicio - 1]["mes_ano"]
             
                 fim = inicio
