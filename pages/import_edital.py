@@ -124,14 +124,14 @@ def remover_duplicados(df):
 
     # Padroniza datas
     df["data_sessao"] = (
-    pd.to_datetime(df["data_sessao"])
-    .dt.strftime("%Y-%m-%d")
-        )
+        pd.to_datetime(df["data_sessao"])
+        .dt.strftime("%Y-%m-%d")
+    )
         
-        banco["data_sessao"] = (
-            pd.to_datetime(banco["data_sessao"])
-            .dt.strftime("%Y-%m-%d")
-        )
+    banco["data_sessao"] = (
+        pd.to_datetime(banco["data_sessao"])
+        .dt.strftime("%Y-%m-%d")
+    )
 
     # Padroniza textos
     for col in ["sessao", "membro", "orgao_disponivel"]:
