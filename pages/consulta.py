@@ -277,8 +277,8 @@ def pagina_consulta():
                 "mes_ano",
                 "membro",
                 "designacao",
-                "observacao",
                 "orgao",
+                "observacao",
                 "tipo"
             ]
         ]
@@ -323,7 +323,7 @@ def pagina_consulta():
                     worksheet.merge_range(
                         inicio,
                         COL_MES_ANO,
-                        fim,
+                        fim - 1,
                         COL_MES_ANO,
                         valor,
                         merge_format,
