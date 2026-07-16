@@ -294,8 +294,25 @@ def pagina_consulta():
             workbook = writer.book
             worksheet = writer.sheets["Consolidado"]
 
-            format_orgao = workbook.add_format({"bg_color": "#f79646"})
-            format_outros = workbook.add_format({"bg_color": "#fde9d9"})
+            fmt_mes = workbook.add_format({
+                "align": "center",
+                "valign": "vcenter",
+                "border": 1
+            })
+            
+            fmt_orgao_sel = workbook.add_format({
+                "bg_color": "#8DB4E2",
+                "border": 1
+            })
+            
+            fmt_outro_orgao = workbook.add_format({
+                "bg_color": "#DAEEF3",
+                "border": 1
+            })
+            
+            fmt_normal = workbook.add_format({
+                "border": 1
+            })
 
             COL_MES_ANO = 0
 
@@ -308,6 +325,47 @@ def pagina_consulta():
             inicio = 1
             
             while inicio <= len(df_final):
+
+                for linha in range(len(df_final)):
+
+                    excel_row = linha + 1
+                
+                    if df_final.iloc[linha]["orgao"] == orgao_sel:
+                        fmt = fmt_orgao_sel
+                    else:
+                        fmt = fmt_outro_orgao
+                
+                    # membro
+                    worksheet.write(
+                        excel_row,
+                        1,
+                        df_final.iloc[linha]["membro"],
+                        fmt
+                    )
+                
+                    # designacao
+                    worksheet.write(
+                        excel_row,
+                        2,
+                        df_final.iloc[linha]["designacao"],
+                        fmt
+                    )
+                
+                    # orgao
+                    worksheet.write(
+                        excel_row,
+                        3,
+                        df_final.iloc[linha]["orgao"],
+                        fmt
+                    )
+                
+                    # observacao (sem cor)
+                    worksheet.write(
+                        excel_row,
+                        4,
+                        df_final.iloc[linha]["observacao"],
+                        fmt_normal
+                    )
             
                 valor = df_final.iloc[inicio - 1]["mes_ano"]
             
