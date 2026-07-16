@@ -14,7 +14,8 @@ COLUNAS_OBRIGATORIAS = [
     "criterio",
     "orgao_disponivel",
     "membro",
-    "orgao_titular"
+    "orgao_titular",
+    "codigo_titular"
 ]
 
 CARGOS = [
