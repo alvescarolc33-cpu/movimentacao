@@ -6,7 +6,7 @@ from pages.edital import pagina_edital
 from pages.atos import pagina_atos
 from pages.penajusta import pagina_penajusta
 from pages.vacancia import pagina_vacancia
-from pages.import_edital import pagina_importacao
+from pages.import_edital import pagina_import_edital
 
 # ---------------- SESSION ----------------
 
@@ -62,7 +62,7 @@ elif menu == "Edital CSMP":
 
 elif menu == "Importar Edital"
 
-    pagina_importacao()
+    pagina_import_edital()
 
 elif menu == "Atos TJ":
     
