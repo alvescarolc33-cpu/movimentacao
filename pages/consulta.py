@@ -246,10 +246,20 @@ def pagina_consulta():
             if not g_outros.empty:
                 lista_final.append(g_outros)
 
+        df_orgao = df_orgao.copy()
+        df_orgao["orgao"] = orgao_sel
         df_final = pd.concat(lista_final, ignore_index=True)
 
-        df_final["orgao"] = df_final["orgao"].replace("", pd.NA)
-        df_final["orgao"] = df_final["orgao"].fillna(orgao_sel)
+        df_outros = df_outros.copy()
+        
+        if "orgao" not in df_outros.columns:
+            df_outros["orgao"] = orgao_sel
+        else:
+            df_outros["orgao"] = (
+                df_outros["orgao"]
+                .replace("", pd.NA)
+                .fillna(orgao_sel)
+            )
 
         excel_buffer_all = io.BytesIO()
 
