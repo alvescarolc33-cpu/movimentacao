@@ -154,11 +154,26 @@ def importar(df):
 
     supabase = get_supabase()
 
-    registros = df.to_dict("records")
+    df = df.copy()
+
+    # Data para formato aceito pelo Postgres
+    df["data_sessao"] = (
+        pd.to_datetime(df["data_sessao"])
+        .dt.strftime("%Y-%m-%d")
+    )
+
+    # Substitui NaN por None
+    df = df.astype(object)
+    df = df.where(pd.notnull(df), None)
+
+    registros = df.to_dict(orient="records")
+
+    # Debug
+    st.write(registros[0])
 
     resposta = (
         supabase
-        .table(TABELA)
+        .table("edital")
         .insert(registros)
         .execute()
     )
