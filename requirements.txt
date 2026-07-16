@@ -5,6 +5,7 @@ pandas
 xlsxwriter
 streamlit-authenticator
 bcrypt
-supabase>=2.0.0
+#supabase>=2.0.0
+supabase==2.15.3
 pdfplumber
 openpyxl>=3.1.2
