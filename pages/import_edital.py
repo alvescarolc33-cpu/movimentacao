@@ -159,50 +159,62 @@ def remover_duplicados(df):
 
     return df[df["existe"] != True].drop(columns="existe")
 
+from postgrest.exceptions import APIError
+
 def importar(df):
 
     supabase = get_supabase()
 
-    registros = []
+    df = df.copy()
 
-    for _, row in df.iterrows():
+    # Datas
+    for coluna in ["data_sessao", "validade"]:
+        df[coluna] = (
+            pd.to_datetime(df[coluna], errors="coerce")
+            .dt.strftime("%Y-%m-%d")
+        )
 
-        registro = {}
+    # Inteiros
+    for coluna in ["ano", "codigo_titular"]:
+        df[coluna] = (
+            pd.to_numeric(df[coluna], errors="coerce")
+            .astype("Int64")
+        )
 
-        for coluna, valor in row.items():
+    # Substitui NaN por None
+    df = df.replace({pd.NA: None, np.nan: None})
 
-            # valores vazios
-            if pd.isna(valor):
-                registro[coluna] = None
+    registros = df.to_dict("records")
 
-            # datas
-            elif isinstance(valor, (pd.Timestamp,)):
-                registro[coluna] = valor.strftime("%Y-%m-%d")
-
-            # numpy.int64 / float64 / bool_
-            elif hasattr(valor, "item"):
-                registro[coluna] = valor.item()
-
-            else:
-                registro[coluna] = valor
-
-        registros.append(registro)
-
-    # Apenas para descobrir qual registro falha
     try:
-        json.dumps(registros)
-        st.success("JSON válido!")
-    except Exception as e:
-        st.error(e)
-        st.write(registros[0])
-        raise
 
-    return (
-        supabase
-        .table(TABELA)
-        .insert(registros)
-        .execute()
-    )
+        resposta = (
+            supabase
+            .table("edital")
+            .insert(registros)
+            .execute()
+        )
+
+        st.success("Importado com sucesso!")
+        return resposta
+
+    except APIError as e:
+
+        st.error("Erro retornado pelo Supabase")
+
+        st.write("Mensagem:")
+        st.write(e.message)
+
+        st.write("Detalhes:")
+        st.write(e.details)
+
+        st.write("Código:")
+        st.write(e.code)
+
+        st.write("Hint:")
+        st.write(e.hint)
+
+        raise
 
 def pagina_import_edital():
 
