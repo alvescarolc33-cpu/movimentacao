@@ -150,81 +150,33 @@ def remover_duplicados(df):
 
     return df[df["existe"] != True].drop(columns="existe")
     
-#def importar(df):
-
-    #supabase = get_supabase()
-
-    #df = df.copy()
-
-    # Converte todas as colunas de data
-    #for coluna in ["data_sessao", "validade"]:
-    #    if coluna in df.columns:
-    #        df[coluna] = (
-    #            pd.to_datetime(df[coluna], errors="coerce")
-    #            .dt.strftime("%Y-%m-%d")
-    #        )
-
-    # Troca NaN/NaT por None
-    #df = df.where(pd.notnull(df), None)
-
-    #registros = df.to_dict(orient="records")
-
-    #resposta = (
-    #    supabase
-    #    .table("edital")
-    #    .insert(registros)
-    #    .execute()
-    #)
-
-    #return resposta
-
-import json
-import pandas as pd
-import numpy as np
-import streamlit as st
-
 def importar(df):
 
     supabase = get_supabase()
 
     df = df.copy()
 
-    # Converte colunas de data
-    for col in ["data_sessao", "validade"]:
-        if col in df.columns:
-            df[col] = pd.to_datetime(df[col], errors="coerce").dt.strftime("%Y-%m-%d")
-
-    # Converte todos os tipos numpy para tipos Python
-    for col in df.columns:
-        df[col] = df[col].apply(
-            lambda x: (
-                x.item() if isinstance(x, np.generic) else x
+    # Converte todas as colunas de data
+    for coluna in ["data_sessao", "validade"]:
+        if coluna in df.columns:
+            df[coluna] = (
+                pd.to_datetime(df[coluna], errors="coerce")
+                .dt.strftime("%Y-%m-%d")
             )
-        )
 
-    # Substitui NaN/NaT por None
+    # Troca NaN/NaT por None
     df = df.where(pd.notnull(df), None)
 
     registros = df.to_dict(orient="records")
 
-    # Descobre exatamente qual campo está causando o erro
-    for i, registro in enumerate(registros):
-        try:
-            json.dumps(registro)
-        except Exception as e:
-            st.error(f"Erro na linha {i+1}")
-            st.write(registro)
-            st.exception(e)
-            return
-
-    st.success("JSON válido!")
-
-    return (
+    resposta = (
         supabase
         .table("edital")
         .insert(registros)
         .execute()
     )
+
+    return resposta
 
 def pagina_import_edital():
 
