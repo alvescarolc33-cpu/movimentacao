@@ -156,20 +156,18 @@ def importar(df):
 
     df = df.copy()
 
-    # Data para formato aceito pelo Postgres
-    df["data_sessao"] = (
-        pd.to_datetime(df["data_sessao"])
-        .dt.strftime("%Y-%m-%d")
-    )
+    # Converte todas as colunas de data
+    for coluna in ["data_sessao", "validade"]:
+        if coluna in df.columns:
+            df[coluna] = (
+                pd.to_datetime(df[coluna], errors="coerce")
+                .dt.strftime("%Y-%m-%d")
+            )
 
-    # Substitui NaN por None
-    df = df.astype(object)
+    # Troca NaN/NaT por None
     df = df.where(pd.notnull(df), None)
 
     registros = df.to_dict(orient="records")
-
-    # Debug
-    st.write(registros[0])
 
     resposta = (
         supabase
@@ -179,7 +177,7 @@ def importar(df):
     )
 
     return resposta
-
+    
 def pagina_import_edital():
 
     st.title("📤 Importar Edital")
