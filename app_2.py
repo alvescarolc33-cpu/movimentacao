@@ -60,7 +60,7 @@ elif menu == "Edital CSMP":
     
     pagina_edital()
 
-elif menu == "Importar Edital"
+elif menu == "Importar Edital":
 
     pagina_import_edital()
 
