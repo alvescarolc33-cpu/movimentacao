@@ -145,7 +145,7 @@ def importar(df):
 
     return resposta
 
-def pagina_importacao():
+def pagina_import_edital():
 
     st.title("📤 Importar Edital")
 
