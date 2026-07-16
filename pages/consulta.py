@@ -268,6 +268,54 @@ def pagina_consulta():
             format_orgao = workbook.add_format({"bg_color": "#f79646"})
             format_outros = workbook.add_format({"bg_color": "#fde9d9"})
 
+            # Colunas (índice inicia em 0)
+            COL_ANO = 0
+            COL_MES = 1
+            
+            merge_format = workbook.add_format({
+                "align": "center",
+                "valign": "vcenter",
+                "border": 1
+            })
+            
+            inicio = 1  # primeira linha de dados (linha 0 = cabeçalho)
+            
+            while inicio <= len(df_final):
+            
+                ano = df_final.iloc[inicio - 1]["ano"]
+                mes = df_final.iloc[inicio - 1]["mes"]
+            
+                fim = inicio
+            
+                while (
+                    fim < len(df_final)
+                    and df_final.iloc[fim]["ano"] == ano
+                    and df_final.iloc[fim]["mes"] == mes
+                ):
+                    fim += 1
+            
+                if fim - inicio > 1:
+            
+                    worksheet.merge_range(
+                        inicio,
+                        COL_ANO,
+                        fim,
+                        COL_ANO,
+                        ano,
+                        merge_format,
+                    )
+            
+                    worksheet.merge_range(
+                        inicio,
+                        COL_MES,
+                        fim,
+                        COL_MES,
+                        mes,
+                        merge_format,
+                    )
+            
+                inicio = fim + 1
+    
             for i, tipo in enumerate(df_final["tipo"], start=1):
                 fmt = format_orgao if tipo == "orgao" else format_outros
                 worksheet.set_row(i, cell_format=fmt)
