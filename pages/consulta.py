@@ -321,7 +321,9 @@ def pagina_consulta():
                 "valign": "vcenter",
                 "border": 1
             })
-            
+
+            for linha in range(len(df_final)):
+                
             inicio = 1
             
             while inicio <= len(df_final):
@@ -336,7 +338,7 @@ def pagina_consulta():
                         fmt = fmt_outro_orgao
                 
                     # membro
-                    worksheet.write(
+                   worksheet.write_string(
                         excel_row,
                         1,
                         df_final.iloc[linha]["membro"],
@@ -344,7 +346,7 @@ def pagina_consulta():
                     )
                 
                     # designacao
-                    worksheet.write(
+                    worksheet.write_string(
                         excel_row,
                         2,
                         df_final.iloc[linha]["designacao"],
@@ -352,7 +354,7 @@ def pagina_consulta():
                     )
                 
                     # orgao
-                    worksheet.write(
+                    worksheet.write_stringe(
                         excel_row,
                         3,
                         df_final.iloc[linha]["orgao"],
@@ -360,7 +362,7 @@ def pagina_consulta():
                     )
                 
                     # observacao (sem cor)
-                    worksheet.write(
+                    worksheet.write_string(
                         excel_row,
                         4,
                         df_final.iloc[linha]["observacao"],
