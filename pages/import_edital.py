@@ -1,6 +1,5 @@
 import pandas as pd
 import streamlit as st
-import numpy as np
 from services.supabase_client import get_supabase
         
 TABELA = "edital"
@@ -168,20 +167,6 @@ def importar(df):
 
     # Troca NaN/NaT por None
     df = df.where(pd.notnull(df), None)
-
-        for coluna in df.columns:
-        
-            if df[coluna].dtype == "int64":
-                df[coluna] = df[coluna].astype(int)
-        
-            elif df[coluna].dtype == "float64":
-                df[coluna] = df[coluna].astype(float)
-        
-            elif df[coluna].dtype == "bool":
-                df[coluna] = df[coluna].astype(bool)
-        
-            else:
-                df[coluna] = df[coluna].astype(object)
 
     registros = df.to_dict(orient="records")
 
