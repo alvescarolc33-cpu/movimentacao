@@ -6,6 +6,7 @@ from pages.edital import pagina_edital
 from pages.atos import pagina_atos
 from pages.penajusta import pagina_penajusta
 from pages.vacancia import pagina_vacancia
+from pages.import_edital import pagina_importacao
 
 # ---------------- SESSION ----------------
 
@@ -39,7 +40,7 @@ if not st.session_state.user:
 
 menu = st.sidebar.radio(
     "Menu",
-    ["Movimentação", "Edital CSMP", "Atos TJ", "Vacâncias", "DOe Pena Justa", "Sair"]
+    ["Movimentação", "Edital CSMP", "Importar Edital", "Atos TJ", "Vacâncias", "DOe Pena Justa", "Sair"]
 )
 
 # Mostrar informações do usuário logado
@@ -58,6 +59,10 @@ if menu == "Movimentação":
 elif menu == "Edital CSMP":
     
     pagina_edital()
+
+elif menu == "Importar Edital"
+
+    pagina_importacao()
 
 elif menu == "Atos TJ":
     
