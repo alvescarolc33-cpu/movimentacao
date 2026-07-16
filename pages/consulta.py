@@ -327,18 +327,41 @@ def pagina_consulta():
             })
 
             for linha in range(len(df_final)):
-
-                    excel_row = linha + 1
-                
-                    if df_final.iloc[linha]["orgao"] == orgao_sel:
-                        fmt = fmt_orgao_sel
-                    else:
-                        fmt = fmt_outro_orgao
-                
-                worksheet.write_string(excel_row, 1, str(df_final.iloc[linha]["membro"]), fmt)
-                worksheet.write_string(excel_row, 2, str(df_final.iloc[linha]["designacao"]), fmt)
-                worksheet.write_string(excel_row, 3, str(df_final.iloc[linha]["orgao"]), fmt)
-                worksheet.write_string(excel_row, 4, str(df_final.iloc[linha]["observacao"]), fmt_normal)
+            
+                excel_row = linha + 1
+            
+                if df_final.iloc[linha]["orgao"] == orgao_sel:
+                    fmt = fmt_orgao_sel
+                else:
+                    fmt = fmt_outro_orgao
+            
+                worksheet.write_string(
+                    excel_row,
+                    1,
+                    str(df_final.iloc[linha]["membro"]),
+                    fmt
+                )
+            
+                worksheet.write_string(
+                    excel_row,
+                    2,
+                    str(df_final.iloc[linha]["designacao"]),
+                    fmt
+                )
+            
+                worksheet.write_string(
+                    excel_row,
+                    3,
+                    str(df_final.iloc[linha]["orgao"]),
+                    fmt
+                )
+            
+                worksheet.write_string(
+                    excel_row,
+                    4,
+                    str(df_final.iloc[linha]["observacao"]),
+                    fmt_normal
+                )
                 
             inicio = 1
             
