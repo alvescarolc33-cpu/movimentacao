@@ -206,21 +206,21 @@ def importar(df):
 
     try:
 
-        LIMITE = 30
-
+        ultima_resposta = None
+        
         for i in range(0, len(registros), LIMITE):
-
-        lote = registros[i:i+LIMITE]
-
-        (
-                    supabase
-                    .table("edital")
-                    .insert(lote)
-                    .execute()
-        )
+        
+            lote = registros[i:i + LIMITE]
+        
+            ultima_resposta = (
+                supabase
+                .table(TABELA)
+                .insert(lote)
+                .execute()
+            )
 
         st.success("Importado com sucesso!")
-        return resposta
+        return ultima_resposta
 
     except APIError as e:
 
