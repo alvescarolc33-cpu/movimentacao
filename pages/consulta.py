@@ -217,11 +217,27 @@ def pagina_consulta():
             unsafe_allow_html=True,
         )
 
-        #df_orgao["orgao"] = orgao_sel
-
+        df_orgao = df_orgao.copy()
+        df_outros = df_outros.copy()
+        
         df_orgao["tipo"] = "orgao"
         df_outros["tipo"] = "outros"
-
+        
+        # Todas as linhas do órgão principal recebem o órgão pesquisado
+        df_orgao["orgao"] = orgao_sel
+        
+        # Nas demais, somente completa quando estiver vazio
+        if "orgao" not in df_outros.columns:
+            df_outros["orgao"] = orgao_sel
+        else:
+            df_outros["orgao"] = (
+                df_outros["orgao"]
+                .astype(str)
+                .str.strip()
+                .replace("", orgao_sel)
+                .replace("nan", orgao_sel)
+            )
+        
         df_all = pd.concat([df_orgao, df_outros], ignore_index=True)
 
         ordem_meses = [
@@ -246,26 +262,23 @@ def pagina_consulta():
             if not g_outros.empty:
                 lista_final.append(g_outros)
 
-        df_orgao = df_orgao.copy()
-        df_orgao["orgao"] = orgao_sel
         df_final = pd.concat(lista_final, ignore_index=True)
-
-        df_outros = df_outros.copy()
         
-        if "orgao" not in df_outros.columns:
-            df_outros["orgao"] = orgao_sel
-        else:
-            df_outros["orgao"] = (
-                df_outros["orgao"]
-                .replace("", pd.NA)
-                .fillna(orgao_sel)
-            )
-
         excel_buffer_all = io.BytesIO()
 
+        df_final = df_final[
+            [
+                "mes_ano",
+                "membro",
+                "designacao",
+                "observacao",
+                "orgao",
+                "tipo"
+            ]
+        ]
+        
         with pd.ExcelWriter(excel_buffer_all, engine="xlsxwriter") as writer:
             df_export = df_final.copy()
-            #df_final.to_excel(writer, index=False, sheet_name="Consolidado")
             df_export.drop(columns="tipo").to_excel(
                 writer,
                 index=False,
@@ -278,59 +291,47 @@ def pagina_consulta():
             format_orgao = workbook.add_format({"bg_color": "#f79646"})
             format_outros = workbook.add_format({"bg_color": "#fde9d9"})
 
-            # Colunas (índice inicia em 0)
-            COL_ANO = 0
-            COL_MES = 1
-            
+            COL_MES_ANO = 0
+
             merge_format = workbook.add_format({
                 "align": "center",
                 "valign": "vcenter",
                 "border": 1
             })
             
-            inicio = 1  # primeira linha de dados (linha 0 = cabeçalho)
+            inicio = 1
             
             while inicio <= len(df_final):
             
-                ano = df_final.iloc[inicio - 1]["ano"]
-                mes = df_final.iloc[inicio - 1]["mes"]
+                valor = df_final.iloc[inicio - 1]["mes_ano"]
             
                 fim = inicio
             
                 while (
                     fim < len(df_final)
-                    and df_final.iloc[fim]["ano"] == ano
-                    and df_final.iloc[fim]["mes"] == mes
+                    and df_final.iloc[fim]["mes_ano"] == valor
                 ):
                     fim += 1
             
                 if fim - inicio > 1:
-            
                     worksheet.merge_range(
                         inicio,
-                        COL_ANO,
+                        COL_MES_ANO,
                         fim,
-                        COL_ANO,
-                        ano,
-                        merge_format,
-                    )
-            
-                    worksheet.merge_range(
-                        inicio,
-                        COL_MES,
-                        fim,
-                        COL_MES,
-                        mes,
+                        COL_MES_ANO,
+                        valor,
                         merge_format,
                     )
             
                 inicio = fim + 1
-    
-            for i, tipo in enumerate(df_final["tipo"], start=1):
-                fmt = format_orgao if tipo == "orgao" else format_outros
-                worksheet.set_row(i, cell_format=fmt)
 
         df_final = df_final.drop(columns="tipo")
+
+        df_final["mes_ano"] = (
+            df_final["mes"].astype(str)
+            + ", "
+            + df_final["ano"].astype(str)
+        )
 
         excel_buffer_all.seek(0)
 
