@@ -34,7 +34,6 @@ def validar_dataframe(df):
 
     erros = []
 
-    # Colunas obrigatórias
     faltando = set(COLUNAS_OBRIGATORIAS) - set(df.columns)
 
     if faltando:
@@ -43,7 +42,6 @@ def validar_dataframe(df):
         )
         return erros
 
-    # Datas
     df["data_sessao"] = pd.to_datetime(
         df["data_sessao"],
         errors="coerce"
@@ -56,8 +54,6 @@ def validar_dataframe(df):
             f"{len(linhas)} datas inválidas."
         )
 
-    # Cargo
-
     linhas = df[
         ~df["cargo"].isin(CARGOS)
     ]
@@ -67,8 +63,6 @@ def validar_dataframe(df):
             f"{len(linhas)} cargos inválidos."
         )
 
-    # Concurso
-
     linhas = df[
         ~df["concurso"].isin(CONCURSOS)
     ]
@@ -77,8 +71,6 @@ def validar_dataframe(df):
         erros.append(
             f"{len(linhas)} concursos inválidos."
         )
-
-    # Campos vazios
 
     obrigatorios = [
         "data_sessao",
@@ -123,7 +115,6 @@ def remover_duplicados(df):
         "orgao_disponivel"
     ]
 
-    # Padroniza datas
     df["data_sessao"] = (
         pd.to_datetime(df["data_sessao"])
         .dt.strftime("%Y-%m-%d")
@@ -134,7 +125,6 @@ def remover_duplicados(df):
         .dt.strftime("%Y-%m-%d")
     )
 
-    # Padroniza textos
     for col in ["sessao", "membro", "orgao_disponivel"]:
         df[col] = (
             df[col]
@@ -166,83 +156,20 @@ def importar(df):
 
     df = df.copy()
 
-    # Datas
     for coluna in ["data_sessao", "validade"]:
         df[coluna] = (
             pd.to_datetime(df[coluna], errors="coerce")
             .dt.strftime("%Y-%m-%d")
         )
 
-# Inteiros
     for coluna in ["ano", "codigo_titular"]:
         df[coluna] = (
             pd.to_numeric(df[coluna], errors="coerce")
             .apply(lambda x: None if pd.isna(x) else int(x))
         )
 
-# Demais valores nulos
     df = df.where(pd.notnull(df), None)
-
-    # Datas
-    #for coluna in ["data_sessao", "validade"]:
-    #    df[coluna] = (
-    #        pd.to_datetime(df[coluna], errors="coerce")
-    #        .dt.strftime("%Y-%m-%d")
-    #    )
-
-    # Inteiros
-    #for coluna in ["ano", "codigo_titular"]:
-    #    df[coluna] = (
-    #        pd.to_numeric(df[coluna], errors="coerce")
-    #        .astype("Int64")
-    #    )
-
-    # Substitui NaN por None
-    #df = df.replace({pd.NA: None, np.nan: None})
-    #df = df.where(pd.notnull(df), None)
-    #df = df.astype(object).where(pd.notnull(df), None)
-
-    #for coluna in df.columns:
-
-    #    if pd.api.types.is_integer_dtype(df[coluna]):
-    #        df[coluna] = df[coluna].apply(
-    #                lambda x: int(x) if pd.notna(x) else None
-    #    )
-
-    #    elif pd.api.types.is_float_dtype(df[coluna]):
-    #        df[coluna] = df[coluna].apply(
-    #                lambda x: float(x) if pd.notna(x) else None
-    #    )
-
-    #    else:
-    #        df[coluna] = df[coluna].apply(
-    #                lambda x: None if pd.isna(x) else x
-    #    )
-
-    #registros = df.to_dict("records")
-
-    #try:
-
-        #ultima_resposta = None
-        
-        #for i in range(0, len(registros), LIMITE):
-        
-            #lote = registros[i:i + LIMITE]
-        
-            #ultima_resposta = (
-                #supabase
-                #.table(TABELA)
-                #.insert(lote)
-                #.insert(
-                    #lote,
-                    #returning="representation"
-                #)
-                #.execute()
-            #)
-
-        #st.success("Importado com sucesso!")
-        #return ultima_resposta
-
+    
     registros = df.to_dict("records")
 
     try:
@@ -275,8 +202,6 @@ def importar(df):
 
         #st.write("Hint:")
         #st.write(e.hint)
-
-        #raise
 
         st.error("Erro retornado pelo Supabase")
         st.write(e)
