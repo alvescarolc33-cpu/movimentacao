@@ -202,20 +202,6 @@ def importar(df):
 
     except APIError as e:
 
-        #st.error("Erro retornado pelo Supabase")
-
-        #st.write("Mensagem:")
-        #st.write(e.message)
-
-        #st.write("Detalhes:")
-        #st.write(e.details)
-
-        #st.write("Código:")
-        #st.write(e.code)
-
-        #st.write("Hint:")
-        #st.write(e.hint)
-
         st.error("Erro retornado pelo Supabase")
         st.write(e)
         raise
