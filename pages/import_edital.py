@@ -202,29 +202,43 @@ def importar(df):
                     lambda x: None if pd.isna(x) else x
         )
 
-    registros = df.to_dict("records")
+    #registros = df.to_dict("records")
 
-    try:
+    #try:
 
-        ultima_resposta = None
+        #ultima_resposta = None
         
-        for i in range(0, len(registros), LIMITE):
+        #for i in range(0, len(registros), LIMITE):
         
-            lote = registros[i:i + LIMITE]
+            #lote = registros[i:i + LIMITE]
         
-            ultima_resposta = (
-                supabase
-                .table(TABELA)
+            #ultima_resposta = (
+                #supabase
+                #.table(TABELA)
                 #.insert(lote)
-                .insert(
-                    lote,
-                    returning="representation"
-                )
-                .execute()
-            )
+                #.insert(
+                    #lote,
+                    #returning="representation"
+                #)
+                #.execute()
+            #)
 
-        st.success("Importado com sucesso!")
-        return ultima_resposta
+        #st.success("Importado com sucesso!")
+        #return ultima_resposta
+
+        registros = df.to_dict("records")
+
+                st.write("Primeiro registro:")
+                st.json(registros[0])
+                
+                resposta = (
+                    supabase
+                    .table(TABELA)
+                    .insert(registros[0], returning="representation")
+                    .execute()
+                )
+                
+                st.write(resposta)
 
     except APIError as e:
 
