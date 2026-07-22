@@ -1,6 +1,6 @@
 import pandas as pd
 import streamlit as st
-import json
+#import json
 from postgrest.exceptions import APIError
 from services.supabase_client import get_supabase
         
@@ -170,9 +170,9 @@ def importar(df):
 
     df = df.where(pd.notnull(df), None)
 
-    st.write(df.dtypes)
-    st.write(type(df.iloc[0]["codigo_titular"]))
-    st.write(repr(df.iloc[0]["codigo_titular"]))
+    #st.write(df.dtypes)
+    #st.write(type(df.iloc[0]["codigo_titular"]))
+    #st.write(repr(df.iloc[0]["codigo_titular"]))
     
     registros = df.to_dict("records")
 
@@ -187,13 +187,13 @@ def importar(df):
 
     try:
 
-            st.write("Primeiro registro:")
-            st.json(registros[0])
+            #st.write("Primeiro registro:")
+            #st.json(registros[0])
 
-            st.write(type(registros[0]["codigo_titular"]))
-            st.write(repr(registros[0]["codigo_titular"]))
+            #st.write(type(registros[0]["codigo_titular"]))
+            #st.write(repr(registros[0]["codigo_titular"]))
 
-            st.code(json.dumps(registros[0], indent=2, default=str))
+            #st.code(json.dumps(registros[0], indent=2, default=str))
                         
             resposta = (
                 supabase
