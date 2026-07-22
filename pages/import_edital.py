@@ -215,7 +215,11 @@ def importar(df):
             ultima_resposta = (
                 supabase
                 .table(TABELA)
-                .insert(lote)
+                #.insert(lote)
+                .insert(
+                    lote,
+                    returning="representation"
+                )
                 .execute()
             )
 
