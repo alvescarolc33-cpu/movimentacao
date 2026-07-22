@@ -239,6 +239,7 @@ def importar(df):
     )
                 
     st.write(resposta)
+    return resposta
 
     except APIError as e:
 
