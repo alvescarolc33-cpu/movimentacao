@@ -228,35 +228,41 @@ def importar(df):
 
     registros = df.to_dict("records")
 
-    st.write("Primeiro registro:")
-    st.json(registros[0])
+    try:
+
+            st.write("Primeiro registro:")
+            st.json(registros[0])
+                        
+            resposta = (
+                supabase
+                .table(TABELA)
+                .insert(registros[0], returning="representation")
+                .execute()
+            )
                 
-    resposta = (
-        supabase
-        .table(TABELA)
-        .insert(registros[0], returning="representation")
-        .execute()
-    )
-                
-    st.write(resposta)
-    return resposta
+            st.write(resposta)
+            return resposta
 
     except APIError as e:
 
+        #st.error("Erro retornado pelo Supabase")
+
+        #st.write("Mensagem:")
+        #st.write(e.message)
+
+        #st.write("Detalhes:")
+        #st.write(e.details)
+
+        #st.write("Código:")
+        #st.write(e.code)
+
+        #st.write("Hint:")
+        #st.write(e.hint)
+
+        #raise
+
         st.error("Erro retornado pelo Supabase")
-
-        st.write("Mensagem:")
-        st.write(e.message)
-
-        st.write("Detalhes:")
-        st.write(e.details)
-
-        st.write("Código:")
-        st.write(e.code)
-
-        st.write("Hint:")
-        st.write(e.hint)
-
+        st.write(e)
         raise
 
 def pagina_import_edital():
