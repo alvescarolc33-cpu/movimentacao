@@ -228,15 +228,15 @@ def importar(df):
 
         registros = df.to_dict("records")
 
-                st.write("Primeiro registro:")
-                st.json(registros[0])
+        st.write("Primeiro registro:")
+        st.json(registros[0])
                 
-                resposta = (
-                    supabase
-                    .table(TABELA)
-                    .insert(registros[0], returning="representation")
-                    .execute()
-                )
+        resposta = (
+                supabase
+                .table(TABELA)
+                .insert(registros[0], returning="representation")
+                .execute()
+        )
                 
         st.write(resposta)
 
