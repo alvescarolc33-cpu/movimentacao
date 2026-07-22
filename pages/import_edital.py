@@ -238,7 +238,7 @@ def importar(df):
                     .execute()
                 )
                 
-                st.write(resposta)
+        st.write(resposta)
 
     except APIError as e:
 
