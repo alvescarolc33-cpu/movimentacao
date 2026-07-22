@@ -1,6 +1,6 @@
 import pandas as pd
 import streamlit as st
-#import json
+import json
 from postgrest.exceptions import APIError
 from services.supabase_client import get_supabase
         
