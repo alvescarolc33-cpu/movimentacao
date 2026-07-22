@@ -176,6 +176,15 @@ def importar(df):
     
     registros = df.to_dict("records")
 
+    for registro in registros:
+            for campo in ("codigo_titular", "ano"):
+                valor = registro.get(campo)
+
+                if valor is None or pd.isna(valor):
+                        registro[campo] = None
+                else:
+                        registro[campo] = int(valor)
+
     try:
 
             st.write("Primeiro registro:")
@@ -229,6 +238,16 @@ def pagina_import_edital():
         return
 
     df = pd.read_excel(arquivo)
+
+    df["codigo_titular"] = (
+        pd.to_numeric(df["codigo_titular"], errors="coerce")
+        .astype("Int64")
+    )
+
+    df["ano"] = (
+        pd.to_numeric(df["ano"], errors="coerce")
+        .astype("Int64")
+    )
 
     st.subheader("Prévia")
 
