@@ -169,10 +169,6 @@ def importar(df):
         )
 
     df = df.where(pd.notnull(df), None)
-
-    #st.write(df.dtypes)
-    #st.write(type(df.iloc[0]["codigo_titular"]))
-    #st.write(repr(df.iloc[0]["codigo_titular"]))
     
     registros = df.to_dict("records")
 
@@ -185,25 +181,24 @@ def importar(df):
                 else:
                         registro[campo] = int(valor)
 
+    LIMITE = 50
+
     try:
 
-            #st.write("Primeiro registro:")
-            #st.json(registros[0])
+            ultima_resposta = None
 
-            #st.write(type(registros[0]["codigo_titular"]))
-            #st.write(repr(registros[0]["codigo_titular"]))
-
-            #st.code(json.dumps(registros[0], indent=2, default=str))
+            for i in range(0, len(registros), LIMITE):
+                    lote = registros[i:i + LIMITE]
                         
-            resposta = (
+            ultima_resposta = (
                 supabase
                 .table(TABELA)
-                .insert(registros[0], returning="representation")
+                .insert(lote)
                 .execute()
             )
                 
-            st.write(resposta)
-            return resposta
+            st.success(f"{len(registros)} registros importados com sucesso.")
+            return ultima_resposta
 
     except APIError as e:
 
