@@ -4,7 +4,7 @@ from auth.login import tela_login
 from pages.consulta import pagina_consulta
 from pages.edital import pagina_edital
 from pages.atos import pagina_atos
-from pages.penajusta import pagina_penajusta
+#from pages.penajusta import pagina_penajusta
 from pages.vacancia import pagina_vacancia
 from pages.import_edital import pagina_import_edital
 
@@ -40,7 +40,7 @@ if not st.session_state.user:
 
 menu = st.sidebar.radio(
     "Menu",
-    ["Movimentação", "Edital CSMP", "Importar Edital", "Atos TJ", "Vacâncias", "DOe Pena Justa", "Sair"]
+    ["Movimentação", "Edital CSMP", "Importar Edital", "Atos TJ", "Vacâncias", "Sair"]
 )
 
 # Mostrar informações do usuário logado
@@ -72,9 +72,9 @@ elif menu == "Vacâncias":
 
     pagina_vacancia()
 
-elif menu == "DOe Pena Justa":
+#elif menu == "DOe Pena Justa":
     
-    pagina_penajusta()
+    #pagina_penajusta()
 
 elif menu == "Sair":
 
