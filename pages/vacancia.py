@@ -38,7 +38,7 @@ def pagina_vacancia():
     # ---- Visualização dos últimos processos
     st.divider()
     st.subheader("Vacâncias recentes")
-    response = supabase.table("vacancias").select("*").order("created_at", desc=True).limit(20).execute()
+    response = supabase.table("vacancias").select("*").order("created_at", desc=True).limit(50).execute()
     if response.data:
         df = pd.DataFrame(response.data)
         st.dataframe(df[['orgao', 'membro', 'vacancia', 'publicacao']], use_container_width=True)
