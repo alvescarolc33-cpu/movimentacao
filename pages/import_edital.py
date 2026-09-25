@@ -206,10 +206,9 @@ def importar(df):
     #    st.write(e)
     #    raise
 
-        registros = df.to_dict("records")
+    registros = df.to_dict("records")
         
-        # Diagnóstico
-        for i, registro in enumerate(registros):
+    for i, registro in enumerate(registros):
             try:
                 json.dumps(registro, allow_nan=False)
             except Exception as e:
@@ -229,9 +228,9 @@ def importar(df):
         
                 raise
         
-        LIMITE = 50
+    LIMITE = 50
         
-        try:
+    try:
         
             ultima_resposta = None
         
@@ -249,7 +248,7 @@ def importar(df):
             st.success(f"{len(registros)} registros importados com sucesso.")
             return ultima_resposta
         
-        except APIError as e:
+    except APIError as e:
         
             st.error("Erro retornado pelo Supabase")
             st.write(e)
