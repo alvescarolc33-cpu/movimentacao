@@ -170,28 +170,8 @@ def importar(df):
 
     df = df.where(pd.notnull(df), None)
     
-    #registros = df.to_dict("records")
     registros = df.to_dict("records")
-
-        for i, registro in enumerate(registros):
-            try:
-                json.dumps(registro, allow_nan=False)
-            except Exception as e:
-                st.write(f"REGISTRO COM ERRO: {i}")
-                st.write("ERRO:", e)
-        
-                for campo, valor in registro.items():
-                    try:
-                        json.dumps(valor, allow_nan=False)
-                    except Exception:
-                        st.write(
-                            f"CAMPO: {campo} | "
-                            f"TIPO: {type(valor)} | "
-                            f"VALOR: {repr(valor)}"
-                        )
-        
-                raise
-
+    
     for registro in registros:
             for campo in ("codigo_titular", "ano"):
                 valor = registro.get(campo)
