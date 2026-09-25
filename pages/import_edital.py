@@ -170,41 +170,90 @@ def importar(df):
 
     df = df.where(pd.notnull(df), None)
     
-    registros = df.to_dict("records")
+    #registros = df.to_dict("records")
     
-    for registro in registros:
-            for campo in ("codigo_titular", "ano"):
-                valor = registro.get(campo)
+    #for registro in registros:
+    #        for campo in ("codigo_titular", "ano"):
+    #            valor = registro.get(campo)
 
-                if valor is None or pd.isna(valor):
-                        registro[campo] = None
-                else:
-                        registro[campo] = int(valor)
+    #            if valor is None or pd.isna(valor):
+    #                    registro[campo] = None
+    #            else:
+    #                    registro[campo] = int(valor)
 
-    LIMITE = 50
+    #LIMITE = 50
 
-    try:
+    #try:
 
-            ultima_resposta = None
+    #        ultima_resposta = None
 
-            for i in range(0, len(registros), LIMITE):
-                    lote = registros[i:i + LIMITE]
+    #        for i in range(0, len(registros), LIMITE):
+    #                lote = registros[i:i + LIMITE]
                         
-                    ultima_resposta = (
-                        supabase
-                        .table(TABELA)
-                        .insert(lote)
-                        .execute()
-                    )
-                
+    #                ultima_resposta = (
+    #                    supabase
+    #                    .table(TABELA)
+    #                    .insert(lote)
+    #                    .execute()
+    #                )
+    #            
+    #        st.success(f"{len(registros)} registros importados com sucesso.")
+    #        return ultima_resposta
+
+    #except APIError as e:
+
+    #    st.error("Erro retornado pelo Supabase")
+    #    st.write(e)
+    #    raise
+
+        registros = df.to_dict("records")
+        
+        # Diagnóstico
+        for i, registro in enumerate(registros):
+            try:
+                json.dumps(registro, allow_nan=False)
+            except Exception as e:
+        
+                st.error(f"Erro no registro {i}")
+                st.write(str(e))
+        
+                for campo, valor in registro.items():
+                    try:
+                        json.dumps(valor, allow_nan=False)
+                    except Exception:
+                        st.write(
+                            f"Campo: {campo} | "
+                            f"Tipo: {type(valor)} | "
+                            f"Valor: {repr(valor)}"
+                        )
+        
+                raise
+        
+        LIMITE = 50
+        
+        try:
+        
+            ultima_resposta = None
+        
+            for i in range(0, len(registros), LIMITE):
+        
+                lote = registros[i:i + LIMITE]
+        
+                ultima_resposta = (
+                    supabase
+                    .table(TABELA)
+                    .insert(lote)
+                    .execute()
+                )
+        
             st.success(f"{len(registros)} registros importados com sucesso.")
             return ultima_resposta
-
-    except APIError as e:
-
-        st.error("Erro retornado pelo Supabase")
-        st.write(e)
-        raise
+        
+        except APIError as e:
+        
+            st.error("Erro retornado pelo Supabase")
+            st.write(e)
+            raise
 
 def pagina_import_edital():
 
