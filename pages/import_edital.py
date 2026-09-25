@@ -152,14 +152,14 @@ def remover_duplicados(df):
 
 import json
 
-dados = df.to_dict(orient="records")
+    dados = df.to_dict(orient="records")
 
-try:
-    json.dumps(dados, allow_nan=False)
-    print("JSON válido")
-except Exception as e:
-    print("Erro:", e)
-            
+    try:
+        json.dumps(dados, allow_nan=False)
+        print("JSON válido")
+    except Exception as e:
+        print("Erro:", e)
+        
 def importar(df):
 
     supabase = get_supabase()
