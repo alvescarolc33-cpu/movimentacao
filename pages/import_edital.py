@@ -168,7 +168,7 @@ def importar(df):
             .apply(lambda x: None if pd.isna(x) else int(x))
         )
 
-    df = df.where(pd.notnull(df), None)
+    ##df = df.where(pd.notnull(df), None)
     
     #registros = df.to_dict("records")
     
@@ -205,6 +205,9 @@ def importar(df):
     #    st.error("Erro retornado pelo Supabase")
     #    st.write(e)
     #    raise
+
+    df = df.astype(object)
+    df = df.where(pd.notna(df), None)
 
     registros = df.to_dict("records")
         
