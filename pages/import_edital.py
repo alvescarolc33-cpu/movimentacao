@@ -150,13 +150,15 @@ def remover_duplicados(df):
 
     return df[df["existe"] != True].drop(columns="existe")
 
-for i, registro in enumerate(dados):
-    try:
-        json.dumps(registro, allow_nan=False)
-    except Exception as e:
-        print(f"Registro {i}: {e}")
-        print(registro)
-        break
+import json
+
+dados = df.to_dict(orient="records")
+
+try:
+    json.dumps(dados, allow_nan=False)
+    print("JSON válido")
+except Exception as e:
+    print("Erro:", e)
             
 def importar(df):
 
