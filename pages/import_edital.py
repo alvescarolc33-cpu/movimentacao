@@ -190,12 +190,12 @@ def importar(df):
             for i in range(0, len(registros), LIMITE):
                     lote = registros[i:i + LIMITE]
                         
-            ultima_resposta = (
-                supabase
-                .table(TABELA)
-                .insert(lote)
-                .execute()
-            )
+                    ultima_resposta = (
+                        supabase
+                        .table(TABELA)
+                        .insert(lote)
+                        .execute()
+                    )
                 
             st.success(f"{len(registros)} registros importados com sucesso.")
             return ultima_resposta
