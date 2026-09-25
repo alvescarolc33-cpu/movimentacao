@@ -150,8 +150,6 @@ def remover_duplicados(df):
 
     return df[df["existe"] != True].drop(columns="existe")
 
-import json
-
     dados = df.to_dict(orient="records")
 
     try:
